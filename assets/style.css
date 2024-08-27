@@ -78,3 +78,22 @@ div>strong {
 .notConnected{
     opacity: 0.4;
 }
+.filterActive .dropdown-toggle{
+    color: rgb(255, 217, 0);
+    font-weight: bold;
+}
+.transform>form>div{
+    display: none;
+}
+.transform div.alert{
+    min-height: 50px;
+}
+.transform.active>form>div{
+    display: unset;
+}
+table>thead>tr:first-child>th {
+    position: sticky;
+    background-color: silver;
+    top: 46px; /* Don't forget this, required for the stickiness */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+  }

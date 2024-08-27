@@ -36,7 +36,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        Pull data from Zabbix
+                        <h5 class="modal-title">Pull data from Zabbix</h5>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -194,6 +194,48 @@
             </div>
         </form>
     </div>
+
+    <div class="d-none">
+        <div id="transformTpl" class="transform">
+            <form class="p-0 m-0">
+                <textarea onkeyup='transform_data(this)' name="xpression" placeholder='transform' rows=1 
+                    onfocus="$(this).parents('.transform').addClass('active')"
+                    onblur="let slf=this;setTimeout(()=>$(slf).parents('.transform').removeClass('active'),400)"></textarea>
+                <div class="mt-0">
+                    <textarea class="alert alert-secondary p-1 m-0" placeholder="preview" name="preview" disabled></textarea>
+                    <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(this,true)">Apply</button>
+                </div>
+            </form>
+        </div>
+        <div class="dropdown" id="filterTpl">
+            <a class="btn btn-info dropdown-toggle btn-sm w-100" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+              Filter
+            </a>
+            <div class="dropdown-menu bg-light">
+                <form class="p-2 m-0">
+                    <div class="form-group">
+                        <select onchange="filter_rows(this.form)" name="filter" class="custom-select custom-select-sm w-100">
+                            <option value="">Select filter</option>
+                            <option value="^$">Empty</option>
+                            <option value=".+">Not empty</option>
+                            <option value="^((?!{value}).)*$">Does not contain</option>
+                            <option value="{value}">Contains</option>
+                            <option value="^{value}">Starts with</option>
+                            <option value="{value}$">Ends with</option>
+                            <option value="^{value}$">Exact match</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="term" class="form-control form-control-sm" onkeyup="filter_rows(this.form)">
+                    </div>
+                    <div class="btn-group w-100 btn-group-sm" role="group" aria-label="Basic example">
+                        <button class="btn btn-primary  w-100" onclick="filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide');" type="button">Apply</button>
+                        <button class="btn btn-secondary w-100" onclick="this.form.reset();filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide')" type="button">Clear</button>
+                    </div>
+                  </form>
+            </div>
+          </div>
+    </div>
     
 <script src="lib/jquery.js"></script>
 <script src="lib/bootstrap.min.js"></script>
@@ -310,12 +352,15 @@
         $("<p>").text(msg).addClass(cls).appendTo(area)[0].scrollIntoView();
     }
 
-    function transform(el){
-        let col = $(el.parentNode).data("col");
+    function transform_data(src,apply=false){
+        console.log("transform",src,apply);
+        let el = src.form.xpression;
+        let col = $(el).parents("th").data("col");
         let expr = el.value;
-        $("#preview>tbody>tr:not(.d-none)>td:nth-child("+(col+1)+")").each((idx,cell)=>{
+
+        function transform(cell) {
             let data = $(cell.parentNode).data();
-            
+            //console.log(cell,data);
             $(cell.parentNode).children().each((idx,cell)=>{
                 if(idx==0)return;
                 data["col"+idx] = $(cell).text();
@@ -324,23 +369,51 @@
             data.self = data.content;
             if(expr!=="")
                 with(data){
-                    $(cell).html(eval(expr));
+                    return eval(expr);
                 }
-            // else
-            //     $(cell).html(data.csvData[col]);
-        })
+        }
+        
+        let colCells = $("#preview>tbody>tr:not(.d-none)>td:nth-child("+(col+1)+")");
+        if(!apply)  {
+            console.log(colCells,colCells.first());
+            console.log(el);
+            try {
+                let newVal = transform(colCells[0]);
+                
+                el.form.preview.value = (typeof newVal!=="undefined")? newVal : $(colCells[0]).text()
+            }
+            catch(e) {
+                console.log(e);
+                el.form.preview.value = "Error: "+e.message
+            }
+            return;
+        }
+        
+
+        console.log("transform all");
+        colCells.each((idx,cell)=>{
+            $(cell).html(transform(cell));
+        });
+        src.form.reset();
     }
 
-    function filter(src){
-        let col = $(src.parentNode).data("col");
+    function filter_rows(form){
+        let rgx = form.filter.value.replaceAll("{value}",form.term.value);
+        console.log(rgx);
+        let th = $(form).parents("th");
+        let col = th.data("col");
         $("#preview>tbody>tr").removeClass("d-none");
+        console.log("remove filter",th.removeClass("filterActive"));
+        if(!rgx.length) return;
+        rgx = new RegExp(rgx,"i");
+
+        console.log("add filter",th.addClass("filterActive"));
         $("#preview>tbody>tr>td:nth-child("+(col+1)+")").each((idx,cell)=>{
             let val = $(cell).text();
-            if(!(new RegExp(src.value,"i")).test(val)) {
+            if(!rgx.test(val)) {
                 $(cell.parentNode).addClass("d-none");
             }
         })
-        console.log(src.value,col,"#preview>tbody>tr>td:nth-child("+(col+1)+")");
         
     }
 
@@ -378,15 +451,23 @@
         let filterRow = $("#preview>thead>tr:nth-child(2)");
         
         let col = transformRow.children().length+1;
-        $("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform'>").appendTo(transformRow);
-        $("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
+        $("<th>").data("fldname","col"+col).attr("data-col",col).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
+        $("<th>").data("fldname","col"+col).attr("data-col",col).append($("#filterTpl").clone().attr("id",null)).appendTo(filterRow);
+
+        //$("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform' rows=1>").appendTo(transformRow);
+        //$("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
         $("<th>").on("click",toggleSmall).attr("data-col",col).text("col"+col).insertBefore(headerLastEl);
         $("#preview>tbody>tr").each((idx,row)=>{
             $("<td contenteditable='true'>").appendTo(row);
         })
     }
 
-    function preview(data) {
+    
+
+    function display_data() {
+        let data = localStorage.getItem("csvData");
+        if(!data) return;
+        data = JSON.parse(data);
         let headerRow = $("<tr>").appendTo($("#preview>thead").empty());
         let filterRow = $("<tr>").appendTo("#preview>thead");
         let transformRow = $("<tr>").appendTo("#preview>thead");
@@ -400,8 +481,8 @@
         $("<th rowspan='3'>").html("<input type='checkbox' onchange='toggle_all_visible(this)'> <button onclick='delete_selected()'>-</button>").appendTo(headerRow);
         fields.forEach(fld => {
             col++;
-            $("<th>").data("fldname",fld).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform'>").appendTo(transformRow);
-            $("<th>").data("fldname",fld).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
+            $("<th>").data("fldname",fld).attr("data-col",col).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
+            $("<th>").data("fldname",fld).attr("data-col",col).append($("#filterTpl").clone().attr("id",null)).appendTo(filterRow);
             $("<th>").on("click",toggleSmall).attr("data-col",col).html("col"+col+"<br>"+fld).appendTo(headerRow);
             $("<option>").attr("value",fld).appendTo("#fields");
         });
@@ -436,7 +517,8 @@
                 header: true,
                 complete: (data)=>{
                     console.log(data);
-                    preview(data)
+                    localStorage.setItem("csvData",JSON.stringify(data))
+                    display_data()
                 }
             }
         });
@@ -517,12 +599,6 @@
         zbx_connect();
     }
     
-
-	function run() {
-		zbx = new ZBXApi($("#apiUrlInput").val(),apiKey);
-		zbx.get("host",{output:['host']})
-	}
-
     function zbx_connect() {
         let url = localStorage.getItem("zbxUrl");
         let token = localStorage.getItem("zbxToken");
@@ -535,7 +611,10 @@
             }
         });
     }
-    $(document).ready(zbx_connect);
+    $(document).ready(()=>{
+        zbx_connect();
+        display_data();
+    });
 
     
 </script>
