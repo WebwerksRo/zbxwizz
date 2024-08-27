@@ -1,103 +1,24 @@
 <html>
 <head>
-    <style>
-        .small{
-            max-width: 20px;
-            max-height: 20px;
-            overflow: hidden;
-        }
-        .selectOpts{
-            vertical-align: top;
-        }
-        .selectOpts label{
-            display: inline-block
-        }
-        #container>div{
-            width: 100px;
-            border: dashed black 1px;
-            margin: 5px; padding: 5px;
-        }
-		
-		div>strong {
-			display: inline-block;
-			padding: 3px;
-			background: #eee;
-			border-radius: 3px;
-			border: solid black 1px;
-			margin: 3px;
-		}
-		.synced{
-            background-color: rgb(200, 243, 191);
-        }
-		.found{
-			color: green;
-		}
-		.notfound{
-			color: red;
-		}
-		.isproto{
-			font-style: italic;
-			background: white;
-		}
-        #overlay{
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background: rgba(180,180,180,0.8);
-            display: none;
-        }
-        #overlay>div{
-            position: absolute;
-            left: 50%;
-            top: 50%;
-        }
-        #select label>select,#select label>input,#select label>textarea{
-            display: block;
-            width: 200px;
-        }
-        .req-options>div{
-            padding: 5px;
-            display: inline-block;
-            border: dashed black 1px;
-        }
-        .req-options>div:first{
-            background-color: red;
-        }
-        .req-options>div>label{
-            display: block;
-        }
-        .controls>form>div{
-            margin: 5px;
-            padding: 5px;
-            background-color: #eee;
-            border: dashed silver 1px;
-        }
-        .nav-link{
-            padding-top: 0px !important;
-            padding-bottom: 0px !important;
-        }
-        .notConnected{
-            opacity: 0.4;
-        }
-    </style>
     <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/select2.min.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
         <div class="flex-grow-1">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#loadCsvModal">Load CSV</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#loadCsvModal">Load CSV</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" onclick="save_data()">Save CSV</a>
+                    <a class="nav-link active btn btn-secondary" href="#" onclick="save_data()">Save CSV</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX fetch</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX fetch</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
                 </li>
             </ul>
         </div>
@@ -110,7 +31,6 @@
         </table>
     </div>
     <datalist id="fields"></datalist>
-    
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
             <div class="modal-dialog">
@@ -279,6 +199,8 @@
 <script src="lib/bootstrap.min.js"></script>
 <script src="lib/zbx.js"></script>
 <script src="lib/papaparse.min.js"></script>
+<script src="lib/select2.min.js"></script>
+
 
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
@@ -299,6 +221,7 @@
         pom.setAttribute('download', filename);
         pom.click();
     }
+
     function save_data() {
         let data = []
         $("#preview>tbody>tr").each((idx,row)=>{
@@ -321,14 +244,14 @@
         });
         console.log(csv);
         downloadBlob(csv,"backup.csv","text/csv;charset=utf-8;");
-        //window.open(encodeURI("data:text/csv;charset=utf-8,"+csv));
     }
     
 
     let overlay = $("#overlay");
     
     async function sync() {
-        zbx = new ZBXApi($("#apiUrlInput").val(),$("#apiKeyInput").val());
+        if(zbx==null)
+            return ("ZBX not connected");
 
         let selFld = $("#selectFld").val();
         let cnt=0;
