@@ -1,0 +1,103 @@
+<html>
+<head>
+    <style>
+        #container>div{
+            width: 100px;
+            border: dashed black 1px;
+            margin: 5px; padding: 5px;
+        }
+		
+		div>strong {
+			display: inline-block;
+			padding: 3px;
+			background: #eee;
+			border-radius: 3px;
+			border: solid black 1px;
+			margin: 3px;
+		}
+		
+		.found{
+			color: green;
+		}
+		.notfound{
+			color: red;
+		}
+		.isproto{
+			font-style: italic;
+			background: white;
+		}
+		
+    </style>
+</head>
+<body>
+<form>
+    <fieldset>
+        <legend>API key</legend>
+        <input type="text" id="apiKeyInput" value="517f8262f3f23ed2d86d4ec88887c52679f21d3cddee3dcbafa0b008dceab0bb">
+        <button id="btn" type="button" onclick="run()">Run</button>
+    </fieldset>
+</form>
+<div id='container' style="display: flex; flex-wrap: wrap">
+    <div>
+        <h5>DemoName</h5>
+        <span>ID</span>
+    </div>
+</div>
+<div id="logs">
+</div>
+<script src="jquery.js"></script>
+<script src="zbx.js"></script>
+<script>
+function run() {
+	let apiKey = $("#apiKeyInput").val();
+	if(!apiKey) {
+		alert("No API key defined");
+		return;
+	}
+
+	zbx = new ZBXApi("http://10.112.61.140/zabbix/api_jsonrpc.php",apiKey);
+	
+	zbx.get("hostinterface",{
+			output: "extend",
+			//limit: 50,
+			searchWildcardsEnabled: true,
+			search: {
+				ip: "{*"
+			}
+		})
+		.done((data)=>{
+			console.log(data);
+			data.result.forEach((iface)=>{
+				zbx.get("usermacro",{
+						hostids: iface.hostid,
+						output: "extend",
+						filter: {
+							macro: "{$INTERFACEIP}"
+						}
+					})
+					.done((data)=>{
+						if(!data.result.length)
+							return;
+						dt = {
+							ip: data.result[0].value,
+							interfaceid: iface.interfaceid
+						};
+						
+						zbx.update("hostinterface",dt)
+							.done(()=>{
+								console.log("Update Host "+iface.hostid+" / Iface "+iface.interfaceid +" / OK");
+							})
+							.fail(()=>{
+								console.log("Update Host "+iface.hostid+" / Iface "+iface.interfaceid +" / failed");
+							})
+						
+					})
+				
+				//console.log(iface)
+			});
+		})
+	
+}
+</script>
+</body>
+</html>

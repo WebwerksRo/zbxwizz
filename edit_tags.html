@@ -1,0 +1,146 @@
+<html>
+<head>
+    <style>
+        #container>div{
+            width: 100px;
+            border: dashed black 1px;
+            margin: 5px; padding: 5px;
+        }
+		
+		div>strong {
+			display: inline-block;
+			padding: 3px;
+			background: #eee;
+			border-radius: 3px;
+			border: solid black 1px;
+			margin: 3px;
+		}
+		
+		.found{
+			color: green;
+		}
+		.notfound{
+			color: red;
+		}
+		.isproto{
+			font-style: italic;
+			background: white;
+		}
+        #overlay{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(180,180,180,0.8);
+            display: none;
+        }
+        #overlay>div{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+        }
+        #select label>select,#select label>input,#select label>textarea{
+            display: block;
+            width: 200px;
+        }
+        .req-options>div{
+            padding: 5px;
+            display: inline-block;
+            border: dashed black 1px;
+        }
+        .req-options>div:first{
+            background-color: red;
+        }
+        .req-options>div>label{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <div>Loading ....</div>
+    </div>
+	<form>
+		<fieldset>
+			<legend>Zabbix API</legend>
+			<label style="display: block">
+				URL<br>
+				<input type="text" id="apiUrlInput" value="https://res.rwe.com/zabbix/api_jsonrpc.php" style="width: 100%;">
+			</label>
+			
+			<label style="display: block">
+				Key<br>
+				<input type="text" id="apiKeyInput" value="" style="width: 100%;">
+			</label>
+		</fieldset>
+        <fieldset>
+            
+            <label>
+                Hostids<br>
+                <textarea style="width: 100%;" id="hostids"></textarea>
+            </label>
+            
+            <label>
+                GroupIDs<br>
+                <textarea style="width: 100%;" id="tags"></textarea>
+            </label>
+            
+        </fieldset>
+        <fieldset style="display: none;">
+			<legend>Excel file</legend>
+			<label style="display: block">
+				Excel file<br>
+				<input type="file" id="apiUrlInput" name="file" onchange="load_xls(this)">
+			</label>
+		</fieldset>
+        <!-- <button id="btn" type="button" onclick="load_xls(this.form.file)">Run</button> -->
+        <button id="btn" type="button" onclick="edit_tags()">Add tags</button>
+        <button id="btn" type="button" onclick="edit_tags(true)">Remove tags</button>
+	</form>
+    <script src="lib/jquery.js"></script>
+    <script src="lib/zbx.js"></script>
+    <script>
+        let zbx,apiUrl,apiKey;
+        $.get("./zbx_api_key.txt").then(data=>{
+            $('#apiKeyInput').val(data);
+        });
+
+
+        function edit_tags(remove=false) {
+            zbx = new ZBXApi($("#apiUrlInput").val(),$("#apiKeyInput").val());
+            let hostids = ($("#hostids").val().split(/,| |\n/).filter((hostid)=>hostid!==""));
+            let tags = $("#tags").val().split(/\n/).filter(line=>line!=="").map(line=>{
+                line.split()
+            });
+            
+            function update(what,data,array) {
+                console.log("Update",data);
+                zbx.update(what,data).then(()=>{
+                    if(array.length)
+                        update(what,array.pop(),array)
+                });
+            }
+            zbx.get("host",{limit:100,output:"hostid",selectTags:"extend"})
+                .then((resp)=>{
+                    resp.json().then((resp)=>{
+                        console.log(resp);
+                        return;
+                        //let filtered = resp.result.filter((host)=>host.hostgroups.filter(hg=>hg.groupid=="1829").length>0);
+                        let updateData = []
+                        resp.result.forEach(host => {
+                            let groupIds = host.hostgroups.filter((hg)=>targetGroupIds.indexOf(hg.groupid)==-1);
+                            if(!remove) {
+                                targetGroupIds.forEach((gid)=>groupIds.push({groupid:gid}))
+                            }
+
+                            
+                            updateData.push({hostid:host.hostid,groups:groupIds});
+                        });
+                        //console.log(updateData);
+                        update("host",updateData.pop(),updateData);
+                    });
+                    
+                })
+        }
+    </script>
+</body>

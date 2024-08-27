@@ -1,0 +1,250 @@
+<html>
+<head>
+    <style>
+        #container>div{
+            width: 100px;
+            border: dashed black 1px;
+            margin: 5px; padding: 5px;
+        }
+		
+		div>strong {
+			display: inline-block;
+			padding: 3px;
+			background: #eee;
+			border-radius: 3px;
+			border: solid black 1px;
+			margin: 3px;
+		}
+		
+		.found{
+			color: green;
+		}
+		.notfound{
+			color: red;
+		}
+		.isproto{
+			font-style: italic;
+			background: white;
+		}
+        #overlay{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(180,180,180,0.8);
+            display: none;
+        }
+        #overlay>div{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+        }
+        #select label>select,#select label>input,#select label>textarea{
+            display: block;
+            width: 200px;
+        }
+        .req-options>div{
+            padding: 5px;
+            display: inline-block;
+            border: dashed black 1px;
+        }
+        .req-options>div:first{
+            background-color: red;
+        }
+        .req-options>div>label{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <div>Loading ....</div>
+    </div>
+	<form>
+		<fieldset>
+			<legend>Zabbix API</legend>
+			<label style="display: block">
+				URL<br>
+				<input type="text" id="apiUrlInput" value="https://res.rwe.com/zabbix/api_jsonrpc.php" style="width: 100%;">
+			</label>
+			
+			<label style="display: block">
+				Key<br>
+				<input type="text" id="apiKeyInput" value="" style="width: 100%;">
+			</label>
+		</fieldset>
+        <fieldset>
+			<legend>Excel file</legend>
+			<label style="display: block">
+				Excel file<br>
+				<input type="file" id="apiUrlInput" name="file" onchange="load_xls(this)">
+			</label>
+		</fieldset>
+        <button id="btn" type="button" onclick="load_xls(this.form.file)">Run</button>
+	</form>
+    <form id="select">
+        <fieldset>
+            <legend>Search</legend>
+            <label>What
+                <select name="what">
+                    <option>host</option>
+                    <option>template</option>
+                    <option>item</option>
+                    <option>trigger</option>
+                </select>
+            </label>
+        </fieldset>
+        <fieldset class="req-options" id="filters">
+            <legend>Filter</legend>
+            <div>
+                <label>
+                    Parameter
+                    <select name="para"></select>
+                </label>
+                <label>
+                    Value
+                    <textarea name="value"></textarea>
+                </label>
+                <button type="button" onclick="$(this).parent().remove()">-</button>
+            </div>
+            <button onclick="new_filter(this)" type="button">Add filter</button>
+        </fieldset>
+        <fieldset class="req-options" id="include">
+            <legend>Include</legend>
+            <div>
+                <label>
+                    Parameter
+                    <input type="text">
+                </label>
+                <label>
+                    Value
+                    <input type="text">
+                </label>
+            </div>
+        </fieldset>
+        <fieldset id="output">
+            <legend>Output</legend>
+            <div>
+                <label>
+                    Parameter
+                    <input type="text">
+                </label>
+            </div>
+        </fieldset>
+        <button type="button" onclick="exec()">Exec</button><br>
+        <textarea id="debug" style="width: 100%; height: 100px;"></textarea>
+    </form>
+    <div id="app"></div>
+<script src="lib/jquery.js"></script>
+<script src="lib/zbx.js"></script>
+<!-- use xlsx.full.min.js from version 0.20.3 -->
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+
+    let specs = {};
+    async function get_specs() {
+        specs.host = await (await fetch("hosts_spec.json")).json();
+    }
+    
+    get_specs();
+    $("")
+
+    async function exec() {
+        let dbg = $("#debug")[0];
+        dbg.value = "";
+        let form = $("#select")[0];
+        form.what.value;
+        zbx = new ZBXApi($("#apiUrlInput").val(),$("#apiKeyInput").val());
+		let response = await zbx.get(form.what.value,{
+            output:['hostid',"name"],
+            limit: 10
+        })
+        let body = await response.json();
+        
+        body.result.forEach((item)=>{
+            dbg.value += JSON.stringify(item)+"\n";
+        });
+    }
+
+    function get_filters() {
+        let filters = {
+
+        };
+        $("#filters>div").each((idx,filter)=>{
+            let para = $(filter).children("[name=para]").val();
+            let val = $(filter).children("[name=para]").val();
+        })
+    }
+
+    function new_filter(src) {
+        let filters = $(src).parent().children("div");
+        $(filters[0]).clone().insertAfter(filters[filters.length-1]);
+    }
+
+    let overlay = $("#overlay");
+    
+    function log(msg,clear=false) {
+        let area = $('#debug');
+        if(clear)
+            area.val("");
+        area.val(area.val()+"\n" + msg);
+    }
+
+    function field_selector(sheetName) {
+        overlay.show();
+        setTimeout(() => {
+            let data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName],{range:0});
+            console.log(data);
+            
+            let sel = $("<select>").appendTo("#app");
+            Object.getOwnPropertyNames(data[0]).forEach((col)=>{
+                if(col!=="__rowNum__")
+                    $("<option>").text(col).appendTo(sel)
+            })
+            overlay.hide();
+        }, 100);
+        
+    }
+
+    function sheet_selector(Sheets) {
+        let sel = $("<select>").appendTo("#app")
+            .on("change",()=>field_selector(sel.val()));
+        Object.getOwnPropertyNames(Sheets).forEach((sheet)=>{
+            $("<option>").text(sheet).appendTo(sel);
+        });
+    }
+    let workbook
+    function load_xls(input) {
+        overlay.show();
+        let file = input.files[0];
+        let reader = new FileReader();
+
+        reader.onloadend = (e)=>{
+            console.log(e);
+        }
+        reader.onerror = (e)=>{
+            console.log(e);
+        }
+        reader.onload = (a)=>{
+            overlay.hide();
+            console.log("Loaded");
+            workbook = XLSX.read(reader.result);
+            console.log(workbook);
+            sheet_selector(workbook.Sheets);
+            
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+	let zbx,apiUrl,apiKey;
+	$.get("./zbx_api_key.txt").then(data=>{
+		$('#apiKeyInput').val(data);
+	});
+
+	function run() {
+		zbx = new ZBXApi($("#apiUrlInput").val(),apiKey);
+		zbx.get("host",{output:['host']})
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,511 @@
+<html>
+<head>
+    <style>
+        .small{
+            max-width: 20px;
+            max-height: 20px;
+            overflow: hidden;
+        }
+        .selectOpts{
+            vertical-align: top;
+        }
+        .selectOpts label{
+            display: inline-block
+        }
+        #container>div{
+            width: 100px;
+            border: dashed black 1px;
+            margin: 5px; padding: 5px;
+        }
+		
+		div>strong {
+			display: inline-block;
+			padding: 3px;
+			background: #eee;
+			border-radius: 3px;
+			border: solid black 1px;
+			margin: 3px;
+		}
+		.synced{
+            background-color: rgb(200, 243, 191);
+        }
+		.found{
+			color: green;
+		}
+		.notfound{
+			color: red;
+		}
+		.isproto{
+			font-style: italic;
+			background: white;
+		}
+        #overlay{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(180,180,180,0.8);
+            display: none;
+        }
+        #overlay>div{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+        }
+        #select label>select,#select label>input,#select label>textarea{
+            display: block;
+            width: 200px;
+        }
+        .req-options>div{
+            padding: 5px;
+            display: inline-block;
+            border: dashed black 1px;
+        }
+        .req-options>div:first{
+            background-color: red;
+        }
+        .req-options>div>label{
+            display: block;
+        }
+        .controls>form>div{
+            margin: 5px;
+            padding: 5px;
+            background-color: #eee;
+            border: dashed silver 1px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.css">
+</head>
+<body>
+    <div class="row">
+        <div style="width: 350px !important; overflow: scroll; height: 100vh;"  class="controls col-2">
+            <form>
+            <div>
+                <h5>Zabbix API</legend>
+                <label style="display: block">
+                    URL<br>
+                    <input type="text" id="apiUrlInput" value="https://res.rwe.com/zabbix/api_jsonrpc.php" style="width: 100%;">
+                </label>
+                <label style="display: block">
+                    Key<br>
+                    <input type="text" id="apiKeyInput" value="" style="width: 100%;">
+                </label>
+            </div>
+            <div>
+                <fieldset>
+                    <legend>CSV file</legend>
+                    <label style="display: block">
+                        Excel file<br>
+                        <input type="file" id="apiUrlInput" name="file">
+                    </label>
+                    <button id="btn" type="button" onclick="load_csv(this.form.file)">Load CSV</button>
+                    <button id="btn" type="button" onclick="save_data()">Backup data</button>
+                </fieldset>
+            </div>
+            <div class="selectOpts">
+                <fieldset>
+                    <legend>Select</legend>
+                    <label>
+                        Select by<br>
+                        <select id="selectBy">
+                            <option>hostid</option>
+                            <option>host</option>
+                            <option>name</option>
+                        </select>
+                    </label>
+                    <label>
+                        Value<br>
+                        <input type="text" id="selectFld" list="fields">
+                    </label>
+                    <label>
+                        Include<br>
+                        <select multiple id="include">
+                            <option>selectHostGroups</option>
+                            <option>selectParentTemplates</option>
+                            <option>selectTags</option>
+                        </select>
+                    </label>
+                    <label>
+                        Output<br>
+                        <select multiple id="output">
+                            <option>hostid</option>
+                            <option>host</option>
+                            <option>description</option>
+                            <option>maintenance_status</option>
+                            <option>name</option>
+                            <option>proxyid</option>
+                            <option>status</option>
+                            <option>active_available</option>
+                        </select>
+                    </label>
+                    <button onclick="sync()" type="button">Get from Zabbix</button>
+                    <button onclick="push_changes()" type="button">Push to Zabbix</button>
+                </fieldset>
+            </div>
+            <div class="selectOpts">
+                <fieldset>
+                    <legend>Update</legend>
+                    <div>
+                        Who<br>
+                        <select>
+                            <option>host</option>
+                            <option>name</option>
+                            <option>groups</option>
+                            <option>tags</option>
+                        </select>
+                    </div>
+                    <div>
+                        Select by<br>
+                        <select id="dataSourceFld"></select>
+                    </div>
+                    <div style="border: solid black 1px" class="p-2 mt-2">
+                        What<br>
+                        <select name="what">
+                            <option>host</option>
+                            <option>name</option>
+                            <option>groups</option>
+                            <option>tags</option>
+                        </select><br>
+                        Update by
+                        <select id="selectBy">
+                            <option>hostid</option>
+                            <option>host</option>
+                            <option>name</option>
+                        </select>
+                        Data source col
+                        <select class="fieldSelect"></select>
+                        <select name="whatColumn"></select><br>
+                        <select name="howToUpdate">
+                            <option>update</option>
+                            <option>replace</option>
+                        </select>
+                        <button onclick="$(this).parent().clone().insertAfter(this.parentNode)" type="button">One more</button>
+                    </div>
+                </fieldset>
+            </div>
+            </form>
+        </div>
+        <div class="col-10" style="overflow: scroll;height: 100vh">
+            <div style="">
+                <table id="preview" border="1" cellpadding="2">
+                    <thead style="background-color: burlywood;"></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <datalist id="fields"></datalist>
+   
+<script src="lib/jquery.js"></script>
+<script src="lib/zbx.js"></script>
+<script src="lib/papaparse.min.js"></script>
+
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+    let zbx,apiUrl,apiKey;
+    let specs = {};
+    async function get_specs() {
+        specs.host = await (await fetch("hosts_spec.json")).json();
+    }
+
+    function downloadBlob(content, filename, contentType) {
+        // Create a blob
+        var blob = new Blob([content], { type: contentType });
+        var url = URL.createObjectURL(blob);
+
+        // Create a link to download it
+        var pom = document.createElement('a');
+        pom.href = url;
+        pom.setAttribute('download', filename);
+        pom.click();
+    }
+    function save_data() {
+        let data = []
+        $("#preview>tbody>tr").each((idx,row)=>{
+            let rec = {};
+            let cells = $(row).children().toArray();
+            cells.shift(-1);
+            cells.forEach((cell)=>rec[$(cell).data("fld")]=$(cell).text());
+            data.push(rec);
+        })
+        console.log(data);
+        csv = Papa.unparse(data,{
+            quotes: true, //or array of booleans
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: ",",
+            header: true,
+            newline: "\n",
+            skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
+            columns: null //or array of strings
+        });
+        console.log(csv);
+        downloadBlob(csv,"backup.csv","text/csv;charset=utf-8;");
+        //window.open(encodeURI("data:text/csv;charset=utf-8,"+csv));
+    }
+    
+
+    let overlay = $("#overlay");
+    
+    async function sync() {
+        zbx = new ZBXApi($("#apiUrlInput").val(),$("#apiKeyInput").val());
+
+        let selFld = $("#selectFld").val();
+        let cnt=0;
+        $("#preview>tbody>tr").toArray().forEach((row)=>{
+            cnt++;
+            //if(cnt>10) return;
+            let data = $(row).data("csvData");
+            let params = {};
+            if(data[selFld].trim().length==0) return;
+            switch($("#selectBy").val()) {
+                case "hostid":
+                    params.hostids = data[selFld]
+                    break;
+                case "name":
+                    params.filter = {
+                        name:[data[selFld]]
+                    }
+                    break;
+                case "host":
+                    params.filter = {
+                        name:[data[selFld]]
+                    }
+                    break;
+            }
+            let output = $("#output").val()
+            params.output = output.length==0 ? "extend" : output;
+            
+            $("#include").val().forEach(incl=>{
+                switch(incl) {
+                    case "selectParentTemplates":
+                        params[incl] = ["templateid","host"];
+                        break;
+                    case "selectTags":
+                        params[incl] = "extend";
+                        break;
+                    case "selectHostGroups":
+                        params[incl] = "extend";
+                        break;
+                }
+                
+            })
+            //console.log(params);
+            //return;
+            zbx.get("host",params).then((resp)=>{
+                let data = resp.result.pop();
+                if(!data) return $(row).remove();
+                $(row).data("zbxData",data).attr("title",JSON.stringify(data)).addClass("synced");
+                console.log("Recv data",params,data);
+            }).catch(e=>console.log(e));
+        })
+    }
+    function dbg(msg,cls,clear=false) {
+        
+        let area = $('#debug');
+        if(clear) area.empty();
+        $("<p>").text(msg).addClass(cls).appendTo(area)[0].scrollIntoView();
+    }
+
+    function transform(el){
+        let col = $(el.parentNode).data("col");
+        let expr = el.value;
+        $("#preview>tbody>tr:not(.d-none)>td:nth-child("+(col+1)+")").each((idx,cell)=>{
+            let data = $(cell.parentNode).data();
+            
+            $(cell.parentNode).children().each((idx,cell)=>{
+                if(idx==0)return;
+                data["col"+idx] = $(cell).text();
+            })
+            data.content = $(cell).text();
+            data.self = data.content;
+            if(expr!=="")
+                with(data){
+                    $(cell).html(eval(expr));
+                }
+            // else
+            //     $(cell).html(data.csvData[col]);
+        })
+    }
+
+    function filter(src){
+        let col = $(src.parentNode).data("col");
+        $("#preview>tbody>tr").removeClass("d-none");
+        $("#preview>tbody>tr>td:nth-child("+(col+1)+")").each((idx,cell)=>{
+            let val = $(cell).text();
+            if(!(new RegExp(src.value,"i")).test(val)) {
+                $(cell.parentNode).addClass("d-none");
+            }
+        })
+        console.log(src.value,col,"#preview>tbody>tr>td:nth-child("+(col+1)+")");
+        
+    }
+
+
+    function delete_selected() {
+        $("#preview>tbody input:checked").each((idx,item)=>$(item).parents("tr").remove());
+    } 
+    function toggle_all_visible(src){
+        let inps = $("#preview>tbody>tr:not(.d-none) input[type=checkbox]");
+        
+        let checked = src.checked;
+        inps.each((idx,inp)=>{
+            inp.checked=checked
+        })
+    }
+
+    function toggleSmall(event) {
+        let el = $(event.target);
+        let col = el.data("col")+1;
+        if(el.hasClass("small")) {
+            $("#preview>thead>tr:first-child>th:nth-child("+col+")").removeClass("small");
+            $("#preview>thead>tr:not(:first-child)>th:nth-child("+(col-1)+")").removeClass("small");
+            $("#preview td:nth-child("+col+")").removeClass("small");
+        }
+        else {
+            $("#preview>thead>tr:first-child>th:nth-child("+col+")").addClass("small");
+            $("#preview>thead>tr:not(:first-child)>th:nth-child("+(col-1)+")").addClass("small");
+            $("#preview td:nth-child("+col+")").addClass("small");
+        }
+    }
+    
+    function addCol(){
+        let headerLastEl = $("#preview>thead>tr:first-child>th:last-child");
+        let transformRow = $("#preview>thead>tr:last-child");
+        let filterRow = $("#preview>thead>tr:nth-child(2)");
+        
+        let col = transformRow.children().length+1;
+        $("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform'>").appendTo(transformRow);
+        $("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
+        $("<th>").on("click",toggleSmall).attr("data-col",col).text("col"+col).insertBefore(headerLastEl);
+        $("#preview>tbody>tr").each((idx,row)=>{
+            $("<td contenteditable='true'>").appendTo(row);
+        })
+    }
+
+    function preview(data) {
+        let headerRow = $("<tr>").appendTo($("#preview>thead").empty());
+        let filterRow = $("<tr>").appendTo("#preview>thead");
+        let transformRow = $("<tr>").appendTo("#preview>thead");
+    
+        let tbody = $("#preview>tbody").empty();
+        let fields = data.meta.fields;
+        $("#fields").empty()
+        let selectFld = $(".fieldSelect").empty();
+        let dataSourceFld = $("#dataSourceFld").empty();
+        let col = 0;
+        $("<th rowspan='3'>").html("<input type='checkbox' onchange='toggle_all_visible(this)'> <button onclick='delete_selected()'>-</button>").appendTo(headerRow);
+        fields.forEach(fld => {
+            col++;
+            $("<th>").data("fldname",fld).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform'>").appendTo(transformRow);
+            $("<th>").data("fldname",fld).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
+            $("<th>").on("click",toggleSmall).attr("data-col",col).html("col"+col+"<br>"+fld).appendTo(headerRow);
+            $("<option>").attr("value",fld).appendTo("#fields");
+        });
+
+        $("<th rowspan='3'>").html("<button onclick='addCol()'>+</button>").appendTo(headerRow);
+        
+        for(let i=0;(i<data.data.length);i++) {
+            let trow = $("<tr>").appendTo(tbody).data("csvData",data.data[i]);
+            let idx = 0;
+            $("<td>").html("<input type='checkbox'>").appendTo(trow);
+            fields.forEach(fld => {
+                idx++;
+                data.data[i][idx] = data.data[i][fld];
+                $("<td contenteditable='true'>").text(data.data[i][fld]).attr("data-fld",fld).appendTo(trow);
+            });
+        }
+    }
+    
+    
+
+
+    Array.prototype.unique = function(){
+        function distinct(value, index, array) {
+            return array.indexOf(value) === index;
+        }    
+        return this.filter(distinct);
+    }
+
+    function load_csv(input) {
+        let a = $(input).parse({
+            config: {
+                header: true,
+                complete: (data)=>{
+                    console.log(data);
+                    preview(data)
+                }
+            }
+        });
+        console.log(a);
+    }
+
+    function push_changes() {
+        let wd = 0;
+        $("#preview>tbody>tr").toArray().forEach((row)=>{
+            // not selected => skip
+            if(!$(row).find("input")[0].checked) return;
+            
+            let rowData = $(row).data();
+            // no zbx data => skip
+            if(!rowData.zbxData){
+                console.log("Skip No ZBX data");
+                return;
+            } 
+            
+            // already processed => skip
+            // if(rowData.zbxData.tags.filter(tag=>tag.name=="ZHP_UPDATE").length) {
+            //     console.log("Skip already done",rowData.zbxData.host);
+            //     return;
+            // }
+            wd++;
+            //if(wd>1) return;
+            //console.log(rowData);
+            
+            let data = {};
+            let cnt=0;
+            $(row).children(":not(:first-child)").each((idx,cell)=>{
+                let $cell = $(cell);ccc
+                let cellData = $cell.data()
+                if(cellData.fld) {
+                    data[cellData.fld] = $cell.text();
+                }
+                data["col"+cnt] = $cell.text();
+            });
+            if(!data.hostid) return;
+            //console.log(data);
+            let tags = JSON.parse(data.Notes).map((item)=>{
+                    let tag = Object.keys(item).pop();
+                    return {
+                        tag: tag,
+                        value: item[tag]
+                    };
+                });
+            let hostgroups = data.Action.split(",").map(grpid=>{return {groupid:grpid}});
+            let config = {
+                hostid: data.hostid,
+                host: rowData.zbxData.host,
+                name: data.Status,
+                groups: hostgroups,
+                //tags: tags
+            }
+            console.log("Perform update",config);
+            //return;
+            zbx.update("host",config).then(()=>console.log("Done",config));
+        })
+    }
+
+	
+	$.get("./zbx_api_key.txt").then(data=>{
+		$('#apiKeyInput').val(data);
+	});
+
+	function run() {
+		zbx = new ZBXApi($("#apiUrlInput").val(),apiKey);
+		zbx.get("host",{output:['host']})
+	}
+</script>
+</body>
+</html>
+git config --global user.name "Sergiu Voicu"
+git config --global user.email "sv@softaccel.net"
