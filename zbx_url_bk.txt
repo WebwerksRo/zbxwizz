@@ -1,0 +1,1 @@
+https://res.rwe.com/zabbix/api_jsonrpc.php

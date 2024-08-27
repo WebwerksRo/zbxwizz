@@ -73,130 +73,210 @@
             background-color: #eee;
             border: dashed silver 1px;
         }
+        .nav-link{
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+        }
+        .notConnected{
+            opacity: 0.4;
+        }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
 </head>
 <body>
-    <div class="row">
-        <div style="width: 350px !important; overflow: scroll; height: 100vh;"  class="controls col-2">
-            <form>
-            <div>
-                <h5>Zabbix API</legend>
-                <label style="display: block">
-                    URL<br>
-                    <input type="text" id="apiUrlInput" value="https://res.rwe.com/zabbix/api_jsonrpc.php" style="width: 100%;">
-                </label>
-                <label style="display: block">
-                    Key<br>
-                    <input type="text" id="apiKeyInput" value="" style="width: 100%;">
-                </label>
-            </div>
-            <div>
-                <fieldset>
-                    <legend>CSV file</legend>
-                    <label style="display: block">
-                        Excel file<br>
-                        <input type="file" id="apiUrlInput" name="file">
-                    </label>
-                    <button id="btn" type="button" onclick="load_csv(this.form.file)">Load CSV</button>
-                    <button id="btn" type="button" onclick="save_data()">Backup data</button>
-                </fieldset>
-            </div>
-            <div class="selectOpts">
-                <fieldset>
-                    <legend>Select</legend>
-                    <label>
-                        Select by<br>
-                        <select id="selectBy">
-                            <option>hostid</option>
-                            <option>host</option>
-                            <option>name</option>
-                        </select>
-                    </label>
-                    <label>
-                        Value<br>
-                        <input type="text" id="selectFld" list="fields">
-                    </label>
-                    <label>
-                        Include<br>
-                        <select multiple id="include">
-                            <option>selectHostGroups</option>
-                            <option>selectParentTemplates</option>
-                            <option>selectTags</option>
-                        </select>
-                    </label>
-                    <label>
-                        Output<br>
-                        <select multiple id="output">
-                            <option>hostid</option>
-                            <option>host</option>
-                            <option>description</option>
-                            <option>maintenance_status</option>
-                            <option>name</option>
-                            <option>proxyid</option>
-                            <option>status</option>
-                            <option>active_available</option>
-                        </select>
-                    </label>
-                    <button onclick="sync()" type="button">Get from Zabbix</button>
-                    <button onclick="push_changes()" type="button">Push to Zabbix</button>
-                </fieldset>
-            </div>
-            <div class="selectOpts">
-                <fieldset>
-                    <legend>Update</legend>
-                    <div>
-                        Who<br>
-                        <select>
-                            <option>host</option>
-                            <option>name</option>
-                            <option>groups</option>
-                            <option>tags</option>
-                        </select>
-                    </div>
-                    <div>
-                        Select by<br>
-                        <select id="dataSourceFld"></select>
-                    </div>
-                    <div style="border: solid black 1px" class="p-2 mt-2">
-                        What<br>
-                        <select name="what">
-                            <option>host</option>
-                            <option>name</option>
-                            <option>groups</option>
-                            <option>tags</option>
-                        </select><br>
-                        Update by
-                        <select id="selectBy">
-                            <option>hostid</option>
-                            <option>host</option>
-                            <option>name</option>
-                        </select>
-                        Data source col
-                        <select class="fieldSelect"></select>
-                        <select name="whatColumn"></select><br>
-                        <select name="howToUpdate">
-                            <option>update</option>
-                            <option>replace</option>
-                        </select>
-                        <button onclick="$(this).parent().clone().insertAfter(this.parentNode)" type="button">One more</button>
-                    </div>
-                </fieldset>
-            </div>
-            </form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
+        <div class="flex-grow-1">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#loadCsvModal">Load CSV</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="save_data()">Save CSV</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX fetch</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
+                </li>
+            </ul>
         </div>
-        <div class="col-10" style="overflow: scroll;height: 100vh">
-            <div style="">
-                <table id="preview" border="1" cellpadding="2">
-                    <thead style="background-color: burlywood;"></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
+        <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected"></a></div>
+    </nav>
+    <div class="" style="margin-top: 46px">
+        <table id="preview" border="1" cellpadding="2">
+            <thead style="background-color: burlywood;"></thead>
+            <tbody></tbody>
+        </table>
     </div>
     <datalist id="fields"></datalist>
+    
+    <div class="modal" id="pullZbxModal">
+        <form id="pullZbxForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Pull data from Zabbix
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="zbxUrlInput">Select by</label>
+                            <select id="selectBy" class="custom-select">
+                                <option>hostid</option>
+                                <option>host</option>
+                                <option>name</option>
+                            </select>
+                        </div> 
+                        <div class="form-group">
+                            <label for="zbxUrlInput">Value source</label>
+                            <input type="text" id="selectFld" list="fields" class="form-control">
+                        </div> 
+                        <div class="form-group">
+                            <label for="zbxUrlInput">Include</label>
+                            <select multiple id="include" class="custom-select">
+                                <option>selectHostGroups</option>
+                                <option>selectParentTemplates</option>
+                                <option>selectTags</option>
+                            </select>
+                        </div> 
+                        <div class="form-group">
+                            <label for="zbxUrlInput">Output</label>
+                            <select multiple id="output" class="custom-select">
+                                <option>hostid</option>
+                                <option>host</option>
+                                <option>description</option>
+                                <option>maintenance_status</option>
+                                <option>name</option>
+                                <option>proxyid</option>
+                                <option>status</option>
+                                <option>active_available</option>
+                            </select>
+                        </div> 
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sync(this.form)">Pull</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal" id="pushZbxModal">
+        <form id="pushZbxForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Push data to Zabbix
+                    </div>
+                    <div class="modal-body">
+                        <fieldset>
+                            <legend>Update</legend>
+                            <div>
+                                Who<br>
+                                <select>
+                                    <option>host</option>
+                                    <option>name</option>
+                                    <option>groups</option>
+                                    <option>tags</option>
+                                </select>
+                            </div>
+                            <div>
+                                Select by<br>
+                                <select id="dataSourceFld"></select>
+                            </div>
+                            <div style="border: solid black 1px" class="p-2 mt-2">
+                                What<br>
+                                <select name="what">
+                                    <option>host</option>
+                                    <option>name</option>
+                                    <option>groups</option>
+                                    <option>tags</option>
+                                </select><br>
+                                Update by
+                                <select id="selectBy">
+                                    <option>hostid</option>
+                                    <option>host</option>
+                                    <option>name</option>
+                                </select>
+                                Data source col
+                                <select class="fieldSelect"></select>
+                                <select name="whatColumn"></select><br>
+                                <select name="howToUpdate">
+                                    <option>update</option>
+                                    <option>replace</option>
+                                </select>
+                                <button onclick="$(this).parent().clone().insertAfter(this.parentNode)" type="button">One more</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="push_changes(this.form)">Load</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
    
+    <div class="modal" id="loadCsvModal">
+        <form id="loadCvsForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Load CSV file
+                    </div>
+                    <div class="modal-body">
+                        <input type="file" name="file">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_csv(this.form.file)">Load</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div class="modal" id="zbxConfigModal">
+        <form id="zbxConfigForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Zabbix connection
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="zbxUrlInput">API URL</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon1" onclick="load_api_url(this)">Load</button>
+                                </div>
+                                <input type="text" class="form-control" name="url" id="zbxUrlInput">
+                            </div>
+                        </div>  
+                        <div class="form-group">
+                            <label for="zbxTokenInput">API Token</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary" type="button" id="button-addon1" onclick="load_api_key(this)">Load</button>
+                                </div>
+                                <input type="text" class="form-control" name="token" id="zbxTokenInput">
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="save_zbx_config(this.form)">Save config</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
 <script src="lib/jquery.js"></script>
+<script src="lib/bootstrap.min.js"></script>
 <script src="lib/zbx.js"></script>
 <script src="lib/papaparse.min.js"></script>
 
@@ -496,16 +576,45 @@
     }
 
 	
-	$.get("./zbx_api_key.txt").then(data=>{
-		$('#apiKeyInput').val(data);
-	});
+	function load_api_key(src) {
+        $.get("./zbx_api_key.txt").then(data=>{
+            src.form.token.value = data;
+        });
+    }
+    function load_api_url(src) {
+        $.get("./zbx_url.txt").then(data=>{
+            src.form.url.value = data;
+        });
+    }
+
+    function save_zbx_config(form) {
+        $("#zbxLogo").addClass("notConnected");
+        localStorage.setItem("zbxUrl",form.url.value);
+        localStorage.setItem("zbxToken",form.token.value);
+        zbx_connect();
+    }
+    
 
 	function run() {
 		zbx = new ZBXApi($("#apiUrlInput").val(),apiKey);
 		zbx.get("host",{output:['host']})
 	}
+
+    function zbx_connect() {
+        let url = localStorage.getItem("zbxUrl");
+        let token = localStorage.getItem("zbxToken");
+        $("#zbxConfigForm")[0].url.value = url;
+        $("#zbxConfigForm")[0].token.value = token;
+        zbx = new ZBXApi(url,token);
+        zbx.get("host",{limit:1}).then(data=>{
+            if(typeof data.result!==undefined) {
+                $("#zbxLogo").removeClass("notConnected");
+            }
+        });
+    }
+    $(document).ready(zbx_connect);
+
+    
 </script>
 </body>
 </html>
-git config --global user.name "Sergiu Voicu"
-git config --global user.email "sv@softaccel.net"

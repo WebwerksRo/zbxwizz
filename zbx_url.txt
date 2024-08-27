@@ -1,0 +1,1 @@
+https://zbx01.softaccel.net/api_jsonrpc.php
