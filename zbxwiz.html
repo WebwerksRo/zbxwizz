@@ -59,22 +59,27 @@
                                     <select class="custom-select custom-select-sm mt-1" name="postprocess">
                                         <option value="update">Update existing</option>
                                         <option value="new">New data</option>
+                                        <option value="ignore">Ignore</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <div class="input-group input-group-sm mb-2">
-                            <select class="custom-select" onchange="pullReqTplEditor.setText(localStorage.getItem($(this).val()))" id="pullReqTemplates"></select>
-                            <div class="input-group-append">
-                                <button class="btn btn-secondary">Remove current template</button>
+                        <div class="form-group">
+                            <label>Request templates</label>
+                            <div class="input-group mb-2">
+                                <select class="custom-select" onchange="load_req_tpl(pullReqTplEditor,$(this).val())" id="pullReqTemplates" name="templates"></select>
+                                <div class="input-group-append">
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)" type="button">Add</button>
+                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div id="pullReqTplEditor" style="height: 500px;"></div>
-                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pull(pullReqTplEditor.getText(),this.form)">Pull</button>
-                        <button type="button" class="btn btn-info" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)">Save as template</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -86,54 +91,61 @@
 
     <div class="modal" id="pushZbxModal">
         <form id="pushZbxForm">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         Push data to Zabbix
                     </div>
                     <div class="modal-body">
-                        <fieldset>
-                            <legend>Update</legend>
-                            <div>
-                                Who<br>
-                                <select>
-                                    <option>host</option>
-                                    <option>name</option>
-                                    <option>groups</option>
-                                    <option>tags</option>
-                                </select>
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="form-group ">
+                                    <label>Resource</label>
+                                    <select class="custom-select custom-select-sm" name="resource">
+                                        <option>host</option>
+                                        <option>hostgroup</option>
+                                        <option>template</option>
+                                        <option>template</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                Select by<br>
-                                <select id="dataSourceFld"></select>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>Operation</label>
+                                    <select class="custom-select custom-select-sm mt-1" name="operation">
+                                        <option>update</option>
+                                        <option>create</option>
+                                        <option>delete</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div style="border: solid black 1px" class="p-2 mt-2">
-                                What<br>
-                                <select name="what">
-                                    <option>host</option>
-                                    <option>name</option>
-                                    <option>groups</option>
-                                    <option>tags</option>
-                                </select><br>
-                                Update by
-                                <select id="selectBy">
-                                    <option>hostid</option>
-                                    <option>host</option>
-                                    <option>name</option>
-                                </select>
-                                Data source col
-                                <select class="fieldSelect"></select>
-                                <select name="whatColumn"></select><br>
-                                <select name="howToUpdate">
-                                    <option>update</option>
-                                    <option>replace</option>
-                                </select>
-                                <button onclick="$(this).parent().clone().insertAfter(this.parentNode)" type="button">One more</button>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>Post process</label>
+                                    <select class="custom-select custom-select-sm mt-1" name="postprocess">
+                                        <option value="update">Update existing</option>
+                                        <option value="new">New data</option>
+                                        <option value="ignore">Ignore</option>
+                                    </select>
+                                </div>
                             </div>
-                        </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <label>Request templates</label>
+                            <div class="input-group mb-2">
+                                <select class="custom-select" onchange="load_req_tpl(pushReqTplEditor,$(this).val())" id="pushReqTemplates" name="templates"></select>
+                                <div class="input-group-append">
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning" onclick="save_req_tpl(pushReqTplPfx,'#pushReqTemplates',pushReqTplEditor)" type="button">Add</button>
+                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="pushReqTplEditor" style="height: 500px;"></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="push_changes(this.form)">Load</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="push(pushReqTplEditor.getText(),this.form)">Push</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -254,33 +266,122 @@
         specs.host = await (await fetch("hosts_spec.json")).json();
     }
 
+    function load_req_tpl(editor,key) {
+        if(key.length) 
+            editor.setText(localStorage.getItem(key));
+    }
+
+    function remove_template(btn) {
+        $(btn.form.templates).children().toArray()
+            .forEach(opt=>{
+                if(opt.selected) {
+                    localStorage.removeItem(opt.value);
+                    $(opt).remove();
+                }
+            });
+    }
+
+    function push(template,form) {
+        if(["host"].indexOf(form.resource.value)===-1)
+            return;
+        if(["update","create","delete"].indexOf(form.operation.value)===-1)
+            return;
+
+        let method = form.resource.value+"."+form.operation.value;
+
+         if(form.operation.value==="update") {
+            let wd = 0;
+            dt.rows(true).forEach((row)=>{
+                row.el
+                    .removeClass("loading")
+                    .removeClass("synced")
+                wd++;
+                if(wd>10) return;
+                with(row.data) {
+                    let req = eval("`"+template+"`");
+                    try{
+                        let params = JSON.parse(req);
+                        console.log(params);
+                        //return;
+                        zbx.req(method,params).then((resp)=>{
+                            let zbxData = resp.result.pop();
+                            if(zbxData) {
+                                //row.el.data("zbxData",zbxData)
+                                row.el.addClass("synced")
+                            }
+                            row.el.removeClass("loading")
+                        });
+                        row.el.addClass("loading");
+                    }
+                    catch(e) {
+                        console.log(e);
+                    }
+                    
+                }
+            });
+         }
+    }
+
     function pull(template,form) {
         if(["host"].indexOf(form.resource.value)===-1)
             return;
-        wd = 0;
-        dt.rows().forEach((row)=>{
-            wd++;
-            if(wd>10) return;
-            with($(row).data()) {
-                let req = eval("`"+template+"`");
-                try{
-                    zbx.get(form.resource.value,JSON.parse(req)).then((resp)=>console.log(resp));
+        if(form.postprocess.value==="update") {
+            wd = 0;
+            dt.rows(true).forEach((row)=>{
+                row.el
+                    .removeClass("loading")
+                    .removeClass("synced")
+                wd++;
+                if(wd>10) return;
+                with(row.data) {
+                    let req = eval("`"+template+"`");
+                    try{
+                        zbx.get(form.resource.value,JSON.parse(req)).then((resp)=>{
+                            let zbxData = resp.result.pop();
+                            if(zbxData) {
+                                row.el.data("zbxData",zbxData)
+                                row.el.addClass("synced")
+                            }
+                            row.el.removeClass("loading")
+                        });
+                        row.el.addClass("loading");
+                    }
+                    catch(e) {
+                        console.log(e);
+                    }
+                    
                 }
-                catch(e) {
-                    console.log(e);
-                }
-                
-            }
-        })
+            });
+            return;
+        }
     }
 
     function dataTable(id) {
+
+        function rowObj(row) {
+            let $row = $(row);
+            return {
+                data: $row.data(),
+                el: $row,
+                cells: $row.children(":not(:first-child)").toArray(),
+                selected: $row.children(":first-child").children("input[type=checkbox]")[0].checked
+            };
+        }
+
         const dt = {
             el: $(id),
-            rows: function(){
-                return this.el.find("tbody>tr").toArray();
+            rows: function(selected=false){
+                let rows = this.el.find("tbody>tr").toArray()
+                    .map(rowObj);
+                return selected ? rows.filter((row)=>row.selected) : rows;
             },
+            columns: function() {
 
+            },
+            addRow: function(data) {
+
+            }
+            
         }
         return dt;
     }
@@ -497,6 +598,10 @@
         })
     }
 
+    function info(src) {
+        console.log($(src).parents("tr").data());
+    }
+
     
 
     function display_data() {
@@ -513,7 +618,7 @@
         let selectFld = $(".fieldSelect").empty();
         let dataSourceFld = $("#dataSourceFld").empty();
         let col = 0;
-        $("<th rowspan='3'>").html("<input type='checkbox' onchange='toggle_all_visible(this)'> <button onclick='delete_selected()'>-</button>").appendTo(headerRow);
+        $("<th rowspan='3'>").html("<input type='checkbox' onchange='toggle_all_visible(this)'> <button onclick='delete_selected()'>-</button> ").appendTo(headerRow);
         fields.forEach(fld => {
             col++;
             $("<th>").data("fldname",fld).attr("data-col",col).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
@@ -527,7 +632,7 @@
         for(let i=0;(i<data.data.length);i++) {
             let trow = $("<tr>").appendTo(tbody).data("csvData",data.data[i]);
             let idx = 0;
-            $("<td>").html("<input type='checkbox'>").appendTo(trow);
+            $("<td>").html("<input type='checkbox'> <button onclick='info(this)'>i</button>").appendTo(trow);
             fields.forEach(fld => {
                 idx++;
                 data.data[i][idx] = data.data[i][fld];
@@ -662,7 +767,7 @@
     }
 
     function setup_req_tpl_select(id,prefix) {
-        let sel = $(id).empty();
+        let sel = $(id).empty().append("<option value=''>Select template</option>");
         let prefixLen = prefix.length;
         Object.keys(localStorage)
             .filter(key=>key.indexOf(prefix)!==-1)
@@ -670,7 +775,7 @@
     }
 
     const pullReqTplEditor = new JSONEditor($("#pullReqTplEditor")[0], {mode: 'code'});
-    //const pushReqTplEditor = new JSONEditor($("#pushReqTplEditor")[0], {mode: 'code'});
+    const pushReqTplEditor = new JSONEditor($("#pushReqTplEditor")[0], {mode: 'code'});
     
     const pullReqTplPfx = "pullReqTpl_"
     const pushReqTplPfx = "pushReqTpl_"

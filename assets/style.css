@@ -26,6 +26,10 @@ div>strong {
 .synced{
     background-color: rgb(200, 243, 191);
 }
+.loading{
+    background-color: rgb(239, 241, 108);
+}
+
 .found{
     color: green;
 }
