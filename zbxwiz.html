@@ -1,8 +1,10 @@
 <html>
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="lib/select2.min.css">
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="node_modules/jsoneditor/dist/jsoneditor.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
@@ -33,55 +35,54 @@
     <datalist id="fields"></datalist>
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Pull data from Zabbix</h5>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="zbxUrlInput">Select by</label>
-                            <select id="selectBy" class="custom-select">
-                                <option>hostid</option>
-                                <option>host</option>
-                                <option>name</option>
-                            </select>
-                        </div> 
-                        <div class="form-group">
-                            <label for="zbxUrlInput">Value source</label>
-                            <input type="text" id="selectFld" list="fields" class="form-control">
-                        </div> 
-                        <div class="form-group">
-                            <label for="zbxUrlInput">Include</label>
-                            <select multiple id="include" class="custom-select">
-                                <option>selectHostGroups</option>
-                                <option>selectParentTemplates</option>
-                                <option>selectTags</option>
-                            </select>
-                        </div> 
-                        <div class="form-group">
-                            <label for="zbxUrlInput">Output</label>
-                            <select multiple id="output" class="custom-select">
-                                <option>hostid</option>
-                                <option>host</option>
-                                <option>description</option>
-                                <option>maintenance_status</option>
-                                <option>name</option>
-                                <option>proxyid</option>
-                                <option>status</option>
-                                <option>active_available</option>
-                            </select>
-                        </div> 
-
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="form-group ">
+                                    <label>Resource</label>
+                                    <select class="custom-select custom-select-sm" name="resource">
+                                        <option>host</option>
+                                        <option>hostgroup</option>
+                                        <option>template</option>
+                                        <option>template</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label>Post process</label>
+                                    <select class="custom-select custom-select-sm mt-1" name="postprocess">
+                                        <option value="update">Update existing</option>
+                                        <option value="new">New data</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <select class="custom-select" onchange="pullReqTplEditor.setText(localStorage.getItem($(this).val()))" id="pullReqTemplates"></select>
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary">Remove current template</button>
+                            </div>
+                        </div>
+                        <div id="pullReqTplEditor" style="height: 500px;"></div>
+                        
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sync(this.form)">Pull</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pull(pullReqTplEditor.getText(),this.form)">Pull</button>
+                        <button type="button" class="btn btn-info" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)">Save as template</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
+
+    
 
     <div class="modal" id="pushZbxModal">
         <form id="pushZbxForm">
@@ -242,6 +243,7 @@
 <script src="lib/zbx.js"></script>
 <script src="lib/papaparse.min.js"></script>
 <script src="lib/select2.min.js"></script>
+<script src="node_modules/jsoneditor/dist/jsoneditor.min.js"></script>
 
 
 <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -251,6 +253,39 @@
     async function get_specs() {
         specs.host = await (await fetch("hosts_spec.json")).json();
     }
+
+    function pull(template,form) {
+        if(["host"].indexOf(form.resource.value)===-1)
+            return;
+        wd = 0;
+        dt.rows().forEach((row)=>{
+            wd++;
+            if(wd>10) return;
+            with($(row).data()) {
+                let req = eval("`"+template+"`");
+                try{
+                    zbx.get(form.resource.value,JSON.parse(req)).then((resp)=>console.log(resp));
+                }
+                catch(e) {
+                    console.log(e);
+                }
+                
+            }
+        })
+    }
+
+    function dataTable(id) {
+        const dt = {
+            el: $(id),
+            rows: function(){
+                return this.el.find("tbody>tr").toArray();
+            },
+
+        }
+        return dt;
+    }
+
+    
 
     function downloadBlob(content, filename, contentType) {
         // Create a blob
@@ -496,7 +531,14 @@
             fields.forEach(fld => {
                 idx++;
                 data.data[i][idx] = data.data[i][fld];
-                $("<td contenteditable='true'>").text(data.data[i][fld]).attr("data-fld",fld).appendTo(trow);
+                
+                trow.data(fld,data.data[i][fld])
+                    .data("col"+idx,data.data[i][fld]);
+
+                $("<td contenteditable='true'>").text(data.data[i][fld])
+                    .attr("data-fld",fld)
+                    .attr("data-col",idx)
+                    .appendTo(trow);
             });
         }
     }
@@ -611,6 +653,30 @@
             }
         });
     }
+
+    
+    function save_req_tpl(prefix,selectId,editor) {
+        let name = prompt("Template name");
+        localStorage.setItem(prefix+name,editor.getText());
+        setup_req_tpl_select(selectId,prefix);
+    }
+
+    function setup_req_tpl_select(id,prefix) {
+        let sel = $(id).empty();
+        let prefixLen = prefix.length;
+        Object.keys(localStorage)
+            .filter(key=>key.indexOf(prefix)!==-1)
+            .forEach(key=>$("<option>").text(key.substr(prefixLen)).attr("value",key).appendTo(sel));
+    }
+
+    const pullReqTplEditor = new JSONEditor($("#pullReqTplEditor")[0], {mode: 'code'});
+    //const pushReqTplEditor = new JSONEditor($("#pushReqTplEditor")[0], {mode: 'code'});
+    
+    const pullReqTplPfx = "pullReqTpl_"
+    const pushReqTplPfx = "pushReqTpl_"
+    setup_req_tpl_select("#pullReqTemplates",pullReqTplPfx);
+    setup_req_tpl_select("#pushReqTemplates",pushReqTplPfx);
+    let dt = dataTable("#preview");
     $(document).ready(()=>{
         zbx_connect();
         display_data();
