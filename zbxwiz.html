@@ -308,7 +308,15 @@
             </div>
         </div>
     </div>
-    
+    <div id="overlay">
+        <div class="vertical-center">
+            <div class="d-inline">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
 <script src="lib/jquery.js"></script>
 <script src="lib/bootstrap.min.js"></script>
 <script src="lib/zbx.js"></script>
@@ -353,9 +361,6 @@
 
     let zbx,apiUrl,apiKey;
     let specs = {};
-    async function get_specs() {
-        specs.host = await (await fetch("hosts_spec.json")).json();
-    }
 
     function load_req_tpl(editor,key) {
         if(key.length) 
@@ -369,7 +374,7 @@
 
         let method = form.resource.value+".get";
         let params = JSON.parse(reqTpl);
-        
+        overlay.show();
         zbx.get(form.resource.value,params).then((data)=>{
             if(!data.result)
                 return alert("Could not fetch data");
@@ -381,7 +386,7 @@
             };
             dt.load_data(data);
             localStorage.setItem("tableData",JSON.stringify(data));
-        })
+        }).finally(()=>overlay.hide());
     }
 
     function remove_template(btn) {
@@ -394,12 +399,15 @@
             });
     }
 
-    function push(template,form) {
-        if(["host"].indexOf(form.resource.value)===-1)
-            return;
-        if(["update","create","delete"].indexOf(form.operation.value)===-1)
-            return;
 
+    function pull_push(template,form,pull=true) {
+
+    }
+    /**
+     * push data to zabbix
+     */
+    function push(template,form) {
+        
         let method = form.resource.value+"."+form.operation.value;
 
          if(form.operation.value==="update") {
@@ -415,6 +423,7 @@
                         let params = JSON.parse(req);
                         console.log(params);
                         //return;
+                        overlay.show();
                         zbx.req(method,params).then((resp)=>{
                             let zbxData = resp.result.pop();
                             if(zbxData) {
@@ -422,7 +431,7 @@
                                 row.el.addClass("synced")
                             }
                             row.el.removeClass("loading")
-                        });
+                        }).finally(()=>overlay.hide());
                         row.el.addClass("loading");
                     }
                     catch(e) {
@@ -434,33 +443,33 @@
          }
     }
 
+    /**
+     * pull data from zabbix
+     */
     function pull(template,form) {
-        if(["host"].indexOf(form.resource.value)===-1)
-            return;
         if(form.postprocess.value==="update") {
-            wd = 0;
             dt.rows(true).forEach((row)=>{
                 row.el
                     .removeClass("loading")
                     .removeClass("synced")
-                wd++;
                 with(row.data) {
                     let req = eval("`"+template+"`");
                     try{
+                        overlay.show();
                         zbx.get(form.resource.value,JSON.parse(req)).then((resp)=>{
                             let zbxData = resp.result.pop();
                             if(zbxData) {
                                 row.el.data("zbxData",zbxData)
                                 row.el.addClass("synced")
                             }
-                            row.el.removeClass("loading")
+                        }).finally(()=>{
+                            overlay.hide();
+                            row.el.removeClass("loading");
                         });
-                        row.el.addClass("loading");
                     }
                     catch(e) {
                         console.log(e);
                     }
-                    
                 }
             });
             return;
@@ -493,6 +502,7 @@
 
             },
             load_data: function (data,type="csv") {
+                overlay.show();
                 if(!data) return;
                 console.log(data);
                 let thead = this.el.children("thead").empty();
@@ -538,7 +548,9 @@
                             try {
                                 row.data(fld,data.records[rowIdx][fld])
                                     .data("col"+(rowIdx+1),data.records[rowIdx][fld]);
-                                cell.text(data.records[rowIdx][fld]).data("fld",fld);
+                                    let value = data.records[rowIdx][fld];
+                                value = typeof value ==="object" ? JSON.stringify(value) : value;
+                                cell.text(value).data("fld",fld);
                             }
                             catch (e) {
                                 console.log(data.records[rowIdx]);
@@ -550,6 +562,7 @@
                     row.data(type+"Data",data.records[rowIdx]) // set row typeData
                     //console.log(data.records[rowIdx]);
                 }
+                overlay.hide();
             }
             
         }
@@ -595,7 +608,6 @@
     }
     
 
-    let overlay = $("#overlay");
     
     async function sync() {
         if(zbx==null)
@@ -643,12 +655,15 @@
             })
             //console.log(params);
             //return;
+            overlay.show();
             zbx.get("host",params).then((resp)=>{
-                let data = resp.result.pop();
-                if(!data) return $(row).remove();
-                $(row).data("zbxData",data).attr("title",JSON.stringify(data)).addClass("synced");
-                console.log("Recv data",params,data);
-            }).catch(e=>console.log(e));
+                    let data = resp.result.pop();
+                    if(!data) return $(row).remove();
+                    $(row).data("zbxData",data).attr("title",JSON.stringify(data)).addClass("synced");
+                    console.log("Recv data",params,data);
+                })
+                .catch(e=>console.log(e))
+                .finally(()=>overlay.hide());
         })
     }
     function dbg(msg,cls,clear=false) {
@@ -857,7 +872,8 @@
             }
             console.log("Perform update",config);
             //return;
-            zbx.update("host",config).then(()=>console.log("Done",config));
+            overlay.show()
+            zbx.update("host",config).then(()=>console.log("Done",config)).finally(()=>overlay.hide());;
         })
     }
 
@@ -886,11 +902,12 @@
         $("#zbxConfigForm")[0].url.value = url;
         $("#zbxConfigForm")[0].token.value = token;
         zbx = new ZBXApi(url,token);
+        overlay.show();
         zbx.get("host",{limit:1}).then(data=>{
             if(typeof data.result!==undefined) {
                 $("#zbxLogo").removeClass("notConnected");
             }
-        });
+        }).finally(()=>overlay.hide());
     }
 
     
@@ -930,8 +947,19 @@
         catch(e) {
             console.log("No valid data saved in localstorage",e);
         }
+        
         dt.load_data(data);
     });
+
+    let overlay = {
+        el: $("#overlay"),
+        show: function(){
+            this.el.show();
+        },
+        hide: function(){
+            this.el.hide();
+        }
+    };
 
     
 </script>

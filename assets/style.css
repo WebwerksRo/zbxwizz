@@ -101,3 +101,22 @@ table>thead>tr:first-child>th {
     top: 46px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
   }
+
+#overlay {
+    height: 100vh;
+    position:fixed;
+    top: 0px;
+    width: 100%;
+    background-color: silver;
+    opacity: 0.7;
+    z-index: 1000000;
+}
+
+.vertical-center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
