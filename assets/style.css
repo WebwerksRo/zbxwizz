@@ -100,9 +100,12 @@ table>thead>tr:first-child>th {
     background-color: silver;
     top: 46px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-  }
+}
 
-#overlay {
+#overlay{
+    display: none;
+}
+.overlay {
     height: 100vh;
     position:fixed;
     top: 0px;
