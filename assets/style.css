@@ -101,7 +101,9 @@ table>thead>tr:first-child>th {
     top: 46px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
-
+tbody>tr:has( input:checked){
+    background: #dfedff;;
+}
 #overlay{
     display: none;
 }
@@ -122,4 +124,9 @@ table>thead>tr:first-child>th {
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+}
+
+#warning{
+    opacity: 1;
+    background: #0b2e13;
 }

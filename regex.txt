@@ -1,9 +1,0 @@
-^((?!ZHP_UPDATE).)*$
-JSON.stringify(zbxData.tags)
-JSON.stringify(zbxData.groups)
-zbxData.hostgroups.map(hg=>hg.groupid).join(",")
-
-1834 - Device Type/Servers DC/Frankfurt
-1833 - OS/Linux
-1832 - OS/Windows
-

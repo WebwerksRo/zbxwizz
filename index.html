@@ -20,7 +20,7 @@
                     <a class="nav-link active btn btn-secondary" href="#" onclick="save_data()">Save CSV</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX fetch</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX pull</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
@@ -93,7 +93,7 @@
     </div>
     
     <div class="modal" id="importZbxModal">
-        <form id="importZbxForm">
+        <form id="importZbxForm" disabled="">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -319,12 +319,15 @@
     </div>
     <div id="warning" class="overlay">
         <div class="vertical-center">
-            <div class="d-inline-block ">
-                &#128540;
+            <div class="d-inline-block text-center bg-light rounded p-5" style="width: 500px">
+                <span style="font-size: 100px">&#x2620;</span>
                 <h3 class="text-danger">Warning</h3>
-                <p>ZbxWizz is a very powerfull tool to manage large scale Zabbix instalations.</p>
-                <p>You can save a lot of time and get your Bo$$ appreciation or you can sign your death sentence by pushing the commands</p>
-                <p>Use it wisely!</p>
+                <p><strong>ZbxWizz</strong> is a very powerfull tool to manage large scale (and small as well)  <strong>Zabbix&trade;</strong> instalations.</p>
+                <p>You can save a lot of time and get your Bo$$ appreciation (and eventually a raise or a bonus) or you can sign your death sentence by pushing the wrong commands</p>
+                <p>As with great power comes great responsibility use it wisely (and on your own risk)! </p>
+                <p>So wich pill will you choose?</p>
+                <button class="badge-pill badge-danger" onclick="localStorage.setItem('userlevel','courageous');run()">Red pill (be brave!)</button>
+                <button class="badge-pill badge-primary" onclick="alert('Sleep well!');window.close()">Blue pill (stay safe!)</button>
             </div>
         </div>
     </div>
@@ -431,13 +434,17 @@
                         //return;
                         overlay.show();
                         zbx.req(method,params).then((resp)=>{
-                            let zbxData = resp.result.pop();
-                            if(zbxData) {
+                            console.log(resp)
+                            if(resp.result) {
                                 //row.el.data("zbxData",zbxData)
                                 row.el.addClass("synced")
                             }
-                            row.el.removeClass("loading")
-                        }).finally(()=>overlay.hide());
+                        })
+                            .catch(()=>row.el.addClass("syncfailed"))
+                            .finally(()=>{
+                            row.el.removeClass("loading");
+                            overlay.hide()
+                        });
                         row.el.addClass("loading");
                     }
                     catch(e) {
@@ -518,7 +525,7 @@
             
                 let tbody = this.el.children("tbody").empty();
                 let numCols = data.fields.length+5>30 ? data.fields.length+5 : 30;
-                $("<th rowspan='3'>").html("<input type='checkbox' onchange='toggle_all_visible(this)'> <button onclick='delete_selected()'>-</button> ").appendTo(headerRow);
+                $("<th rowspan='3' align='center'>").html("<input type='checkbox' class='form-check-input1' onchange='toggle_all_visible(this)'><button onclick='delete_selected()'>-</button> ").appendTo(headerRow);
                 for(let i=0;i<numCols;i++) {
                     let fld = i<data.fields.length ? data.fields[i] : "";
                     $("<th>").data("fldname",fld).attr("data-col",i+1).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
@@ -535,7 +542,7 @@
                         .data("rowIdx",rowIdx); // set rowIdx
                         
                     // add 1st cell
-                    $("<td>").html("<input type='checkbox'> <button onclick='info(this)'>"+rowIdx+"</button>").appendTo(row);
+                    $("<td align='center'>").html("<input type='checkbox' class='form-check-input1'> <button onclick='info(this)'>"+rowIdx+"</button>").appendTo(row);
                     for(let colIdx=0;colIdx<numCols;colIdx++) {
                         // create cell
                         let cell = $("<td contenteditable='true'>")
@@ -944,7 +951,10 @@
     setup_req_tpl_select("#importReqTemplates",importReqTplPfx);
 
     let dt = dataTable("#preview");
-    $(document).ready(()=>{
+    function run() {
+        $("#warning").remove();
+        setTimeout(()=>alert("Pull and import is safe always, push can lead to troubles.\nBe carefull! Don't get fired... or sued."),100);
+
         zbx_connect();
         let data ;
         try {
@@ -953,8 +963,13 @@
         catch(e) {
             console.log("No valid data saved in localstorage",e);
         }
-        
+
         dt.load_data(data);
+    }
+    $(document).ready(()=>{
+        if(localStorage.getItem("userlevel")==="courageous") {
+            run();
+        }
     });
 
     let overlay = {
