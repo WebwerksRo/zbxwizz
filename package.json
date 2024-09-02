@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0"
   }
 }

@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="lib/select2.min.css">
     <link rel="stylesheet" href="assets/style.css">
-    <link rel="stylesheet" href="node_modules/jsoneditor/dist/jsoneditor.min.css">
+    <link rel="stylesheet" href="lib/jsoneditor.css">
+    <link rel="stylesheet" href="lib/jquery-ui.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
@@ -34,13 +35,13 @@
     </nav>
     <div class="" style="margin-top: 46px">
         <table id="preview" border="1" cellpadding="2">
-            <thead style="background-color: burlywood;"></thead>
+            <thead></thead>
             <tbody></tbody>
         </table>
     </div>
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Pull data from Zabbix</h5>
@@ -54,7 +55,8 @@
                                         <option>host</option>
                                         <option>hostgroup</option>
                                         <option>template</option>
-                                        <option>template</option>
+                                        <option>item</option>
+                                        <option>history</option>
                                     </select>
                                 </div>
                             </div>
@@ -75,13 +77,16 @@
                                 <select class="custom-select" onchange="load_req_tpl(pullReqTplEditor,$(this).val())" id="pullReqTemplates" name="templates"></select>
                                 <div class="input-group-append">
                                     <div class="btn-group">
-                                        <button class="btn btn-warning" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)" type="button">Add</button>
+                                        <button class="btn btn-success" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)" type="button">Save</button>
                                         <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="pullReqTplEditor" style="height: 500px;"></div>
+                        <div id="pullReqTplEditor" style="height: 300px;"></div>
+                        <div class="preview alert alert-secondary mt-5">
+                            <pre>sadas</pre>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pull(pullReqTplEditor.getText(),this.form)">Pull</button>
@@ -94,7 +99,7 @@
     
     <div class="modal" id="importZbxModal">
         <form id="importZbxForm" disabled="">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         Import data from Zabbix
@@ -119,13 +124,16 @@
                                 <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="importReqTemplates" name="templates"></select>
                                 <div class="input-group-append">
                                     <div class="btn-group">
-                                        <button class="btn btn-warning" onclick="save_req_tpl(importReqTplPfx,'#importReqTemplates',importReqTplEditor)" type="button">Add</button>
+                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importReqTemplates',importReqTplEditor)" type="button">Save</button>
                                         <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="importReqTplEditor" style="height: 500px;"></div>
+                        <div id="importReqTplEditor" style="height: 300px;"></div>
+                        <div class="preview alert alert-secondary mt-5">
+                            <pre>sadas</pre>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" data-dismiss="modal" onclick="import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
@@ -138,7 +146,7 @@
 
     <div class="modal" id="pushZbxModal">
         <form id="pushZbxForm">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         Push data to Zabbix
@@ -183,13 +191,16 @@
                                 <select class="custom-select" onchange="load_req_tpl(pushReqTplEditor,$(this).val())" id="pushReqTemplates" name="templates"></select>
                                 <div class="input-group-append">
                                     <div class="btn-group">
-                                        <button class="btn btn-warning" onclick="save_req_tpl(pushReqTplPfx,'#pushReqTemplates',pushReqTplEditor)" type="button">Add</button>
+                                        <button class="btn btn-success" onclick="save_req_tpl(pushReqTplPfx,'#pushReqTemplates',pushReqTplEditor)" type="button">Save</button>
                                         <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="pushReqTplEditor" style="height: 500px;"></div>
+                        <div id="pushReqTplEditor" style="height: 300px;"></div>
+                        <div class="preview alert alert-secondary mt-5">
+                            <pre>sadas</pre>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="push(pushReqTplEditor.getText(),this.form)">Push</button>
@@ -258,15 +269,29 @@
     <div class="d-none">
         <div id="transformTpl" class="transform">
             <form class="p-0 m-0">
-                <textarea onkeyup='transform_data(this)' name="xpression" placeholder='transform' rows=1 
+                <div>
+                    <div class="input-group input-group-sm">
+                        <select class="custom-select" onchange="load_transfo(this)" name="templates" onblur="minimize_transform(event)" onclick="list_transformations(this,event)" ></select>
+                        <div class="input-group-append">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-success" onclick="save_transformation(this)" type="button">+</button>
+                                <button class="btn btn-danger" onclick="remove_transformation(this)" type="button">-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <textarea name="xpression" placeholder='transform' rows=1 class="form-control"
                     onfocus="$(this).parents('.transform').addClass('active')"
-                    onblur="let slf=this;setTimeout(()=>$(slf).parents('.transform').removeClass('active'),400)"></textarea>
-                <div class="mt-0">
-                    <textarea class="alert alert-secondary p-1 m-0" placeholder="preview" name="preview" disabled></textarea>
+                    onchange='transform_data(this)'
+                    onblur="minimize_transform(event)"
+                    onkeyup='transform_data(this)' ></textarea>
+                <div class="mt-0 preview" onblur="minimize_transform(event)">
+                    <textarea class="alert alert-secondary p-1 m-0" placeholder="preview" name="preview" disabled onblur="minimize_transform(event)"></textarea>
                     <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(this,true)">Apply</button>
                 </div>
             </form>
         </div>
+
         <div class="dropdown" id="filterTpl">
             <a class="btn btn-info dropdown-toggle btn-sm w-100" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
               Filter
@@ -275,11 +300,10 @@
                 <form class="p-2 m-0">
                     <div class="form-group">
                         <select onchange="filter_rows(this.form)" name="filter" class="custom-select custom-select-sm w-100">
-                            <option value="">Select filter</option>
                             <option value="^$">Empty</option>
                             <option value=".+">Not empty</option>
                             <option value="^((?!{value}).)*$">Does not contain</option>
-                            <option value="{value}">Contains</option>
+                            <option value="{value}" selected>Contains</option>
                             <option value="^{value}">Starts with</option>
                             <option value="{value}$">Ends with</option>
                             <option value="^{value}$">Exact match</option>
@@ -336,653 +360,10 @@
 <script src="lib/zbx.js"></script>
 <script src="lib/papaparse.min.js"></script>
 <script src="lib/select2.min.js"></script>
-<script src="node_modules/jsoneditor/dist/jsoneditor.min.js"></script>
+<script src="lib/jsoneditor.js"></script>
+<script src="lib/jquery-ui.js"></script>
+<script src="lib/colResizable-1.6.min.js"></script>
 
-
-<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script>
-
-    /**
-     * @param string title - modal title
-     * @param string body - modal content
-     * @param string footer - modal footer
-     */
-    function show_modal(opts={}) {
-        let title = opts.title ? opts.title : null;
-        let body = opts.body ? opts.body : null;
-        let footer = opts.footer ? opts.footer : null;
-        let $modal = $("#generic_modal").clone().appendTo("body").removeAttr("id")   // clone modal template
-            .on("hidden.bs.modal",()=>$modal.remove())  // setup cleanup after modal is closed
-            .modal();   // open modal
-
-        // set modal title if present
-        if(!opts.title) {
-            $modal.find(".modal-header").remove()
-        }
-        else {
-            $modal.find(".modal-header").html(opts.title);
-        }
-        // set footer if present
-        if(opts.footer) {
-            $modal.find(".modal-header").html(opts.footer)
-        }
-        // set modal content
-        $modal.find(".modal-body").html(opts.body ? opts.body : "No content");
-        if(opts.size) {
-            $modal.find(".modal-dialog").addClass("modal-"+opts.size);
-        }
-    }
-
-    let zbx,apiUrl,apiKey;
-    let specs = {};
-
-    function load_req_tpl(editor,key) {
-        if(key.length) 
-            editor.setText(localStorage.getItem(key));
-    }
-
-
-    function import_zbx(reqTpl,form) {
-        let method = form.resource.value+".get";
-        let params = JSON.parse(reqTpl);
-        overlay.show();
-        zbx.get(form.resource.value,params).then((data)=>{
-            if(!data.result)
-                return alert("Could not fetch data");
-            if(!data.result.length===0)
-                return alert("No records found");
-            data = {
-                fields:Object.keys(data.result[0]),
-                records: data.result
-            };
-            dt.load_data(data);
-            localStorage.setItem("tableData",JSON.stringify(data));
-        }).finally(()=>overlay.hide());
-    }
-
-    function remove_template(btn) {
-        $(btn.form.templates).children().toArray()
-            .forEach(opt=>{
-                if(opt.selected) {
-                    localStorage.removeItem(opt.value);
-                    $(opt).remove();
-                }
-            });
-    }
-
-
-    function pull_push(template,form,pull=true) {
-
-    }
-    /**
-     * push data to zabbix
-     */
-    function push(template,form) {
-        
-        let method = form.resource.value+"."+form.operation.value;
-
-         if(form.operation.value==="update") {
-            dt.rows(true).forEach((row)=>{
-                row.el
-                    .removeClass("loading")
-                    .removeClass("synced")
-                with(row.data) {
-                    let req = eval("`"+template+"`");
-                    try{
-                        let params = JSON.parse(req);
-                        console.log(params);
-                        //return;
-                        overlay.show();
-                        zbx.req(method,params).then((resp)=>{
-                            console.log(resp)
-                            if(resp.result) {
-                                //row.el.data("zbxData",zbxData)
-                                row.el.addClass("synced")
-                            }
-                        })
-                            .catch(()=>row.el.addClass("syncfailed"))
-                            .finally(()=>{
-                            row.el.removeClass("loading");
-                            overlay.hide()
-                        });
-                        row.el.addClass("loading");
-                    }
-                    catch(e) {
-                        console.log(e);
-                    }
-                    
-                }
-            });
-         }
-    }
-
-    /**
-     * pull data from zabbix
-     */
-    function pull(template,form) {
-        if(form.postprocess.value==="update") {
-            dt.rows(true).forEach((row)=>{
-                row.el
-                    .removeClass("loading")
-                    .removeClass("synced")
-                with(row.data) {
-                    let req = eval("`"+template+"`");
-                    try{
-                        overlay.show();
-                        zbx.get(form.resource.value,JSON.parse(req)).then((resp)=>{
-                            let zbxData = resp.result.pop();
-                            if(zbxData) {
-                                row.el.data("zbxData",zbxData)
-                                row.el.addClass("synced")
-                            }
-                        }).finally(()=>{
-                            overlay.hide();
-                            row.el.removeClass("loading");
-                        });
-                    }
-                    catch(e) {
-                        console.log(e);
-                    }
-                }
-            });
-            return;
-        }
-    }
-
-    function dataTable(id) {
-
-        function rowObj(row) {
-            let $row = $(row);
-            return {
-                data: $row.data(),
-                el: $row,
-                cells: $row.children(":not(:first-child)").toArray(),
-                selected: $row.children(":first-child").children("input[type=checkbox]")[0].checked
-            };
-        }
-
-        const dt = {
-            el: $(id),
-            rows: function(selected=false){
-                let rows = this.el.find("tbody>tr").toArray()
-                    .map(rowObj);
-                return selected ? rows.filter((row)=>row.selected) : rows;
-            },
-            columns: function() {
-
-            },
-            addRow: function(data) {
-
-            },
-            load_data: function (data,type="csv") {
-                overlay.show();
-                if(!data) return;
-                console.log(data);
-                let thead = this.el.children("thead").empty();
-                let headerRow = $("<tr>").appendTo(thead);
-                let filterRow = $("<tr>").appendTo(thead);
-                let transformRow = $("<tr>").appendTo(thead);
-            
-                let tbody = this.el.children("tbody").empty();
-                let numCols = data.fields.length+5>30 ? data.fields.length+5 : 30;
-                $("<th rowspan='3' align='center'>").html("<input type='checkbox' class='form-check-input1' onchange='toggle_all_visible(this)'><button onclick='delete_selected()'>-</button> ").appendTo(headerRow);
-                for(let i=0;i<numCols;i++) {
-                    let fld = i<data.fields.length ? data.fields[i] : "";
-                    $("<th>").data("fldname",fld).attr("data-col",i+1).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
-                    $("<th>").data("fldname",fld).attr("data-col",i+1).append($("#filterTpl").clone().attr("id",null)).appendTo(filterRow);
-                    $("<th>").on("click",toggleSmall).attr("data-col",i+1).html("col"+(i+1)+"<br>"+fld).appendTo(headerRow);
-                    $("<option>").attr("value",fld).appendTo("#fields");
-                }
-
-                $("<th rowspan='3'>").html("<button onclick='addCol()'>+</button>").appendTo(headerRow);
-                
-                // populate data
-                for(let rowIdx=0;rowIdx<data.records.length;rowIdx++) {
-                    let row = $("<tr>").appendTo(tbody)
-                        .data("rowIdx",rowIdx); // set rowIdx
-                        
-                    // add 1st cell
-                    $("<td align='center'>").html("<input type='checkbox' class='form-check-input1'> <button onclick='info(this)'>"+rowIdx+"</button>").appendTo(row);
-                    for(let colIdx=0;colIdx<numCols;colIdx++) {
-                        // create cell
-                        let cell = $("<td contenteditable='true'>")
-                            .attr("data-col",rowIdx+1)
-                            .appendTo(row);
-
-                        
-                        if(colIdx<data.fields.length) {
-                            // get fieldname
-                            let fld = data.fields[colIdx];
-                            let val = data.records[rowIdx][fld];
-
-                            if(!fld) fld = "col_"+colIdx;
-
-                            //data.records[rowIdx][colIdx] = data.records[rowIdx][fld];
-                            try {
-                                row.data(fld,data.records[rowIdx][fld])
-                                    .data("col"+(rowIdx+1),data.records[rowIdx][fld]);
-                                    let value = data.records[rowIdx][fld];
-                                value = typeof value ==="object" ? JSON.stringify(value) : value;
-                                cell.text(value).data("fld",fld);
-                            }
-                            catch (e) {
-                                console.log(data.records[rowIdx]);
-                                console.log(e);
-                            }
-                        }
-                        row.data("col"+(colIdx+1),cell.text())
-                    }
-                    row.data(type+"Data",data.records[rowIdx]) // set row typeData
-                    //console.log(data.records[rowIdx]);
-                }
-                overlay.hide();
-            }
-            
-        }
-        return dt;
-    }
-
-    
-
-    function downloadBlob(content, filename, contentType) {
-        // Create a blob
-        var blob = new Blob([content], { type: contentType });
-        var url = URL.createObjectURL(blob);
-
-        // Create a link to download it
-        var pom = document.createElement('a');
-        pom.href = url;
-        pom.setAttribute('download', filename);
-        pom.click();
-    }
-
-    function save_data() {
-        let data = []
-        $("#preview>tbody>tr").each((idx,row)=>{
-            let rec = {};
-            let cells = $(row).children().toArray();
-            cells.shift(-1);
-            cells.forEach((cell)=>rec[$(cell).data("fld")]=$(cell).text());
-            data.push(rec);
-        })
-        console.log(data);
-        csv = Papa.unparse(data,{
-            quotes: true, //or array of booleans
-            quoteChar: '"',
-            escapeChar: '"',
-            delimiter: ",",
-            header: true,
-            newline: "\n",
-            skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
-            columns: null //or array of strings
-        });
-        console.log(csv);
-        downloadBlob(csv,"backup.csv","text/csv;charset=utf-8;");
-    }
-    
-
-    
-    async function sync() {
-        if(zbx==null)
-            return ("ZBX not connected");
-
-        let selFld = $("#selectFld").val();
-        let cnt=0;
-        $("#preview>tbody>tr").toArray().forEach((row)=>{
-            cnt++;
-            //if(cnt>10) return;
-            let data = $(row).data("csvData");
-            let params = {};
-            if(data[selFld].trim().length==0) return;
-            switch($("#selectBy").val()) {
-                case "hostid":
-                    params.hostids = data[selFld]
-                    break;
-                case "name":
-                    params.filter = {
-                        name:[data[selFld]]
-                    }
-                    break;
-                case "host":
-                    params.filter = {
-                        name:[data[selFld]]
-                    }
-                    break;
-            }
-            let output = $("#output").val()
-            params.output = output.length==0 ? "extend" : output;
-            
-            $("#include").val().forEach(incl=>{
-                switch(incl) {
-                    case "selectParentTemplates":
-                        params[incl] = ["templateid","host"];
-                        break;
-                    case "selectTags":
-                        params[incl] = "extend";
-                        break;
-                    case "selectHostGroups":
-                        params[incl] = "extend";
-                        break;
-                }
-                
-            })
-            //console.log(params);
-            //return;
-            overlay.show();
-            zbx.get("host",params).then((resp)=>{
-                    let data = resp.result.pop();
-                    if(!data) return $(row).remove();
-                    $(row).data("zbxData",data).attr("title",JSON.stringify(data)).addClass("synced");
-                    console.log("Recv data",params,data);
-                })
-                .catch(e=>console.log(e))
-                .finally(()=>overlay.hide());
-        })
-    }
-    function dbg(msg,cls,clear=false) {
-        
-        let area = $('#debug');
-        if(clear) area.empty();
-        $("<p>").text(msg).addClass(cls).appendTo(area)[0].scrollIntoView();
-    }
-
-    function transform_data(src,apply=false){
-        let el = src.form.xpression;
-        let col = $(el).parents("th").data("col");
-        let expr = el.value;
-
-        function transform(cell) {
-            let data = $(cell.parentNode).data();
-
-            $(cell.parentNode).children().each((idx,cell)=>{
-                if(idx==0)return;
-                data["col"+idx] = $(cell).text();
-            })
-            data.self = $(cell).text();
-            console.log(cell,data);
-            if(expr!=="")
-                with(data){
-                    return eval(expr);
-                }
-        }
-        
-        let colCells = $("#preview>tbody>tr:not(.d-none)>td:nth-child("+(col+1)+")");
-        if(!apply)  {
-            try {
-                let newVal = transform(colCells[0]);
-                
-                el.form.preview.value = (typeof newVal!=="undefined")? newVal : $(colCells[0]).text()
-            }
-            catch(e) {
-                console.log(e);
-                el.form.preview.value = "Error: "+e.message
-            }
-            return;
-        }
-        
-
-        colCells.each((idx,cell)=>{
-            $(cell).html(transform(cell));
-        });
-        src.form.reset();
-    }
-
-    function filter_rows(form){
-        let rgx = form.filter.value.replaceAll("{value}",form.term.value);
-        console.log(rgx);
-        let th = $(form).parents("th");
-        let col = th.data("col");
-        $("#preview>tbody>tr").removeClass("d-none");
-        console.log("remove filter",th.removeClass("filterActive"));
-        if(!rgx.length) return;
-        rgx = new RegExp(rgx,"i");
-
-        console.log("add filter",th.addClass("filterActive"));
-        $("#preview>tbody>tr>td:nth-child("+(col+1)+")").each((idx,cell)=>{
-            let val = $(cell).text();
-            if(!rgx.test(val)) {
-                $(cell.parentNode).addClass("d-none");
-            }
-        })
-        
-    }
-
-
-    function delete_selected() {
-        $("#preview>tbody input:checked").each((idx,item)=>$(item).parents("tr").remove());
-    } 
-
-    function toggle_all_visible(src){
-        let inps = $("#preview>tbody>tr:not(.d-none) input[type=checkbox]");
-        
-        let checked = src.checked;
-        inps.each((idx,inp)=>{
-            inp.checked=checked
-        })
-    }
-
-    function toggleSmall(event) {
-        let el = $(event.target);
-        let col = el.data("col")+1;
-        if(el.hasClass("small")) {
-            $("#preview>thead>tr:first-child>th:nth-child("+col+")").removeClass("small");
-            $("#preview>thead>tr:not(:first-child)>th:nth-child("+(col-1)+")").removeClass("small");
-            $("#preview td:nth-child("+col+")").removeClass("small");
-        }
-        else {
-            $("#preview>thead>tr:first-child>th:nth-child("+col+")").addClass("small");
-            $("#preview>thead>tr:not(:first-child)>th:nth-child("+(col-1)+")").addClass("small");
-            $("#preview td:nth-child("+col+")").addClass("small");
-        }
-    }
-    
-    function addCol(){
-        let headerLastEl = $("#preview>thead>tr:first-child>th:last-child");
-        let transformRow = $("#preview>thead>tr:last-child");
-        let filterRow = $("#preview>thead>tr:nth-child(2)");
-        
-        let col = transformRow.children().length+1;
-        $("<th>").data("fldname","col"+col).attr("data-col",col).append($("#transformTpl").clone().attr("id",null)).appendTo(transformRow);
-        $("<th>").data("fldname","col"+col).attr("data-col",col).append($("#filterTpl").clone().attr("id",null)).appendTo(filterRow);
-
-        //$("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onchange='transform(this)' placeholder='transform' rows=1>").appendTo(transformRow);
-        //$("<th>").data("fldname","col"+col).attr("data-col",col).html("<textarea onkeyup='filter(this)' placeholder='filter'>").appendTo(filterRow);
-        $("<th>").on("click",toggleSmall).attr("data-col",col).text("col"+col).insertBefore(headerLastEl);
-        $("#preview>tbody>tr").each((idx,row)=>{
-            $("<td contenteditable='true'>").appendTo(row);
-        })
-    }
-
-    function info(src) {
-        let data = $(src).parents("tr").data();
-        console.log(data);
-        show_modal({
-            body:"<div class='bg-light'><pre >"+JSON.stringify(data,null,4)+"</pre></div>",
-            title: "Record "+data.rowIdx,
-            size: "lg"
-        })
-    }
-
-    
-    
-    
-
-
-    Array.prototype.unique = function(){
-        function distinct(value, index, array) {
-            return array.indexOf(value) === index;
-        }    
-        return this.filter(distinct);
-    }
-
-    function load_csv(input) {
-        let a = $(input).parse({
-            config: {
-                header: true,
-                complete: (data)=>{
-                    console.log(data);
-                    data = {
-                        records: data.data,
-                        fields: data.meta.fields
-                    };
-                    localStorage.setItem("tableData",JSON.stringify(data));
-                    
-                    dt.load_data(data)
-                }
-            }
-        });
-        console.log(a);
-    }
-
-    function push_changes() {
-        let wd = 0;
-        $("#preview>tbody>tr").toArray().forEach((row)=>{
-            // not selected => skip
-            if(!$(row).find("input")[0].checked) return;
-            
-            let rowData = $(row).data();
-            // no zbx data => skip
-            if(!rowData.zbxData){
-                console.log("Skip No ZBX data");
-                return;
-            } 
-            
-            // already processed => skip
-            // if(rowData.zbxData.tags.filter(tag=>tag.name=="ZHP_UPDATE").length) {
-            //     console.log("Skip already done",rowData.zbxData.host);
-            //     return;
-            // }
-            wd++;
-            //if(wd>1) return;
-            //console.log(rowData);
-            
-            let data = {};
-            let cnt=0;
-            $(row).children(":not(:first-child)").each((idx,cell)=>{
-                let $cell = $(cell);ccc
-                let cellData = $cell.data()
-                if(cellData.fld) {
-                    data[cellData.fld] = $cell.text();
-                }
-                data["col"+cnt] = $cell.text();
-            });
-            if(!data.hostid) return;
-            //console.log(data);
-            let tags = JSON.parse(data.Notes).map((item)=>{
-                    let tag = Object.keys(item).pop();
-                    return {
-                        tag: tag,
-                        value: item[tag]
-                    };
-                });
-            let hostgroups = data.Action.split(",").map(grpid=>{return {groupid:grpid}});
-            let config = {
-                hostid: data.hostid,
-                host: rowData.zbxData.host,
-                name: data.Status,
-                groups: hostgroups,
-                //tags: tags
-            }
-            console.log("Perform update",config);
-            //return;
-            overlay.show()
-            zbx.update("host",config).then(()=>console.log("Done",config)).finally(()=>overlay.hide());;
-        })
-    }
-
-	
-	function load_api_key(src) {
-        $.get("./zbx_api_key.txt").then(data=>{
-            src.form.token.value = data;
-        });
-    }
-    function load_api_url(src) {
-        $.get("./zbx_url.txt").then(data=>{
-            src.form.url.value = data;
-        });
-    }
-
-    function save_zbx_config(form) {
-        $("#zbxLogo").addClass("notConnected");
-        localStorage.setItem("zbxUrl",form.url.value);
-        localStorage.setItem("zbxToken",form.token.value);
-        zbx_connect();
-    }
-    
-    function zbx_connect() {
-        let url = localStorage.getItem("zbxUrl");
-        let token = localStorage.getItem("zbxToken");
-        $("#zbxConfigForm")[0].url.value = url;
-        $("#zbxConfigForm")[0].token.value = token;
-        zbx = new ZBXApi(url,token);
-        overlay.show();
-        zbx.get("host",{limit:1}).then(data=>{
-            if(typeof data.result!==undefined) {
-                $("#zbxLogo").removeClass("notConnected");
-            }
-        }).finally(()=>overlay.hide());
-    }
-
-    
-    function save_req_tpl(prefix,selectId,editor) {
-        let name = prompt("Template name");
-        localStorage.setItem(prefix+name,editor.getText());
-        setup_req_tpl_select(selectId,prefix);
-    }
-
-    function setup_req_tpl_select(id,prefix) {
-        let sel = $(id).empty().append("<option value=''>Select template</option>");
-        let prefixLen = prefix.length;
-        Object.keys(localStorage)
-            .filter(key=>key.indexOf(prefix)!==-1)
-            .forEach(key=>$("<option>").text(key.substr(prefixLen)).attr("value",key).appendTo(sel));
-    }
-
-    const pullReqTplEditor = new JSONEditor($("#pullReqTplEditor")[0], {mode: 'code'});
-    const pushReqTplEditor = new JSONEditor($("#pushReqTplEditor")[0], {mode: 'code'});
-    const importReqTplEditor = new JSONEditor($("#importReqTplEditor")[0], {mode: 'code'});
-    
-    const pullReqTplPfx = "pullReqTpl_"
-    const pushReqTplPfx = "pushReqTpl_"
-    const importReqTplPfx = "importReqTpl_"
-
-    setup_req_tpl_select("#pullReqTemplates",pullReqTplPfx);
-    setup_req_tpl_select("#pushReqTemplates",pushReqTplPfx);
-    setup_req_tpl_select("#importReqTemplates",importReqTplPfx);
-
-    let dt = dataTable("#preview");
-    function run() {
-        $("#warning").remove();
-        setTimeout(()=>alert("Pull and import is safe always, push can lead to troubles.\nBe carefull! Don't get fired... or sued."),100);
-
-        zbx_connect();
-        let data ;
-        try {
-            data = JSON.parse(localStorage.getItem("tableData"));
-        }
-        catch(e) {
-            console.log("No valid data saved in localstorage",e);
-        }
-
-        dt.load_data(data);
-    }
-    $(document).ready(()=>{
-        if(localStorage.getItem("userlevel")==="courageous") {
-            run();
-        }
-    });
-
-    let overlay = {
-        el: $("#overlay"),
-        show: function(){
-            this.el.show();
-        },
-        hide: function(){
-            this.el.hide();
-        }
-    };
-
-    
-</script>
+<script src="lib/zbxwizz.js"></script>
 </body>
 </html>

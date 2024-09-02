@@ -1,5 +1,5 @@
 .small{
-    max-width: 20px;
+    max-width: 40px;
     max-height: 20px;
     overflow: hidden;
 }
@@ -95,13 +95,28 @@ div>strong {
 .transform.active>form>div{
     display: unset;
 }
+.transform.active textarea{
+    width: 400px;
+    height: 100px;
+}
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+
+table>thead{
+    background-color: rgb(147, 167, 209);
+    color: white;
+}
 table>thead>tr:first-child>th {
     position: sticky;
-    background-color: silver;
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: rgb(147, 167, 209);
     top: 46px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
-tbody>tr:has( input:checked){
+tbody>tr.selected{
     background: #dfedff;;
 }
 #overlay{
@@ -109,7 +124,7 @@ tbody>tr:has( input:checked){
 }
 .overlay {
     height: 100vh;
-    position:fixed;
+    position:sticky;
     top: 0px;
     width: 100%;
     background-color: silver;
