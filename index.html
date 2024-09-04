@@ -6,6 +6,18 @@
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="lib/jsoneditor.css">
     <link rel="stylesheet" href="lib/jquery-ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
+    <style>
+        *{
+            font-family: "SUSE", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
@@ -33,11 +45,14 @@
         </div>
         <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected"></a></div>
     </nav>
-    <div class="" style="margin-top: 46px">
+    <div class="d-none" style="margin-top: 46px;margin-bottom: 45px">
         <table id="preview" border="1" cellpadding="2">
             <thead></thead>
             <tbody></tbody>
         </table>
+    </div>
+    <div id="container" style="margin-top: 45px">
+
     </div>
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
@@ -282,19 +297,19 @@
                 </div>
                 <textarea name="xpression" placeholder='transform' rows=1 class="form-control"
                     onfocus="$(this).parents('.transform').addClass('active')"
-                    onchange='transform_data(this)'
+                    onchange="transform_data(event)"
                     onblur="minimize_transform(event)"
-                    onkeyup='transform_data(this)' ></textarea>
+                    onkeyup='transform_data(event)' ></textarea>
                 <div class="mt-0 preview" onblur="minimize_transform(event)">
-                    <textarea class="alert alert-secondary p-1 m-0" placeholder="preview" name="preview" disabled onblur="minimize_transform(event)"></textarea>
-                    <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(this,true)">Apply</button>
+                    <textarea class="alert alert-secondary p-1 m-0" placeholder="preview" name="preview" readonly onblur="minimize_transform(event)"></textarea>
+                    <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(event,true)">Apply</button>
                 </div>
             </form>
         </div>
 
         <div class="dropdown" id="filterTpl">
             <a class="btn btn-info dropdown-toggle btn-sm w-100" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-              Filter
+                Filter
             </a>
             <div class="dropdown-menu bg-light">
                 <form class="p-2 m-0">
@@ -316,9 +331,9 @@
                         <button class="btn btn-primary  w-100" onclick="filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide');" type="button">Apply</button>
                         <button class="btn btn-secondary w-100" onclick="this.form.reset();filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide')" type="button">Clear</button>
                     </div>
-                  </form>
+                </form>
             </div>
-          </div>
+        </div>
     </div>
 
     <div class="modal" id="generic_modal">
@@ -355,6 +370,25 @@
             </div>
         </div>
     </div>
+
+    <footer class="footer mt-auto py-2 fixed-bottom bg-secondary border-top border-dark">
+        <div class="container-fluid">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Active</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled">Disabled</a>
+                </li>
+            </ul>
+        </div>
+    </footer>
 <script src="lib/jquery.js"></script>
 <script src="lib/bootstrap.min.js"></script>
 <script src="lib/zbx.js"></script>
@@ -365,5 +399,7 @@
 <script src="lib/colResizable-1.6.min.js"></script>
 
 <script src="lib/zbxwizz.js"></script>
+<script src="lib/datatable.js"></script>
+
 </body>
 </html>

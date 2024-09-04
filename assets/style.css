@@ -57,17 +57,7 @@ div>strong {
     display: block;
     width: 200px;
 }
-.req-options>div{
-    padding: 5px;
-    display: inline-block;
-    border: dashed black 1px;
-}
-.req-options>div:first{
-    background-color: red;
-}
-.req-options>div>label{
-    display: block;
-}
+
 .controls>form>div{
     margin: 5px;
     padding: 5px;
@@ -100,7 +90,7 @@ div>strong {
     height: 100px;
 }
 table, th, td {
-    border: 1px solid black;
+    border: 1px solid #c3c3c3;
     border-collapse: collapse;
   }
 
@@ -108,7 +98,14 @@ table>thead{
     background-color: rgb(147, 167, 209);
     color: white;
 }
+table>tbody tr:hover{
+    background: #e7e7e7;
+}
+table>thead{
+    text-align: center;
+}
 table>thead>tr:first-child>th {
+/*table>thead th {*/
     position: sticky;
     border: 1px solid black;
     border-collapse: collapse;
@@ -144,4 +141,13 @@ tbody>tr.selected{
 #warning{
     opacity: 1;
     background: #0b2e13;
+}
+footer .nav-link{
+    color: white;
+}
+#actionMenu .dropdown {
+    z-index: 10000000;
+}
+.badge{
+    font-size: 1rem;
 }
