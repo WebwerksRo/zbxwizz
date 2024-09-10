@@ -2,11 +2,11 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="lib/bootstrap.min.css">
-    <link rel="stylesheet" href="lib/select2.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/select2.min.css">
     <link rel="stylesheet" href="assets/style.css">
-    <link rel="stylesheet" href="lib/jsoneditor.css">
-    <link rel="stylesheet" href="lib/jquery-ui.css">
+    <link rel="stylesheet" href="assets/css/jsoneditor.css">
+    <link rel="stylesheet" href="assets/css/jquery-ui.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
@@ -321,33 +321,28 @@
             </div>
         </div>
     </div>
-    <div class="tab-content" id="worksheets">
-        <div class="tab-pane fade" id="wsTpl" role="tabpanel" aria-labelledby="" style="margin-top: 45px; margin-bottom: 70px"></div>
-    </div>
+    <div class="tab-content" id="worksheets"></div>
     <footer class="footer mt-auto fixed-bottom bg-secondary border-top border-dark">
         <div class="container-fluid p-1" >
             <div class="d-inline-block">
-                <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1">
-                    <li class="nav-item d-none" role="presentation">
-                        <button class="nav-link" id="" data-toggle="tab" data-target="#sheet1" type="button" role="tab" aria-controls="sheet1" aria-selected="true" data-idx="1">Sheet1</button>
-                    </li>
-                </ul>
+                <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
             </div>
-            <button onclick="new_sheet()">[+] New sheet</button>
-            <button onclick="delete_active_sheet()">[-] Remove current sheet</button>
+            <button onclick="worksheets.new_sheet()">[+] New sheet</button>
+            <button onclick="worksheets.delete_sheet()">[-] Remove current sheet</button>
+            <button onclick="worksheets.reset()">[x] Reset</button>
         </div>
         <div class="container-fluid bg-dark text-success p-1">
             Status bar:
         </div>
     </footer>
-<script src="lib/jquery.js"></script>
-<script src="lib/bootstrap.min.js"></script>
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/papaparse.min.js"></script>
+<script src="assets/js/select2.min.js"></script>
+<script src="assets/js/jsoneditor.js"></script>
+<script src="assets/js/jquery-ui.js"></script>
+<script src="assets/js/colResizable-1.6.min.js"></script>
 <script src="lib/zbx.js"></script>
-<script src="lib/papaparse.min.js"></script>
-<script src="lib/select2.min.js"></script>
-<script src="lib/jsoneditor.js"></script>
-<script src="lib/jquery-ui.js"></script>
-<script src="lib/colResizable-1.6.min.js"></script>
 <script src="lib/datatable.js"></script>
 <script src="lib/worksheets.js"></script>
 <script src="lib/zbxwizz.js"></script>
