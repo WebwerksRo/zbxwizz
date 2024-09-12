@@ -168,3 +168,6 @@ footer .nav-link{
     color: white;
 
 }
+.dataTable td{
+    overflow: hidden;
+}
