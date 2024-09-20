@@ -15,6 +15,16 @@
             font-family: "SUSE", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
+
+        }
+        #worksheets td{
+            /*max-width: 400px;*/
+            /*white-space: normal;*/
+            /*overflow: hidden;*/
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            overflow: scroll;
         }
         .compress{
             /*width: 50px !important;*/
@@ -25,6 +35,10 @@
             margin-top: 5px;
             margin-bottom: 5px;
             padding: 5px;
+        }
+        .filter.dropdown.show{
+            min-width: 200px;
+            width: 100%;
         }
 
     </style>
@@ -49,8 +63,16 @@
                     <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="dt.load_data({records:[],fields:[]})">Clear data</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="save_structure()">Save structure</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()">Restore structure</a>
+                </li>
+
+
             </ul>
         </div>
         <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a></div>
@@ -339,7 +361,7 @@
             </div>
             <button onclick="worksheets.new_sheet()">[+] New sheet</button>
             <button onclick="worksheets.delete_sheet()">[-] Remove current sheet</button>
-            <button onclick="worksheets.reset()">[x] Reset</button>
+<!--            <button onclick="worksheets.reset()">[x] Reset</button>-->
         </div>
         <div class="container-fluid bg-dark text-success p-1">
             Status bar:
