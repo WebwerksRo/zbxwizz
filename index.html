@@ -17,14 +17,17 @@
             font-style: normal;
 
         }
+        #worksheets td,#worksheets th{
+            vertical-align: top;
+        }
         #worksheets td{
             /*max-width: 400px;*/
             /*white-space: normal;*/
-            /*overflow: hidden;*/
+            overflow: hidden;
             word-wrap: break-word;
             overflow-wrap: break-word;
             word-break: break-word;
-            overflow: scroll;
+            /*overflow: scroll;*/
         }
         .compress{
             /*width: 50px !important;*/
@@ -39,6 +42,9 @@
         .filter.dropdown.show{
             min-width: 200px;
             width: 100%;
+        }
+        .transform.active{
+            min-width: 400px;
         }
 
     </style>
