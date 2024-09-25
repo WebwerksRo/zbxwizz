@@ -154,6 +154,9 @@ footer .nav-link{
 .badge{
     font-size: 1rem;
 }
+.dataTable{
+    width: 100%;
+}
 .dataTable tbody td:first-child button{
     display: block;
     width: 100%;
@@ -166,7 +169,6 @@ footer .nav-link{
 .dataTable tbody td.active{
     background: #00AEEF;
     color: white;
-
 }
 /*.dataTable td{*/
 /*    overflow: hidden;*/

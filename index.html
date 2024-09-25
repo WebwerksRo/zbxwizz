@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
     <style>
         #worksheets{
             font-family: "SUSE", sans-serif;
@@ -53,29 +54,48 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
         <div class="flex-grow-1">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Import data
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
+                        <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Import Excel</a>
+                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importZbxModal">Import from Zabbix</a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#importZbxModal">Import from ZBX</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Export data
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" role="button"  href="#" onclick="save_data()">Export to CSV</a>
+                        <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Export JSON</a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" onclick="save_data()">Save CSV</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Zabbix ops
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pullZbxModal">Pull</a>
+                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pushZbxModal">Push</a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pullZbxModal">ZBX pull</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" data-toggle="modal" data-target="#pushZbxModal">ZBX push</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Table structure
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save</a>
+                        <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore</a>
+                    </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="save_structure()">Save structure</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()">Restore structure</a>
+                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()"><i class="fa fa-save"></i></a>
                 </li>
 
 
