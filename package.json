@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "font-awesome": "^4.7.0",
     "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0"
   }

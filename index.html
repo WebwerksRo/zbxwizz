@@ -51,64 +51,82 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex fixed-top">
-        <div class="flex-grow-1">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Import data
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
-                        <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Import Excel</a>
-                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importZbxModal">Import from Zabbix</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Export data
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" role="button"  href="#" onclick="save_data()">Export to CSV</a>
-                        <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Export JSON</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Zabbix ops
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pullZbxModal">Pull</a>
-                        <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pushZbxModal">Push</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Table structure
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save</a>
-                        <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()"><i class="fa fa-save"></i></a>
-                </li>
+    <div style="width: 100vw; height: 100vh; display: flex;flex-direction:column;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex">
+            <div class="flex-grow-1">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Import data
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
+                            <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Import Excel</a>
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importZbxModal">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Export data
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" role="button"  href="#" onclick="save_data()">Export to CSV</a>
+                            <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Export JSON</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Zabbix ops
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pullZbxModal">Pull</a>
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pushZbxModal">Push</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Table structure
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()"><i class="fa fa-save"></i></a>
+                    </li>
+    
+    
+                </ul>
+            </div>
+            <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a></div>
+        </nav>
+        <div class="tab-content" id="worksheets"></div>
+        <footer class="footer bg-secondary border-top border-dark">
+            <div class="container-fluid p-1 d-flex" >
+                <div class="flex-grow-1" style="overflow: auto;">
 
-
-            </ul>
-        </div>
-        <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a></div>
-    </nav>
-    <div class="d-none" style="margin-top: 46px;margin-bottom: 45px">
-        <table id="preview" cellpadding="2">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
+                    <div class="d-inline-block">
+                        <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
+                    </div>
+                    <button onclick="worksheets.new_sheet()">[+] New sheet</button>
+                    <button onclick="worksheets.delete_sheet()">[-] Remove current sheet</button>
+                </div>
+                <div onclick="worksheets.update_stats()" style="width: 250px;">
+                    <span class="badge badge-light mr-1">Total: <span class="badge badge-secondary" id="totalRecs">123</span></span>
+                    <span class="badge badge-light mr-1">Selected: <span class="badge badge-success" id="totalSelected">123</span></span>
+                    <span class="badge badge-light mr-1">Visible: <span class="badge badge-danger" id="totalVisible">123</span></span>
+                </div>
+    <!--            <button onclick="worksheets.reset()">[x] Reset</button>-->
+            </div>
+            
+        </footer>
     </div>
+    
 
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
@@ -191,6 +209,53 @@
                                         <option>hostgroup</option>
                                         <option>template</option>
                                         <option>trigger</option>
+                                        <option>item</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Request templates</label>
+                            <div class="input-group mb-2">
+                                <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="F" name="templates"></select>
+                                <div class="input-group-append">
+                                    <div class="btn-group">
+                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importReqTemplates',importReqTplEditor)" type="button">Save</button>
+                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="importReqTplEditor" style="height: 300px;"></div>
+                        <div class="preview alert alert-secondary mt-5">
+                            <pre>sadas</pre>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal" id="importJSModal">
+        <form id="importZbxForm" disabled="">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Import data JavaScript
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="form-group ">
+                                    <label>Resource</label>
+                                    <select class="custom-select custom-select-sm" name="resource">
+                                        <option>host</option>
+                                        <option>hostgroup</option>
+                                        <option>template</option>
+                                        <option>trigger</option>
                                     </select>
                                 </div>
                             </div>
@@ -213,7 +278,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="alert('Not implemented');return;importJS(importReqTplEditor.getText(),this.form)">Import</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -237,7 +302,7 @@
                                         <option>host</option>
                                         <option>hostgroup</option>
                                         <option>template</option>
-                                        <option>template</option>
+                                        <option>trigger</option>
                                     </select>
                                 </div>
                             </div>
@@ -379,20 +444,7 @@
             </div>
         </div>
     </div>
-    <div class="tab-content" id="worksheets"></div>
-    <footer class="footer mt-auto fixed-bottom bg-secondary border-top border-dark">
-        <div class="container-fluid p-1" >
-            <div class="d-inline-block">
-                <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
-            </div>
-            <button onclick="worksheets.new_sheet()">[+] New sheet</button>
-            <button onclick="worksheets.delete_sheet()">[-] Remove current sheet</button>
-<!--            <button onclick="worksheets.reset()">[x] Reset</button>-->
-        </div>
-        <div class="container-fluid bg-dark text-success p-1">
-            Status bar:
-        </div>
-    </footer>
+
 <script src="assets/js/jquery.js"></script>
 <script src="assets/js/bootstrap.min.js"></script>
 <script src="assets/js/papaparse.min.js"></script>

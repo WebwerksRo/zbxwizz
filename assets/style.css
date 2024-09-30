@@ -110,7 +110,7 @@ table>thead>tr:first-child>th {
     border: 1px solid black;
     border-collapse: collapse;
     background-color: rgb(147, 167, 209);
-    top: 46px; /* Don't forget this, required for the stickiness */
+    top: 0px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 tbody>tr.selected{
@@ -151,7 +151,7 @@ footer .nav-link{
 #actionMenu .dropdown {
     z-index: 10000000;
 }
-.badge{
+.dataTable .badge{
     font-size: 1rem;
 }
 .dataTable{
@@ -170,6 +170,36 @@ footer .nav-link{
     background: #00AEEF;
     color: white;
 }
+.hightlight{
+    background: #00AEEF;
+    background: rgb(253, 243, 103) !important;
+}
 /*.dataTable td{*/
 /*    overflow: hidden;*/
 /*}*/
+
+/* ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+  }
+   
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(95, 92, 131); 
+    border-radius: 10px;
+  }
+  
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #53535f;  
+  } */
+#worksheets{
+    scrollbar-width: 20px;
+    flex-grow: 1; overflow: scroll;
+    scrollbar-color: rgb(36, 41, 107);
+}
