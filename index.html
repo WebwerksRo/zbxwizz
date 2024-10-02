@@ -47,6 +47,14 @@
         .transform.active{
             min-width: 400px;
         }
+        #mymodal{ position: absolute; width: 600px;  top: 50px; left: 50px;}
+        #mymodal>*{
+            padding: 10px;
+        }
+        #editor {
+            width: 100%;
+            height: 400px;
+        }
 
     </style>
 </head>
@@ -97,8 +105,12 @@
                         <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="manage_struct()"><i class="fa fa-save"></i></a>
+                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="autosave(true)"><i class="fa fa-save"></i></a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="open_play_editor()"><i class="fa fa-play"></i></a>
+                    </li>
+
     
     
                 </ul>
@@ -126,7 +138,48 @@
             
         </footer>
     </div>
-    
+
+    <div class="d-none">
+        <div id="tranformDialog" title="Transform">
+            <label>
+                Saved xpressions<br>
+                <select style="width: 100%"></select>
+            </label>
+            <label>
+                Xpression<br>
+                <textarea style="width: 100%"></textarea>
+            </label>
+            <label>
+                Preview<br>
+                <textarea style="width: 100%"></textarea>
+            </label>
+        </div>
+        <div class="card" >
+            <div class="card-header">Title</div>
+            <div class="card-body">
+                body
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-secondary">Click me</button>
+            </div>
+        </div>
+        <div class="card shadow" id="mymodal">
+            <!--            $("#mymodal").appendTo('body').draggable({ handle: ".card-header" }).resizable();-->
+            <div class="card-header d-flex">
+                <div class="flex-grow-1">Script player</div>
+                <div class="btn-group-sm">
+                    <button class="btn btn-secondary btn-sm" >x</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <input type="file" id="scriptFile">
+                <div id="editor"></div>
+            </div>
+            <div class="card-footer text-right">
+                <a href="#" class="btn btn-primary btn-sm" onclick="playscript()">Play script</a>
+            </div>
+        </div>
+    </div>
 
     <div class="modal" id="pullZbxModal">
         <form id="pullZbxForm">
@@ -240,7 +293,7 @@
         </form>
     </div>
     <div class="modal" id="importJSModal">
-        <form id="importZbxForm" disabled="">
+        <form id="importJsForm" disabled="">
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -272,7 +325,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="importReqTplEditor" style="height: 300px;"></div>
+                        <div id="importJsTplEditor" style="height: 300px;"></div>
                         <div class="preview alert alert-secondary mt-5">
                             <pre>sadas</pre>
                         </div>
@@ -456,5 +509,32 @@
 <script src="lib/datatable.js"></script>
 <script src="lib/worksheets.js"></script>
 <script src="lib/zbxwizz.js"></script>
+<script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="node_modules/ace-builds/src-noconflict/ext-language_tools.js"></script>
+
+
+<script>
+
+    ace.require("ace/ext/language_tools");
+    var editor = ace.edit("editor");
+    editor.session.setMode("ace/mode/javascript");
+    editor.setTheme("ace/theme/tomorrow");
+    // enable autocompletion and snippets
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+    editor.setValue(localStorage.getItem("script"));
+    function playscript() {
+        let script = editor.getValue();
+        localStorage.setItem("script",script);
+        eval(script);
+    }
+    function open_play_editor(    ) {
+        $("#mymodal").appendTo('body').draggable({ handle: ".card-header" }).resizable();
+    }
+</script>
+
 </body>
 </html>

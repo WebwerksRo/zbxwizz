@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "ace-builds": "^1.36.2",
     "font-awesome": "^4.7.0",
+    "jquery": "^3.7.1",
     "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0"
   }
