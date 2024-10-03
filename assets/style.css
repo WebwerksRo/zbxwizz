@@ -109,6 +109,7 @@ table>thead{
 }
 table>thead>tr:first-child>th {
 /*table>thead th {*/
+    z-index: 100;
     position: sticky;
     border: 1px solid black;
     border-collapse: collapse;
