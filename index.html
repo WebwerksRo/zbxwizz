@@ -55,6 +55,10 @@
             width: 100%;
             height: 400px;
         }
+        table td:first-child,table th:first-child{
+            position: sticky;
+            left: 0;
+        }
 
     </style>
 </head>
@@ -168,12 +172,13 @@
             <div class="card-header d-flex">
                 <div class="flex-grow-1">Script player</div>
                 <div class="btn-group-sm">
-                    <button class="btn btn-secondary btn-sm" >x</button>
+                    <button class="btn btn-secondary btn-sm" onclick="hide_player()">x</button>
                 </div>
             </div>
             <div class="card-body">
                 <input type="file" id="scriptFile">
                 <div id="editor"></div>
+                <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
             </div>
             <div class="card-footer text-right">
                 <a href="#" class="btn btn-primary btn-sm" onclick="playscript()">Play script</a>
@@ -237,7 +242,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pull(pullReqTplEditor.getText(),this.form)">Pull</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="req_pull(pullReqTplEditor.getText(),this.form)">Pull</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -285,7 +290,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -523,16 +528,25 @@
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableSnippets: true,
-        enableLiveAutocompletion: true
+        enableLiveAutocompletion: true,
+        fontSize: "12pt"
     });
     editor.setValue(localStorage.getItem("script"));
     function playscript() {
         let script = editor.getValue();
         localStorage.setItem("script",script);
-        eval(script);
+        try {
+            $("scriptDebug").val(eval(script));
+        }
+        catch(e) {
+            $("scriptDebug").val(e);
+        }
     }
     function open_play_editor(    ) {
-        $("#mymodal").appendTo('body').draggable({ handle: ".card-header" }).resizable();
+        $("#mymodal").appendTo('body').show().draggable({ handle: ".card-header" }).resizable();
+    }
+    function hide_player() {
+        $("#mymodal").hide();
     }
 </script>
 

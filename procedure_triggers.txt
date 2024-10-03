@@ -15,9 +15,7 @@ IMPORT hosts beloging to said groupid
   "selectTags":["tag","value"],
   "selectHostGroups":["name","groupid"]
 }
-extract hostid with transformation
-    data.csv.hosts[0].hostid
-and rename column as "hostid"
+
 
 step 3. create hosts triggers sheet
 - IMPORT triggers beloging to above hosts
