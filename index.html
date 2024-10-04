@@ -47,7 +47,7 @@
         .transform.active{
             min-width: 400px;
         }
-        #mymodal{ position: absolute; width: 600px;  top: 50px; left: 50px;}
+        #mymodal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000}
         #mymodal>*{
             padding: 10px;
         }
@@ -55,9 +55,16 @@
             width: 100%;
             height: 400px;
         }
-        table td:first-child,table th:first-child{
+        table td:first-child{
+            width: 60px !important;
+            min-width: 60px !important;
             position: sticky;
             left: 0;
+        }
+        table td:nth-child(2){
+            position: sticky;
+            left: 60px;
+            background-color: white;
         }
 
     </style>
@@ -69,6 +76,15 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Environment
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" role="button" onclick="save_env(true)">Save</a>
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#load_env">Load</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                             Import data
                         </a>
                         <div class="dropdown-menu">
@@ -78,6 +94,7 @@
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
                         </div>
                     </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                             Export data
@@ -111,6 +128,7 @@
                     <li class="nav-item">
                         <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="autosave(true)"><i class="fa fa-save"></i></a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="open_play_editor()"><i class="fa fa-play"></i></a>
                     </li>
@@ -465,6 +483,21 @@
             </div>
         </form>
     </div>
+    <div class="modal" id="load_env">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <form>
+                <div class="modal-header">Load environment</div>
+                <div class="modal-body">
+                    <input type="file" name="envfile">
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-secondary" type="button" onclick="load_env(this.form)">Load</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -519,7 +552,6 @@
 
 
 <script>
-
     ace.require("ace/ext/language_tools");
     var editor = ace.edit("editor");
     editor.session.setMode("ace/mode/javascript");
@@ -548,6 +580,8 @@
     function hide_player() {
         $("#mymodal").hide();
     }
+
+
 </script>
 
 </body>
