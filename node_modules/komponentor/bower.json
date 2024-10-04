@@ -1,0 +1,17 @@
+{
+  "name": "komponentor",
+  "description": "Javascript library for building web interfaces apps using reusable components",
+  "main": "komponentor.js",
+  "authors": [
+    "Sergiu Voicu <sergiu.voicu@softaccel.net>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/vsergione/komponentor.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,31 @@
+body{
+    margin: 0px;
+    padding: 0px
+}
+.sidebar{
+    padding: 5px;
+    width: 200px;
+    background: silver;
+    height: 100%;
+    z-index: 10;
+}
+.row>*{
+    display: inline-block;
+    vertical-align: top;
+}
+.main{
+    height: 100%;
+}
+.footer{
+    z-index: -1;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    padding: 5px;
+}
+.selected{
+    font-weight: boldPage;
+}
