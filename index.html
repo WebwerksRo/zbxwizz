@@ -47,8 +47,11 @@
         .transform.active{
             min-width: 400px;
         }
-        #mymodal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000}
-        #mymodal>*{
+        #draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000}
+        #draggableModal .card-body{
+            overflow: auto;
+        }
+        #draggableModal>*{
             padding: 10px;
         }
         #editor {
@@ -188,21 +191,24 @@
                 <button class="btn btn-secondary">Click me</button>
             </div>
         </div>
-        <div class="card shadow" id="mymodal">
-            <!--            $("#mymodal").appendTo('body').draggable({ handle: ".card-header" }).resizable();-->
+        <div id="scriptPlayer">
+            <div class="alert alert-secondary">
+                <input type="file" id="scriptFile">
+            </div>
+            <div id="editor"></div>
+            <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
+        </div>
+        <div class="card shadow" id="draggableModal">
             <div class="card-header d-flex">
-                <div class="flex-grow-1">Script player</div>
+                <div class="flex-grow-1 dgm-modal-title">Script player</div>
                 <div class="btn-group-sm">
-                    <button class="btn btn-secondary btn-sm" onclick="hide_player()">x</button>
+                    <button class="btn btn-secondary btn-sm" onclick="$(this).parents('#draggableModal').hide()">x</button>
                 </div>
             </div>
             <div class="card-body">
-                <input type="file" id="scriptFile">
-                <div id="editor"></div>
-                <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
+
             </div>
             <div class="card-footer text-right">
-                <a href="#" class="btn btn-primary btn-sm" onclick="playscript()">Play script</a>
             </div>
         </div>
     </div>
@@ -311,7 +317,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_zbx(importReqTplEditor.getText(),this.form)">Import</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_from_api(importReqTplEditor.getText(),this.form)">Import</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -342,10 +348,10 @@
                         <div class="form-group">
                             <label>Request templates</label>
                             <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="importReqTemplates" name="templates"></select>
+                                <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="importJSReqTemplates" name="templates"></select>
                                 <div class="input-group-append">
                                     <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importReqTemplates',importReqTplEditor)" type="button">Save</button>
+                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importJSReqTemplates',importReqTplEditor)" type="button">Save</button>
                                         <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                     </div>
                                 </div>
@@ -424,7 +430,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="push(pushReqTplEditor.getText(),this.form)">Push</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="push_to_api(pushReqTplEditor.getText(),this.form)">Push</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -546,7 +552,7 @@
 <script src="assets/js/jsoneditor.js"></script>
 <script src="assets/js/jquery-ui.js"></script>
 <script src="assets/js/colResizable-1.6.min.js"></script>
-<script src="lib/zbx.js"></script>
+<script src="plugins/zbx.js"></script>
 <script src="lib/datatable.js"></script>
 <script src="lib/worksheets.js"></script>
 <script src="lib/zbxwizz.js"></script>
@@ -555,18 +561,8 @@
 
 
 <script>
-    ace.require("ace/ext/language_tools");
-    var editor = ace.edit("editor");
-    editor.session.setMode("ace/mode/javascript");
-    editor.setTheme("ace/theme/tomorrow");
-    // enable autocompletion and snippets
-    editor.setOptions({
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: true,
-        fontSize: "12pt"
-    });
-    editor.setValue(localStorage.getItem("script"));
+
+
     function playscript() {
         let script = editor.getValue();
         localStorage.setItem("script",script);
@@ -577,12 +573,51 @@
             $("scriptDebug").val(e);
         }
     }
+
+    function dragable_modal(opts) {
+        let modal = $("#draggableModal").appendTo('body').draggable({ handle: ".card-header" }).resizable();
+        modal.find(".dgm-modal-title").html(opts.title);
+        modal.find(".card-body").empty().append(opts.body);
+        let footer = modal.find(".card-footer").empty();
+        opts.buttons.forEach(btn=>{
+            let $btn = $("<button>").addClass("btn btn-"+btn.class).text(btn.text).on("click",btn.action).appendTo(footer);
+            if(btn.attrs) {
+                Object.keys(btn.attrs).forEach(attr=>$btn.attr(attr,btn.attrs[attr]));
+            }
+        });
+        modal.show();
+
+
+    }
+
     function open_play_editor(    ) {
-        $("#mymodal").appendTo('body').show().draggable({ handle: ".card-header" }).resizable();
+        ace.require("ace/ext/language_tools");
+        let editor = ace.edit("editor");
+        editor.session.setMode("ace/mode/javascript");
+        editor.setTheme("ace/theme/tomorrow");
+        // enable autocompletion and snippets
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true,
+            fontSize: "12pt"
+        });
+        editor.setValue(localStorage.getItem("script"));
+
+        dragable_modal({
+            title:"Script player",
+            body: $("#scriptPlayer"),
+            buttons:[
+                {
+                    text: "Play",
+                    action: playscript,
+                    class: "primary"
+                }
+            ]
+        });
+        //$("#draggableModal").appendTo('body').show().draggable({ handle: ".card-header" }).resizable();
     }
-    function hide_player() {
-        $("#mymodal").hide();
-    }
+
 
 
 </script>
