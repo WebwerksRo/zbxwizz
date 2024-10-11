@@ -231,6 +231,7 @@
                                         <option>template</option>
                                         <option>item</option>
                                         <option>history</option>
+                                        <option>trigger</option>
                                     </select>
                                 </div>
                             </div>
@@ -332,38 +333,25 @@
                         Import data JavaScript
                     </div>
                     <div class="modal-body">
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-group ">
-                                    <label>Resource</label>
-                                    <select class="custom-select custom-select-sm" name="resource">
-                                        <option>host</option>
-                                        <option>hostgroup</option>
-                                        <option>template</option>
-                                        <option>trigger</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <label>Request templates</label>
                             <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="importJSReqTemplates" name="templates"></select>
+                                <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates"></select>
                                 <div class="input-group-append">
                                     <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importJSReqTemplates',importReqTplEditor)" type="button">Save</button>
+                                        <button class="btn btn-success" onclick="save_req_tpl(importJSTplPfx,'#importJSTemplates',importJSTplEditor)" type="button">Save</button>
                                         <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="importJsTplEditor" style="height: 300px;"></div>
+                        <div id="importJSTplEditor" style="height: 300px;"></div>
                         <div class="preview alert alert-secondary mt-5">
-                            <pre>sadas</pre>
+                            <pre>Nothing to show</pre>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="alert('Not implemented');return;importJS(importReqTplEditor.getText(),this.form)">Import</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_js(importJSTplEditor.getText(),this.form)">Import</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -567,10 +555,10 @@
         let script = editor.getValue();
         localStorage.setItem("script",script);
         try {
-            $("scriptDebug").val(eval(script));
+            $("#scriptDebug").val(eval(script));
         }
         catch(e) {
-            $("scriptDebug").val(e);
+            $("#scriptDebug").val(e);
         }
     }
 
