@@ -85,6 +85,7 @@
                             Environment
                         </a>
                         <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.reset()">New</a>
                             <a class="dropdown-item" href="#" role="button" onclick="save_env(true)">Save</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#load_env">Load</a>
                         </div>
@@ -106,7 +107,7 @@
                             Export data
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button"  href="#" onclick="save_data()">Export to CSV</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Export JSON</a>
                         </div>
                     </li>
@@ -574,8 +575,42 @@
             }
         });
         modal.show();
+    }
 
-
+    function prompt_save_data() {
+        let $el = $(`
+        <div>
+            What do you want to export
+            <select>
+                    <option value="">all records</option>
+                    <option value="selected">only selected</option>
+                    <option value="visible">only visible</option>
+                </select>  
+                </div>
+            `);
+        dragable_modal({
+            title:"Export CSV",
+            body: $el,
+            buttons:[
+                {
+                    text: "Export",
+                    action: ()=>{
+                        console.log($el.children("select").val());
+                        switch($el.children("select").val()) {
+                            case "selected":
+                                save_data(row=>row.isSelected);
+                                break;
+                            case "visible":
+                                save_data(row=>!row.isHidden);
+                                break;
+                            default: 
+                                save_data();
+                        }
+                    },
+                    class: "primary"
+                }
+            ]
+        });
     }
 
     function open_play_editor(    ) {
