@@ -12,6 +12,19 @@
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
     <style>
+        .cols-sort{
+            margin: 0;
+            padding: 0;
+        }
+        .cols-sort li{
+            border: solid silver 1px;
+            background-color: #eeefe6;
+            font-size: 12px;
+            padding: 3px;
+            margin: 0;
+            margin-bottom: 2px;
+
+        }
         #worksheets{
             font-family: "SUSE", sans-serif;
             font-optical-sizing: auto;
@@ -130,13 +143,6 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="worksheets.reset()">Clear data</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="autosave(true)"><i class="fa fa-save"></i></a>
-                    </li>
-
-                    <li class="nav-item">
                         <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="open_play_editor()"><i class="fa fa-play"></i></a>
                     </li>
 
@@ -210,6 +216,12 @@
 
             </div>
             <div class="card-footer text-right">
+            </div>
+        </div>
+        <div class="vertical-center emptyDataTablePlaceholder" id="emptyDataTable">
+            <div class="d-inline-block text-center" style="width: 500px">
+                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
+                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importZbxModal'>Import from Zabbix</button>
             </div>
         </div>
     </div>
@@ -519,17 +531,17 @@
             </div>
         </div>
     </div>
-    <div id="warning" class="overlay">
+    <div id="warning">
         <div class="vertical-center">
-            <div class="d-inline-block text-center bg-light rounded p-5" style="width: 500px">
+            <div class="d-inline-block text-center bg-dark text-white rounded p-5" style="width: 500px">
                 <span style="font-size: 100px">&#x2620;</span>
                 <h3 class="text-danger">Warning</h3>
-                <p><strong>ZbxWizz</strong> is a very powerfull tool to manage large scale (and small as well)  <strong>Zabbix&trade;</strong> instalations.</p>
-                <p>You can save a lot of time and get your Bo$$ appreciation (and eventually a raise or a bonus) or you can sign your death sentence by pushing the wrong commands</p>
-                <p>As with great power comes great responsibility use it wisely (and on your own risk)! </p>
-                <p>So wich pill will you choose?</p>
-                <button class="badge-pill badge-danger" onclick="localStorage.setItem('userlevel','courageous');run()">Red pill (be brave!)</button>
-                <button class="badge-pill badge-primary" onclick="alert('Sleep well!');window.close()">Blue pill (stay safe!)</button>
+                <p><strong>ZbxWizz</strong> is a very powerful (and dangerous) tool to configure the data in large scale (and small as well) <strong>Zabbix&trade;</strong> deployments.</p>
+                <p>You can save a lot of time and get your <strong>Bo$$</strong> appreciation (and eventually a raise or a bonus) or you can sign your <strike>death  sentence</strike> resignation by pushing the wrong commands</p>
+                <p>As with great power comes great responsibility use it wisely (and at your own risk)! </p>
+                <p>So which pill will you choose?</p>
+                <button class="badge-pill badge-danger" onclick="confirm('Congratulations\nYou\'ve earned a tequila (you will need it for sure)!\nAre you still sure you want to continue?') && run() && localStorage.setItem('userlevel','courageous')">Red pill (be brave!)</button>
+                <button class="badge-pill badge-primary" onclick="alert('Enjoy the stake!');window.close()">Blue pill (stay safe!)</button>
             </div>
         </div>
     </div>
@@ -547,7 +559,85 @@
 <script src="lib/zbxwizz.js"></script>
 <script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="node_modules/ace-builds/src-noconflict/ext-language_tools.js"></script>
+<div class="d-none">
+    <div class="colnum d-flex">
+        <div><button class="badge badge-light" onclick="move_col($(this).parents('th').attr('data-col'),'left')">&lt;</button></div>
+        <div class="flex-grow-1">
+            <div class="dropdown">
+                <button class="colno dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Dropdown button
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#" onclick="$(this).parents('table').data().sheet.sort_col($(this).parents('th').attr('data-col'),'asc')" >&#x1F53C; Sort asc</a>
+                    <a class="dropdown-item" href="#" onclick="$(this).parents('table').data().sheet.sort_col($(this).parents('th').attr('data-col'),'desc')">&#x1F53D; Sort desc</a>
+                    <a class="dropdown-item" href="#">Reorder columns</a>
+                </div>
+            </div>
 
+
+            <!--        <button class="colno badge badge-secondary w-100" onclick="toggle_compress_col(this)">0</button></div>-->
+            <!--        <div><button class="badge badge-light" title="Sort asc">&#x1F53C;</button></div>-->
+            <!--        <div><button class="badge badge-light"  title="Sort desc">&#x1F53D;</button></div>-->
+            <button class="badge badge-light" onclick="move_col($(this).parents('th').attr('data-col'),'right')">&gt;</button></div>
+    </div>
+    <div class="text-center field">
+        <span class="badge badge-primary" ondblclick="rename_fld(this)">&nbsp;</span>
+    </div>
+    <div class="filter dropdown" >
+        <a class="btn btn-info dropdown-toggle btn-sm w-100" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+            Filter
+        </a>
+        <div class="dropdown-menu bg-light">
+            <form class="p-2 m-0">
+                <div class="form-group">
+                    <select onchange="filter_rows(this.form)" name="filter" class="custom-select custom-select-sm w-100">
+                        <option value="^$">Empty</option>
+                        <option value=".+">Not empty</option>
+                        <option value="^((?!{value}).)*$">Does not contain</option>
+                        <option value="{value}" selected>Contains</option>
+                        <option value="^{value}">Starts with</option>
+                        <option value="{value}$">Ends with</option>
+                        <option value="^{value}$">Exact match</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="term" class="form-control form-control-sm" onkeyup="filter_rows(this.form)" onchange="filter_rows(this.form)">
+                </div>
+                <div class="form-group">
+                    <select onclick='get_unique(this)' style="width: 100%" onchange="$(this.form.term).val($(this).val()).trigger('change')"></select>
+                </div>
+                <div class="btn-group w-100 btn-group-sm" role="group" aria-label="Basic example">
+                    <button class="btn btn-primary  w-100" onclick="filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide');" type="button">Apply</button>
+                    <button class="btn btn-secondary w-100" onclick="this.form.reset();filter_rows(this.form,true);$(this).parents('.dropdown-menu').prev().dropdown('hide')" type="button">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="transform">
+        <form class="p-0 m-0">
+            <div>
+                <div class="input-group input-group-sm">
+                    <select class="custom-select" onchange="load_transfo(this)" name="templates" onblur="minimize_transform(event)" onclick="list_transformations(this,event)" ></select>
+                    <div class="input-group-append">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success" onclick="save_transformation(this)" type="button">+</button>
+                            <button class="btn btn-danger" onclick="remove_transformation(this)" type="button">-</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <textarea name="xpression" placeholder='transform' rows=1 class="form-control w-100"
+                      onfocus="$(this).parents('.transform').addClass('active')"
+                      onchange="transform_data(event)"
+                      onblur="minimize_transform(event)"
+                      onkeyup='transform_data(event)' ></textarea>
+            <div class="mt-0 preview" onblur="minimize_transform(event)">
+                <textarea class="alert alert-secondary p-1 m-0 w-100" placeholder="preview" name="preview" readonly onblur="minimize_transform(event)"></textarea>
+                <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(event,true)">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 

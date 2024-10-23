@@ -45,6 +45,8 @@ div>strong {
     width: 100%;
     height: 100%;
     z-index: 100;
+    left: 0px;
+    top: 0px;
     background: rgba(180,180,180,0.8);
     display: none;
 }
@@ -155,7 +157,12 @@ table td{
 
 #warning{
     opacity: 1;
-    background: #0b2e13;
+    background: #f1f1f1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
 }
 footer .nav-link{
     color: white;
