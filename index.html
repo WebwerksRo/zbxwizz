@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
     <style>
         .nav-item:hover{
             border-radius: 3px;
@@ -149,7 +149,7 @@
             <div class="navbar-collapse collapse" id="navbarsExample04" style="">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
                             Environment
                         </a>
                         <div class="dropdown-menu">
@@ -159,7 +159,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
                             Data
                         </a>
                         <div class="dropdown-menu">
@@ -173,18 +173,18 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
                             Table ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" role="button" onclick="add_rows()">Add rows</a>
-                            <a class="dropdown-item" href="#" onclick="reorder_columns()">Reorder columns</a>
-                            <a class="dropdown-item" href="#" onclick="copy_to_new_sheet()">Copy to new sheet</a>
+                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.get_active().add_rows()">Add rows</a>
+                            <a class="dropdown-item" href="#" onclick="worksheets.get_active().reorder_columns_dialog()">Reorder columns</a>
+                            <a class="dropdown-item" href="#" onclick="worksheets.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a>
                         </div>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
@@ -193,7 +193,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
                             Tools
                         </a>
                         <div class="dropdown-menu">
@@ -209,7 +209,7 @@
                         </div>
                     </li>
                 </ul>
-                <a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a>
+                <a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/img/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a>
             </div>
         </nav>
         <div class="tab-content" id="worksheets"></div>
@@ -617,8 +617,8 @@
 <script src="lib/datatable.js"></script>
 <script src="lib/worksheets.js"></script>
 <script src="lib/zbxwizz.js"></script>
-<script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script src="node_modules/ace-builds/src-noconflict/ext-language_tools.js"></script>
+<script src="assets/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
 <script>
     function playscript() {
         let script = editor.getValue();

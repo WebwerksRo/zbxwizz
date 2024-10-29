@@ -189,7 +189,7 @@ footer .nav-link{
     background: rgb(253, 243, 103) !important;
 }
 .dataTable tr:has(.cell.active) {
-    background: #dfedff;
+    background: #f0efc3;
 }
 
 
