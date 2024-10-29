@@ -1,2 +1,4 @@
 zbx_*.txt
 *.zip
+node_modules
+.idea
