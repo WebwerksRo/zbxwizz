@@ -1,6 +1,17 @@
 {
   "dependencies": {
+    "ace-builds": "^1.36.2",
+    "bootstrap": "^4.6.2",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.7.1",
     "jqueryui": "^1.11.1",
-    "jsoneditor": "^10.1.0"
+    "jsoneditor": "^10.1.0",
+    "komponentor": "github:vsergione/komponentor"
+  },
+  "devDependencies": {
+    "electron": "^32.2.0"
+  },
+  "scripts": {
+    "start": "electron ."
   }
 }

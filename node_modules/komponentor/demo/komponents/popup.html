@@ -1,0 +1,29 @@
+<style>
+    .popup{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background: white;
+        border: solid black 1px;
+        padding: 5px;
+        min-width: 500px;
+        min-height: 200px;
+        z-index: 1000;
+        transform: translate(-50%, -50%);
+    }
+</style>
+<div class="popup">
+<div id="messageDisplay">Message</div>
+<button onclick="closePopup(this)">Close</button>
+</div>
+<script>
+    function closePopup(button) {
+        $(button).data("komponent").$el.remove();
+    }
+
+    function init_komponent(k) {
+        k.$el.appendTo("body");
+        console.log(k.$el.find("#messageDisplay"),k);
+        k.$el.find("#messageDisplay").text(k.data.text);
+    }
+</script>

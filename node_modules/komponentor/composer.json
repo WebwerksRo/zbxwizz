@@ -1,0 +1,13 @@
+{
+    "name": "vsergiu/komponentor.js",
+    "description": "Javascript library for building web interfaces apps using reusable components",
+    "type": "libray",
+    "authors": [
+        {
+            "name": "Sergiu Voicu",
+            "email": "sergiu.voicu@softaccel.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

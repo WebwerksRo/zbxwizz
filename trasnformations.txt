@@ -1,5 +1,0 @@
-interfaces.map(iface=>iface.ip+"["+iface.type+"]").join(",")
-
-zbxData.tags.map(tg=>tg.tag+"="+tg.value).join(" \n")
-
-hostgroups.map(h=>h.name).filter(hgn=>hgn.indexOf('Server All')!=-1).join(", ")

@@ -1,4 +1,7 @@
 zbx_*.txt
-*.zip
-node_modules
+tmp*.*
+procedure.txt
 .idea
+procedures
+node_modules
+docs

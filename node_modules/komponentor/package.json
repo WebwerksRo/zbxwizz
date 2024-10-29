@@ -1,0 +1,19 @@
+{
+  "name": "komponentor",
+  "version": "1.0.0",
+  "description": "Javascript library for building web interfaces apps using reusable components",
+  "main": "komponentor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vsergione/komponentor.js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vsergione/komponentor.js/issues"
+  },
+  "homepage": "https://github.com/vsergione/komponentor.js#readme"
+}

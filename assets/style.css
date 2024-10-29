@@ -45,6 +45,8 @@ div>strong {
     width: 100%;
     height: 100%;
     z-index: 100;
+    left: 0px;
+    top: 0px;
     background: rgba(180,180,180,0.8);
     display: none;
 }
@@ -57,17 +59,7 @@ div>strong {
     display: block;
     width: 200px;
 }
-.req-options>div{
-    padding: 5px;
-    display: inline-block;
-    border: dashed black 1px;
-}
-.req-options>div:first{
-    background-color: red;
-}
-.req-options>div>label{
-    display: block;
-}
+
 .controls>form>div{
     margin: 5px;
     padding: 5px;
@@ -81,6 +73,9 @@ div>strong {
 }
 .notConnected{
     opacity: 0.4;
+}
+.nav-link{
+    cursor: pointer;
 }
 .filterActive .dropdown-toggle{
     color: rgb(255, 217, 0);
@@ -100,7 +95,7 @@ div>strong {
     height: 100px;
 }
 table, th, td {
-    border: 1px solid black;
+    border: 1px solid #c3c3c3;
     border-collapse: collapse;
   }
 
@@ -108,16 +103,38 @@ table>thead{
     background-color: rgb(147, 167, 209);
     color: white;
 }
+table>tbody tr:hover{
+    background: #e7e7e7;
+}
+table>thead{
+    text-align: center;
+}
 table>thead>tr:first-child>th {
+/*table>thead th {*/
+    z-index: 100;
     position: sticky;
     border: 1px solid black;
     border-collapse: collapse;
     background-color: rgb(147, 167, 209);
-    top: 46px; /* Don't forget this, required for the stickiness */
+    top: 0px; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+table>thead>tr:first-child>th:first-child {
+    left: 0;
+    z-index: 110;
+}
+table>thead>tr:first-child>th:nth-child(2) {
+    left: 60px;
+    z-index: 110;
+}
+tr{
+    background: white;
 }
 tbody>tr.selected{
     background: #dfedff;;
+}
+table td{
+    white-space: pre;
 }
 #overlay{
     display: none;
@@ -143,5 +160,48 @@ tbody>tr.selected{
 
 #warning{
     opacity: 1;
-    background: #0b2e13;
+    background: #f1f1f1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+footer .nav-link{
+    color: white;
+}
+#actionMenu .dropdown {
+    z-index: 10000000;
+}
+.dataTable .badge{
+    font-size: 1rem;
+}
+.dataTable{
+    width: 100%;
+}
+.dataTable tbody td.editing{
+    background: #0B0A09;
+    color: greenyellow;
+}
+.dataTable tbody td.active{
+    background: #00AEEF;
+    color: white;
+}
+.hightlight{
+    background: #00AEEF;
+    background: rgb(253, 243, 103) !important;
+}
+.dataTable tr:has(.cell.active){
+    background: #f0efc3;
+}
+
+
+#worksheets{
+    scrollbar-width: 20px;
+    flex-grow: 1; overflow: scroll;
+    scrollbar-color: rgb(36, 41, 107);
+}
+
+#tranformDialog label{
+    display: block;
 }

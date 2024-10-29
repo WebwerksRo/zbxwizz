@@ -1,12 +1,4 @@
-
-
-
-resize columns
-
-
-save transformations - ok
-update row data when cell content changes - ok
-parse values as JSON - ok
-preview request - ok
-transform only selected - working ok as it transforms only what is visible
-improve transformation view - ok
+# refactor datatable
+# flexible API requests
+# preprocess restponse before render
+# improve loading overlay
