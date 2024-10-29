@@ -127,6 +127,9 @@ table>thead>tr:first-child>th:nth-child(2) {
     left: 60px;
     z-index: 110;
 }
+tr{
+    background: white;
+}
 tbody>tr.selected{
     background: #dfedff;;
 }
@@ -188,7 +191,7 @@ footer .nav-link{
     background: #00AEEF;
     background: rgb(253, 243, 103) !important;
 }
-.dataTable tr:has(.cell.active) {
+.dataTable tr:has(.cell.active){
     background: #f0efc3;
 }
 

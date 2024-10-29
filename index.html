@@ -106,18 +106,18 @@
         .transform.active{
             min-width: 400px;
         }
-        #draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000; box-shadow: 5px 5px 10px #525252; border: solid #525252 1px;
+        .draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000; box-shadow: 5px 5px 10px #525252; border: solid #525252 1px;
         }
 
-        #draggableModal .card-header{
+        .draggableModal .card-header{
             padding: 5px;
             background-color: #c3c3c3;
         }
-        #draggableModal .card-body{
+        .draggableModal .card-body{
             overflow: auto;
             padding: 5px;
         }
-        #draggableModal>*{
+        .draggableModal>*{
             padding: 10px;
         }
         #editor {
@@ -165,7 +165,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Import Excel</a>
-                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importZbxModal">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active())">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -177,7 +177,7 @@
                             Table ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.get_active().add_rows()">Add rows</a>
+                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.get_active().add_rows_dialog()">Add rows</a>
                             <a class="dropdown-item" href="#" onclick="worksheets.get_active().reorder_columns_dialog()">Reorder columns</a>
                             <a class="dropdown-item" href="#" onclick="worksheets.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a>
                         </div>
@@ -188,8 +188,8 @@
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pullZbxModal">Pull</a>
-                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#pushZbxModal">Push</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',req_pull,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Push</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -202,10 +202,10 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Script editor</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Settings</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Settings</a>
 
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" role="button"  href="#" onclick="open_help()">Help</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Help</a>
                         </div>
                     </li>
                 </ul>
@@ -266,11 +266,11 @@
             <div id="editor"></div>
             <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
         </div>
-        <div class="card" id="draggableModal">
+        <div class="card draggableModal" id="draggableModal">
             <div class="card-header d-flex">
                 <div class="flex-grow-1 dgm-modal-title">Script player</div>
                 <div class="mr-1">
-                    <span onclick="$(this).parents('#draggableModal').hide()" style="cursor: pointer"><i class="fa fa-times-rectangle"></i></span>
+                    <span onclick="$(this).parents('.draggableModal').hide()" style="cursor: pointer"><i class="fa fa-times-rectangle"></i></span>
                 </div>
             </div>
             <div class="card-body">
@@ -282,125 +282,143 @@
         <div class="vertical-center emptyDataTablePlaceholder" id="emptyDataTable">
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
-                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importZbxModal'>Import from Zabbix</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active())">Import from Zabbix</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importJSModal'>Import from JavaScript</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="pullZbxModal">
-        <form id="pullZbxForm">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Pull data from Zabbix</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-group ">
-                                    <label>Resource</label>
-                                    <select class="custom-select custom-select-sm" name="resource">
-                                        <option>host</option>
-                                        <option>hostgroup</option>
-                                        <option>template</option>
-                                        <option>item</option>
-                                        <option>history</option>
-                                        <option>trigger</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Post process</label>
-                                    <select class="custom-select custom-select-sm mt-1" name="postprocess">
-                                        <option value="update">Update existing</option>
-                                        <option value="new">New data</option>
-                                        <option value="ignore">Ignore</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Data label</label>
-                                    <input type="text" name="label" value="zbx">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Request templates</label>
-                            <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(pullReqTplEditor,$(this).val())" id="pullReqTemplates" name="templates"></select>
-                                <div class="input-group-append">
-                                    <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(pullReqTplPfx,'#pullReqTemplates',pullReqTplEditor)" type="button">Save</button>
-                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="pullReqTplEditor" style="height: 300px;"></div>
-                        <div class="preview alert alert-secondary mt-5">
-                            <pre>Start typing</pre>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="req_pull(pullReqTplEditor.getText(),this.form)">Pull</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <div class="d-none">
+        <form id="importZbxForm" disabled="">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group ">
+                        <label>Resource</label>
+                        <select class="custom-select custom-select-sm" name="resource">
+                            <option>host</option>
+                            <option>hostgroup</option>
+                            <option>template</option>
+                            <option>item</option>
+                            <option>history</option>
+                            <option>trigger</option>
+                        </select>
                     </div>
                 </div>
+            </div>
+            <div class="form-group">
+                <label>Request templates</label>
+                <div class="input-group mb-2">
+                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'importReqTpl_')" name="templates"></select>
+                    <div class="input-group-append">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success" onclick="save_req_tpl('importReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jsoneditorcontainer" style="height: 300px;"></div>
+            <div class="preview alert alert-secondary mt-1 mb-1">
+                <pre>Preview</pre>
+            </div>
+        </form>
+
+
+        <form id="pullZbxForm">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group ">
+                        <label>Resource</label>
+                        <select class="custom-select custom-select-sm" name="resource">
+                            <option>host</option>
+                            <option>hostgroup</option>
+                            <option>template</option>
+                            <option>item</option>
+                            <option>history</option>
+                            <option>trigger</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Post process</label>
+                        <select class="custom-select custom-select-sm" name="postprocess">
+                            <option value="update">Update existing</option>
+                            <option value="new">New data</option>
+                            <option value="ignore">Ignore</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Data label</label>
+                        <input type="text" name="label" value="zbx" class="form-control form-control-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Request templates</label>
+                <div class="input-group mb-2">
+                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pullReqTpl_')" name="templates"></select>
+                    <div class="input-group-append">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success" onclick="save_req_tpl('pullReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jsoneditorcontainer" style="height: 300px;"></div>
+            <div class="preview alert alert-secondary mt-1 mb-1">
+                <pre>Start typing</pre>
+            </div>
+        </form>
+
+        <form id="pushZbxForm">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group ">
+                        <label>Resource</label>
+                        <select class="custom-select custom-select-sm" name="resource">
+                            <option>host</option>
+                            <option>hostgroup</option>
+                            <option>template</option>
+                            <option>item</option>
+                            <option>history</option>
+                            <option>trigger</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Operation</label>
+                        <select class="custom-select custom-select-sm" name="operation">
+                            <option>update</option>
+                            <option>create</option>
+                            <option>delete</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Request templates</label>
+                <div class="input-group mb-2">
+                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pushReqTpl_')" name="templates"></select>
+                    <div class="input-group-append">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-success" onclick="save_req_tpl('pushReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jsoneditorcontainer" style="height: 300px;"></div>
+            <div class="preview alert alert-secondary mt-1">
+                <pre>sadas</pre>
             </div>
         </form>
     </div>
 
-    <div class="modal" id="importZbxModal">
-        <form id="importZbxForm" disabled="">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        Import data from Zabbix
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-group ">
-                                    <label>Resource</label>
-                                    <select class="custom-select custom-select-sm" name="resource">
-                                        <option>host</option>
-                                        <option>hostgroup</option>
-                                        <option>template</option>
-                                        <option>item</option>
-                                        <option>history</option>
-                                        <option>trigger</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Request templates</label>
-                            <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(importReqTplEditor,$(this).val())" id="importReqTemplates" name="templates"></select>
-                                <div class="input-group-append">
-                                    <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(importReqTplPfx,'#importReqTemplates',importReqTplEditor)" type="button">Save</button>
-                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="importReqTplEditor" style="height: 300px;"></div>
-                        <div class="preview alert alert-secondary mt-5">
-                            <pre>sadas</pre>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_from_api(importReqTplEditor.getText(),this.form)">Import</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
     <div class="modal" id="importJSModal">
         <form id="importJsForm" disabled="">
             <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -435,74 +453,6 @@
         </form>
     </div>
 
-    <div class="modal" id="pushZbxModal">
-        <form id="pushZbxForm">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        Push data to Zabbix
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-group ">
-                                    <label>Resource</label>
-                                    <select class="custom-select custom-select-sm" name="resource">
-                                        <option>host</option>
-                                        <option>hostgroup</option>
-                                        <option>template</option>
-                                        <option>item</option>
-                                        <option>history</option>
-                                        <option>trigger</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Operation</label>
-                                    <select class="custom-select custom-select-sm mt-1" name="operation">
-                                        <option>update</option>
-                                        <option>create</option>
-                                        <option>delete</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>Post process</label>
-                                    <select class="custom-select custom-select-sm mt-1" name="postprocess">
-                                        <option value="update">Update existing</option>
-                                        <option value="new">New data</option>
-                                        <option value="ignore">Ignore</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Request templates</label>
-                            <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(pushReqTplEditor,$(this).val())" id="pushReqTemplates" name="templates"></select>
-                                <div class="input-group-append">
-                                    <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(pushReqTplPfx,'#pushReqTemplates',pushReqTplEditor)" type="button">Save</button>
-                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="pushReqTplEditor" style="height: 300px;"></div>
-                        <div class="preview alert alert-secondary mt-5">
-                            <pre>sadas</pre>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="push_to_api(pushReqTplEditor.getText(),this.form)">Push</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 
     <div class="modal" id="importCsvModal">
         <form id="loadCvsForm">
@@ -583,10 +533,12 @@
     </div>
     <div id="overlay" class="overlay">
         <div class="vertical-center">
+
             <div class="d-inline">
                 <div class="spinner-border" role="status">
-                    <span class="sr-only">Loading...</span>
+                    <span class="sr-only message">Loading...</span>
                 </div>
+                <div><progress id="loading" value="32" max="100" style="display: none; height: 1em;background-color: #eee;border-radius: 2px;box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;"></progress></div>
             </div>
         </div>
     </div>
@@ -597,7 +549,7 @@
                 <h3 class="text-danger">Warning</h3>
                 <p><strong>ZbxWizz</strong> is a very powerful (and dangerous) tool to configure the data in large scale (and small as well) <strong>Zabbix&trade;</strong> deployments.</p>
                 <p>You can save a lot of time and get your <strong>Bo$$</strong> appreciation (and eventually a raise or a bonus) or you can sign your <strike>death  sentence</strike> resignation by pushing the wrong commands</p>
-                <p>As with great power comes great responsibility use it wisely (and at your own risk)! </p>
+                <p>As with great power comes great responsibility. Use it wisely and at your own risk! </p>
                 <p>So which pill will you choose?</p>
                 <button class="badge-pill badge-danger" onclick="confirm('Congratulations\nYou\'ve earned a tequila (you will need it for sure)!\nAre you still sure you want to continue?') && run() && localStorage.setItem('userlevel','courageous')">Red pill (be brave!)</button>
                 <button class="badge-pill badge-primary" onclick="alert('Enjoy the stake!');window.close()">Blue pill (stay safe!)</button>
@@ -607,7 +559,7 @@
 
 <script src="assets/js/jquery.js"></script>
 <!--<script src="assets/js/bootstrap.min.js"></script>-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.js"></script>
+<script src="assets/js/bootstrap.bundle.js"></script>
 <script src="assets/js/papaparse.min.js"></script>
 <script src="assets/js/select2.min.js"></script>
 <script src="assets/js/jsoneditor.js"></script>
