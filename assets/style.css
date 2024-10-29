@@ -176,11 +176,6 @@ footer .nav-link{
 .dataTable{
     width: 100%;
 }
-.dataTable tbody td:first-child button{
-    display: block;
-    width: 100%;
-    height: 100%;
-}
 .dataTable tbody td.editing{
     background: #0B0A09;
     color: greenyellow;
@@ -192,6 +187,9 @@ footer .nav-link{
 .hightlight{
     background: #00AEEF;
     background: rgb(253, 243, 103) !important;
+}
+.dataTable tr:has(.cell.active) {
+    background: #dfedff;
 }
 
 

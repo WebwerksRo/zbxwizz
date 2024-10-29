@@ -12,6 +12,52 @@
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
     <style>
+        .nav-item:hover{
+            border-radius: 3px;
+            background-color: #cfcfcf;
+
+        }
+        .nav-item:hover a.nav-link.active{
+            color: black;
+        }
+        .fields_reorder{
+            max-height: 500px;
+            overflow: auto;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .fields_reorder>div{
+            margin-bottom: 3px;
+            background-color: #f0f0f0;
+            border: solid black 1px;
+            border-radius: 5px;
+            padding: 3px;
+        }
+        .fields_reorder>div:hover{
+            background-color: #f0efc3;
+
+        }
+        .limitedHeigth{
+
+        }
+        .addremove:hover span{
+            display: inline;
+        }
+        .addremove span{
+            display: none;
+        }
+        @media (max-width:575.98px) {
+            .navbar-collapse .nav-item {
+                margin-bottom: 10px;
+                border-bottom: solid lightgrey 1px;
+            }
+        }
+        #sheetSelector .nav-item .removesheet{
+            display: none;
+        }
+        #sheetSelector .nav-item:hover .removesheet{
+            display: inline;
+        }
         .cols-sort{
             margin: 0;
             padding: 0;
@@ -37,10 +83,10 @@
         #worksheets td{
             /*max-width: 400px;*/
             /*white-space: normal;*/
-            overflow: hidden;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
+            /*overflow: hidden;*/
+            /*word-wrap: break-word;*/
+            /*overflow-wrap: break-word;*/
+            /*word-break: break-word;*/
             /*overflow: scroll;*/
         }
         .compress{
@@ -60,9 +106,16 @@
         .transform.active{
             min-width: 400px;
         }
-        #draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000}
+        #draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000; box-shadow: 5px 5px 10px #525252; border: solid #525252 1px;
+        }
+
+        #draggableModal .card-header{
+            padding: 5px;
+            background-color: #c3c3c3;
+        }
         #draggableModal .card-body{
             overflow: auto;
+            padding: 5px;
         }
         #draggableModal>*{
             padding: 10px;
@@ -77,24 +130,26 @@
             position: sticky;
             left: 0;
         }
-        .compressed{
-            max-width: 60px;
-        }
         table td:nth-child(2){
             position: sticky;
             left: 60px;
             background-color: white;
         }
 
+
     </style>
 </head>
 <body>
     <div style="width: 100vw; height: 100vh; display: flex;flex-direction:column;">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex">
-            <div class="flex-grow-1">
+        <nav class="navbar navbar-expand-md navbar-dark bg-secondary" id="top">
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <div class="navbar-collapse collapse" id="navbarsExample04" style="">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
                             Environment
                         </a>
                         <div class="dropdown-menu">
@@ -104,28 +159,32 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                            Import data
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                            Data
                         </a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Import Excel</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importZbxModal">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
-                        </div>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                            Export data
-                        </a>
-                        <div class="dropdown-menu">
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert('Not yet implemented')">Export JSON</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                            Table ops
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" role="button" onclick="add_rows()">Add rows</a>
+                            <a class="dropdown-item" href="#" onclick="reorder_columns()">Reorder columns</a>
+                            <a class="dropdown-item" href="#" onclick="copy_to_new_sheet()">Copy to new sheet</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
@@ -134,23 +193,24 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link active dropdown-toggle btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                            Table structure
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" onmouseover="$(this).dropdown('toggle')">
+                            Tools
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save</a>
-                            <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save table structure</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore table structure</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Script editor</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Settings</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" role="button"  href="#" onclick="open_help()">Help</a>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active btn btn-secondary" href="#" role="button" onclick="open_play_editor()"><i class="fa fa-play"></i></a>
-                    </li>
-
-    
-    
                 </ul>
+                <a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a>
             </div>
-            <div><a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a></div>
         </nav>
         <div class="tab-content" id="worksheets"></div>
         <footer class="footer bg-secondary border-top border-dark">
@@ -160,10 +220,11 @@
                     <div class="d-inline-block">
                         <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
                     </div>
-                    <button onclick="worksheets.new_sheet()">[+] New sheet</button>
-                    <button onclick="worksheets.delete_sheet()">[-] Remove current sheet</button>
+                    <button onclick="worksheets.new_sheet()" class="btn btn-info btn-sm addremove"><i class="fa fa-plus"></i> <span>New sheet</span></button>
+                    <button onclick="worksheets.delete_sheet()" class="btn btn-danger btn-sm addremove"><i class="fa fa-minus"></i><span> Remove current sheet</span></button>
                 </div>
                 <div onclick="worksheets.update_stats()" style="min-width: 250px !important;">
+                    <a href="#" onclick="$ws.scrollTop(0).scrollLeft(0)" title="To top"><i class="fa fa-arrow-up text-white"></i></a>
                     <span class="badge badge-light mr-1">Total: <span class="badge badge-secondary" id="totalRecs">123</span></span>
                     <span class="badge badge-light mr-1">Selected: <span class="badge badge-success" id="totalSelected">123</span></span>
                     <span class="badge badge-light mr-1">Visible: <span class="badge badge-danger" id="totalVisible">123</span></span>
@@ -205,11 +266,11 @@
             <div id="editor"></div>
             <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
         </div>
-        <div class="card shadow" id="draggableModal">
+        <div class="card" id="draggableModal">
             <div class="card-header d-flex">
                 <div class="flex-grow-1 dgm-modal-title">Script player</div>
-                <div class="btn-group-sm">
-                    <button class="btn btn-secondary btn-sm" onclick="$(this).parents('#draggableModal').hide()">x</button>
+                <div class="mr-1">
+                    <span onclick="$(this).parents('#draggableModal').hide()" style="cursor: pointer"><i class="fa fa-times-rectangle"></i></span>
                 </div>
             </div>
             <div class="card-body">
@@ -473,18 +534,12 @@
                         <div class="form-group">
                             <label for="zbxUrlInput">API URL</label>
                             <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="load_api_url(this)">Load</button>
-                                </div>
                                 <input type="text" class="form-control" name="url" id="zbxUrlInput">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="zbxTokenInput">API Token</label>
                             <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="load_api_key(this)">Load</button>
-                                </div>
                                 <input type="text" class="form-control" name="token" id="zbxTokenInput">
                             </div>
                         </div>
@@ -551,7 +606,8 @@
     </div>
 
 <script src="assets/js/jquery.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
+<!--<script src="assets/js/bootstrap.min.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.js"></script>
 <script src="assets/js/papaparse.min.js"></script>
 <script src="assets/js/select2.min.js"></script>
 <script src="assets/js/jsoneditor.js"></script>
@@ -563,89 +619,7 @@
 <script src="lib/zbxwizz.js"></script>
 <script src="node_modules/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="node_modules/ace-builds/src-noconflict/ext-language_tools.js"></script>
-<div class="d-none">
-    <div class="colnum d-flex">
-        <div><button class="badge badge-light" onclick="move_col($(this).parents('th').attr('data-col'),'left')">&lt;</button></div>
-        <div class="flex-grow-1">
-            <div class="dropdown">
-                <button class="colno dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown button
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" onclick="$(this).parents('table').data().sheet.sort_col($(this).parents('th').attr('data-col'),'asc')" >&#x1F53C; Sort asc</a>
-                    <a class="dropdown-item" href="#" onclick="$(this).parents('table').data().sheet.sort_col($(this).parents('th').attr('data-col'),'desc')">&#x1F53D; Sort desc</a>
-                    <a class="dropdown-item" href="#">Reorder columns</a>
-                </div>
-            </div>
-
-
-            <!--        <button class="colno badge badge-secondary w-100" onclick="toggle_compress_col(this)">0</button></div>-->
-            <!--        <div><button class="badge badge-light" title="Sort asc">&#x1F53C;</button></div>-->
-            <!--        <div><button class="badge badge-light"  title="Sort desc">&#x1F53D;</button></div>-->
-            <button class="badge badge-light" onclick="move_col($(this).parents('th').attr('data-col'),'right')">&gt;</button></div>
-    </div>
-    <div class="text-center field">
-        <span class="badge badge-primary" ondblclick="rename_fld(this)">&nbsp;</span>
-    </div>
-    <div class="filter dropdown" >
-        <a class="btn btn-info dropdown-toggle btn-sm w-100" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-            Filter
-        </a>
-        <div class="dropdown-menu bg-light">
-            <form class="p-2 m-0">
-                <div class="form-group">
-                    <select onchange="filter_rows(this.form)" name="filter" class="custom-select custom-select-sm w-100">
-                        <option value="^$">Empty</option>
-                        <option value=".+">Not empty</option>
-                        <option value="^((?!{value}).)*$">Does not contain</option>
-                        <option value="{value}" selected>Contains</option>
-                        <option value="^{value}">Starts with</option>
-                        <option value="{value}$">Ends with</option>
-                        <option value="^{value}$">Exact match</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <input type="text" name="term" class="form-control form-control-sm" onkeyup="filter_rows(this.form)" onchange="filter_rows(this.form)">
-                </div>
-                <div class="form-group">
-                    <select onclick='get_unique(this)' style="width: 100%" onchange="$(this.form.term).val($(this).val()).trigger('change')"></select>
-                </div>
-                <div class="btn-group w-100 btn-group-sm" role="group" aria-label="Basic example">
-                    <button class="btn btn-primary  w-100" onclick="filter_rows(this.form);$(this).parents('.dropdown-menu').prev().dropdown('hide');" type="button">Apply</button>
-                    <button class="btn btn-secondary w-100" onclick="this.form.reset();filter_rows(this.form,true);$(this).parents('.dropdown-menu').prev().dropdown('hide')" type="button">Clear</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="transform">
-        <form class="p-0 m-0">
-            <div>
-                <div class="input-group input-group-sm">
-                    <select class="custom-select" onchange="load_transfo(this)" name="templates" onblur="minimize_transform(event)" onclick="list_transformations(this,event)" ></select>
-                    <div class="input-group-append">
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-success" onclick="save_transformation(this)" type="button">+</button>
-                            <button class="btn btn-danger" onclick="remove_transformation(this)" type="button">-</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <textarea name="xpression" placeholder='transform' rows=1 class="form-control w-100"
-                      onfocus="$(this).parents('.transform').addClass('active')"
-                      onchange="transform_data(event)"
-                      onblur="minimize_transform(event)"
-                      onkeyup='transform_data(event)' ></textarea>
-            <div class="mt-0 preview" onblur="minimize_transform(event)">
-                <textarea class="alert alert-secondary p-1 m-0 w-100" placeholder="preview" name="preview" readonly onblur="minimize_transform(event)"></textarea>
-                <button class="btn btn-secondary btn-sm w-100 mt-1" type="button" onclick="transform_data(event,true)">Apply</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
-
-
     function playscript() {
         let script = editor.getValue();
         localStorage.setItem("script",script);
@@ -657,30 +631,17 @@
         }
     }
 
-    function dragable_modal(opts) {
-        let modal = $("#draggableModal").appendTo('body').draggable({ handle: ".card-header" }).resizable();
-        modal.find(".dgm-modal-title").html(opts.title);
-        modal.find(".card-body").empty().append(opts.body);
-        let footer = modal.find(".card-footer").empty();
-        opts.buttons.forEach(btn=>{
-            let $btn = $("<button>").addClass("btn btn-"+btn.class).text(btn.text).on("click",btn.action).appendTo(footer);
-            if(btn.attrs) {
-                Object.keys(btn.attrs).forEach(attr=>$btn.attr(attr,btn.attrs[attr]));
-            }
-        });
-        modal.show();
-    }
 
     function prompt_save_data() {
         let $el = $(`
         <div>
             What do you want to export
             <select>
-                    <option value="">all records</option>
-                    <option value="selected">only selected</option>
-                    <option value="visible">only visible</option>
-                </select>  
-                </div>
+                <option value="">all records</option>
+                <option value="selected">only selected</option>
+                <option value="visible">only visible</option>
+            </select>
+        </div>
             `);
         dragable_modal({
             title:"Export CSV",

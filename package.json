@@ -6,5 +6,11 @@
     "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0",
     "komponentor": "github:vsergione/komponentor"
+  },
+  "devDependencies": {
+    "electron": "^32.2.0"
+  },
+  "scripts": {
+    "start": "electron ."
   }
 }
