@@ -301,7 +301,15 @@ footer .nav-link{
 .transform.active{
     min-width: 400px;
 }
-.draggableModal{ position: absolute; width: 600px;  top: 50px; left: 50px; z-index: 1000; box-shadow: 5px 5px 10px #525252; border: solid #525252 1px;
+
+.draggableModal, .draggableModal.ui-resizable{
+    position: absolute;
+    width: 600px;
+    top: 50px;
+    left: 50px;
+    z-index: 1000;
+    box-shadow: 5px 5px 10px #525252;
+    border: solid #525252 1px;
 }
 
 .draggableModal .card-header{

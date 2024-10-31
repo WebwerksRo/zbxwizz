@@ -43,7 +43,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active())">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -144,23 +144,11 @@
             <div id="editor"></div>
             <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
         </div>
-        <div class="card draggableModal" id="draggableModal">
-            <div class="card-header d-flex">
-                <div class="flex-grow-1 dgm-modal-title">Script player</div>
-                <div class="mr-1">
-                    <span onclick="$(this).parents('.draggableModal').hide()" style="cursor: pointer"><i class="fa fa-times-rectangle"></i></span>
-                </div>
-            </div>
-            <div class="card-body">
 
-            </div>
-            <div class="card-footer text-right">
-            </div>
-        </div>
         <div class="vertical-center emptyDataTablePlaceholder" id="emptyDataTable">
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active())">Import from Zabbix</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Import from Zabbix</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importJSModal'>Import from JavaScript</button>
             </div>
         </div>
@@ -450,86 +438,5 @@
 <script src="lib/zbxwizz.js"></script>
 <script src="assets/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
-<script>
-    function playscript() {
-        let script = editor.getValue();
-        localStorage.setItem("script",script);
-        try {
-            $("#scriptDebug").val(eval(script));
-        }
-        catch(e) {
-            $("#scriptDebug").val(e);
-        }
-    }
-
-
-    function prompt_save_data() {
-        let $el = $(`
-        <div>
-            What do you want to export
-            <select>
-                <option value="">all records</option>
-                <option value="selected">only selected</option>
-                <option value="visible">only visible</option>
-            </select>
-        </div>
-            `);
-        dragable_modal({
-            title:"Export CSV",
-            body: $el,
-            buttons:[
-                {
-                    text: "Export",
-                    action: ()=>{
-                        console.log($el.children("select").val());
-                        switch($el.children("select").val()) {
-                            case "selected":
-                                save_data(row=>row.isSelected);
-                                break;
-                            case "visible":
-                                save_data(row=>!row.isHidden);
-                                break;
-                            default: 
-                                save_data();
-                        }
-                    },
-                    class: "primary"
-                }
-            ]
-        });
-    }
-
-    function open_play_editor(    ) {
-        ace.require("ace/ext/language_tools");
-        let editor = ace.edit("editor");
-        editor.session.setMode("ace/mode/javascript");
-        editor.setTheme("ace/theme/tomorrow");
-        // enable autocompletion and snippets
-        editor.setOptions({
-            enableBasicAutocompletion: true,
-            enableSnippets: true,
-            enableLiveAutocompletion: true,
-            fontSize: "12pt"
-        });
-        editor.setValue(localStorage.getItem("script"));
-
-        dragable_modal({
-            title:"Script player",
-            body: $("#scriptPlayer"),
-            buttons:[
-                {
-                    text: "Play",
-                    action: playscript,
-                    class: "primary"
-                }
-            ]
-        });
-        //$("#draggableModal").appendTo('body').show().draggable({ handle: ".card-header" }).resizable();
-    }
-
-
-
-</script>
-
 </body>
 </html>
