@@ -43,7 +43,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -103,6 +103,7 @@
                 </div>
                 <div onclick="worksheets.update_stats()" style="min-width: 250px !important;">
                     <a href="#" onclick="$ws.scrollTop(0).scrollLeft(0)" title="To top"><i class="fa fa-arrow-up text-white"></i></a>
+                    <a href="#" onclick="autosave(true)" title="To top"><i class="fa fa-save text-white"></i></a>
                     <span class="badge badge-light mr-1">Total: <span class="badge badge-secondary" id="totalRecs">123</span></span>
                     <span class="badge badge-light mr-1">Selected: <span class="badge badge-success" id="totalSelected">123</span></span>
                     <span class="badge badge-light mr-1">Visible: <span class="badge badge-danger" id="totalVisible">123</span></span>
@@ -148,7 +149,7 @@
         <div class="vertical-center emptyDataTablePlaceholder" id="emptyDataTable">
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Import from Zabbix</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importJSModal'>Import from JavaScript</button>
             </div>
         </div>
