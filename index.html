@@ -89,6 +89,7 @@
                     </li>
                 </ul>
                 <a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/img/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a>
+                <a class="btn btn-outline-warning" href="https://www.zabbix.com/documentation/current/en/manual/api"  target="_blank"><i class="fa fa-question"></i></a>
             </div>
         </nav>
         <div class="tab-content" id="worksheets"></div>
@@ -197,7 +198,8 @@
                 <div class="col">
                     <div class="form-group ">
                         <label>Resource</label>
-                        <select class="custom-select custom-select-sm" name="resource">
+                        <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,$(this).val(),'get')">
+                            <option></option>
                             <option>host</option>
                             <option>hostgroup</option>
                             <option>template</option>
@@ -221,6 +223,14 @@
                     <div class="form-group">
                         <label>Data label</label>
                         <input type="text" name="label" value="zbx" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label class="font-white">Help</label>
+                        <div>
+                        <a class="btn btn-secondary btn-sm zbxapihelp" href=""><i class="fa fa-question"></i></button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -247,7 +257,7 @@
                 <div class="col">
                     <div class="form-group ">
                         <label>Resource</label>
-                        <select class="custom-select custom-select-sm" name="resource">
+                        <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,$(this).val(),$(this.form.operation).val())">
                             <option>host</option>
                             <option>hostgroup</option>
                             <option>template</option>
@@ -265,6 +275,14 @@
                             <option>create</option>
                             <option>delete</option>
                         </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label class="font-white">Help</label>
+                        <div>
+                            <a class="btn btn-secondary btn-sm zbxapihelp" href=""><i class="fa fa-question"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
