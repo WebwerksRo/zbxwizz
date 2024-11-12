@@ -44,7 +44,8 @@
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
-                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importJSModal">Import from JavaScript</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
+
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
                             <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Export JSON</a>
@@ -191,7 +192,6 @@
             </div>
         </form>
 
-
         <form id="pullZbxForm">
             <div class="form-row">
                 <div class="col">
@@ -285,41 +285,28 @@
                 <pre>sadas</pre>
             </div>
         </form>
-    </div>
 
-    <div class="modal" id="importJSModal">
         <form id="importJsForm" disabled="">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        Import data JavaScript
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Request templates</label>
-                            <div class="input-group mb-2">
-                                <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates"></select>
-                                <div class="input-group-append">
-                                    <div class="btn-group">
-                                        <button class="btn btn-success" onclick="save_req_tpl(importJSTplPfx,'#importJSTemplates',importJSTplEditor)" type="button">Save</button>
-                                        <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="form-group">
+                <label>Request templates</label>
+                <div class="input-group mb-2">
+                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates"></select>
+                    <div class="input-group-append">
+                        <div class="btn-group">
+                            <button class="btn btn-success" onclick="save_req_tpl('importJSTplPfx_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                         </div>
-                        <div id="importJSTplEditor" style="height: 300px;"></div>
-                        <div class="preview alert alert-secondary mt-5">
-                            <pre>Nothing to show</pre>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" onclick="req_import_js(importJSTplEditor.getText(),this.form)">Import</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
+            <div class="jsoneditorcontainer" style="height: 300px;"></div>
+            <div class="preview alert alert-secondary mt-5">
+                <pre>Nothing to show</pre>
+            </div>
         </form>
     </div>
+
+    
 
 
     <div class="modal" id="importCsvModal">
@@ -376,10 +363,10 @@
                 <form>
                 <div class="modal-header">Load environment</div>
                 <div class="modal-body">
-                    <input type="file" name="envfile">
+                    <input type="file" name="envfile" accept="application/json">
                 </div>
                 <div class="modal-footer">
-                    <button data-dismiss="modal" class="btn btn-secondary" type="button" onclick="load_env(this.form)">Load</button>
+                    <button class="btn btn-secondary" type="button" onclick="load_env(this.form,$(this).parents('modal'))">Load</button>
                 </div>
                 </form>
             </div>
