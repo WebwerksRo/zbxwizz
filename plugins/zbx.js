@@ -1,4 +1,5 @@
 class ZBXApi {
+	status = false;
 	constructor(url,apiKey) {
 		this.url = url;
 		this.apiKey = apiKey;

@@ -42,13 +42,13 @@
                         </a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
-                            <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a>
+                            <!-- <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a> -->
                             <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
 
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
-                            <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Export JSON</a>
+                            <!-- <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Export JSON</a> -->
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -152,13 +152,75 @@
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
                 <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
-                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importJSModal'>Import from JavaScript</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</button>
+
             </div>
         </div>
     </div>
 
     <div class="d-none">
+        <form class="p-0 m-0" id="transformForm" onsubmit="event.preventDefault();transform_data(this,true)">
+            <div class="transform active">
+
+                <div class="form-row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label >Saved expressions</label>
+                            <div class="input-group input-group-sm">
+                                <select class="custom-select" onchange="load_transfo(this)" name="templates" onclick="list_transformations(this,event)" ></select>
+                                <div class="input-group-append">
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-success" onclick="save_transformation(this)" type="button">+</button>
+                                        <button class="btn btn-danger" onclick="remove_transformation(this)" type="button">-</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Expression</label>
+                            <textarea name="xpression" placeholder='transform' rows=1 class="form-control w-100" onkeyup="transform_data(this.form)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Expression evaluation preview</label>
+                            <textarea class="alert alert-secondary p-1 m-0 w-100" placeholder="preview" name="preview" readonly ></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <button class="btn btn-secondary btn-sm w-100 mt-1" type="submit">Apply</button>
+                    </div>
+                </div>
+                <input type="hidden" name="col">
+            </div>
+        </form>
+
         <form id="importZbxForm" disabled="">
+            <div class="form-row">
+                <div class="col">
+
+                    <div class="form-group">
+                        <label>Request templates</label>
+                        <div class="input-group mb-2">
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'importReqTpl_')" name="templates"></select>
+                            <div class="input-group-append">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="save_req_tpl('importReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="col">
                     <div class="form-group ">
@@ -191,21 +253,9 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-            <div class="form-group">
-                <label>Request templates</label>
-                <div class="input-group mb-2">
-                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'importReqTpl_')" name="templates"></select>
-                    <div class="input-group-append">
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-success" onclick="save_req_tpl('importReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
-                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1 mb-1">
                 <pre>Preview</pre>
@@ -213,6 +263,22 @@
         </form>
 
         <form id="pullZbxForm">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label>Saved templates</label>
+                        <div class="input-group mb-2">
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pullReqTpl_')" name="templates"></select>
+                            <div class="input-group-append">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="save_req_tpl('pullReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="col">
                     <div class="form-group ">
@@ -246,16 +312,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="col">
-                    <div class="form-group">
-                        <label>Post process</label>
-                        <select class="custom-select custom-select-sm" name="postprocess">
-                            <option value="update">Update existing</option>
-                            <option value="new">New data</option>
-                            <option value="ignore">Ignore</option>
-                        </select>
-                    </div>
-                </div> -->
                 <div class="col">
                     <div class="form-group">
                         <label>Data label</label>
@@ -263,18 +319,8 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Request templates</label>
-                <div class="input-group mb-2">
-                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pullReqTpl_')" name="templates"></select>
-                    <div class="input-group-append">
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-success" onclick="save_req_tpl('pullReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
-                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+            
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1 mb-1">
                 <pre>Start typing</pre>
@@ -282,6 +328,22 @@
         </form>
 
         <form id="pushZbxForm">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label>Saved templates</label>
+                        <div class="input-group mb-2">
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pushReqTpl_')" name="templates"></select>
+                            <div class="input-group-append">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-success" onclick="save_req_tpl('pushReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="col">
                     <div class="form-group ">
@@ -326,18 +388,8 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Request templates</label>
-                <div class="input-group mb-2">
-                    <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pushReqTpl_')" name="templates"></select>
-                    <div class="input-group-append">
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-success" onclick="save_req_tpl('pushReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
-                            <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
+           
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1">
                 <pre>preview</pre>
@@ -346,7 +398,7 @@
 
         <form id="importJsForm" disabled="">
             <div class="form-group">
-                <label>Request templates</label>
+                <label>Saved templates</label>
                 <div class="input-group mb-2">
                     <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates"></select>
                     <div class="input-group-append">

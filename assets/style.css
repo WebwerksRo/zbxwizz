@@ -78,8 +78,13 @@ div>strong {
     cursor: pointer;
 }
 .filterActive .dropdown-toggle{
-    color: rgb(255, 217, 0);
-    font-weight: bold;
+    color: rgb(255, 133, 23);
+}
+.filterActive .dropdown-toggle:before{
+    content: '\f0b0';
+    font-family: FontAwesome;
+    font-weight: normal;
+    margin-right: 10px;
 }
 .transform>form>div{
     display: none;
@@ -109,24 +114,7 @@ table>tbody tr:hover{
 table>thead{
     text-align: center;
 }
-table>thead>tr:first-child>th {
-/*table>thead th {*/
-    z-index: 100;
-    position: sticky;
-    border: 1px solid black;
-    border-collapse: collapse;
-    background-color: rgb(147, 167, 209);
-    top: 0px; /* Don't forget this, required for the stickiness */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
-table>thead>tr:first-child>th:first-child {
-    left: 0;
-    z-index: 110;
-}
-table>thead>tr:first-child>th:nth-child(2) {
-    left: 60px;
-    z-index: 110;
-}
+
 tr{
     background: white;
 }
@@ -177,24 +165,85 @@ footer .nav-link{
     font-size: 1rem;
 }
 .dataTable{
+    table-layout: fixed;
     width: 100%;
 }
 .dataTable tbody td.editing{
     background: #0B0A09;
     color: greenyellow;
+    overflow: scroll;
+    white-space: normal;
+    word-wrap: break-word
 }
 .dataTable tbody td.active{
     background: #00AEEF;
     color: white;
 }
-.hightlight{
-    background: #00AEEF;
-    background: rgb(253, 243, 103) !important;
+.dataTable td{
+    white-space: normal;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: "....";
+}
+.dataTable td:first-child,.dataTable td:nth-child(2){
+    overflow: visible;
 }
 .dataTable tr:has(.cell.active){
     background: #f0efc3;
 }
+.dataTable th{
+    width: 130px;
+}
+.dataTable tbody>tr.success td{
+    background: #e8ffec;
 
+}
+
+.dataTable tbody>tr.error td{
+    background: #fff2e2;
+}
+
+.dataTable td:first-child{
+    width: 60px !important;
+    min-width: 60px !important;
+    position: sticky;
+    left: 0;
+    background: white;
+}
+.dataTable>thead>tr>th {
+    z-index: 100;
+    position: sticky;
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: rgb(147, 167, 209);
+    top: 0px; /* Don't forget this, required for the stickiness */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+.dataTable>thead>tr>th:first-child {
+    left: 0;
+    width: 40px;
+    z-index: 110;
+}
+.dataTable>thead>tr>th:nth-child(2) {
+    left: 40px;
+    width: 60px;
+    z-index: 110;
+}
+.dataTable td:nth-child(1){
+    text-align: center;
+}
+.dataTable td:nth-child(2){
+    position: sticky;
+    left: 40px;
+    background-color: white;
+    text-align: center;
+}
+
+
+.hightlight{
+    background: #00AEEF;
+    background: rgb(253, 243, 103) !important;
+}
 
 #worksheets{
     scrollbar-width: 20px;
@@ -232,9 +281,7 @@ footer .nav-link{
     background-color: #f0efc3;
 
 }
-.limitedHeigth{
 
-}
 .addremove:hover span{
     display: inline;
 }
@@ -272,18 +319,6 @@ footer .nav-link{
     font-style: normal;
 
 }
-#worksheets td,#worksheets th{
-    vertical-align: top;
-}
-#worksheets td{
-    /*max-width: 400px;*/
-    /*white-space: normal;*/
-    /*overflow: hidden;*/
-    /*word-wrap: break-word;*/
-    /*overflow-wrap: break-word;*/
-    /*word-break: break-word;*/
-    /*overflow: scroll;*/
-}
 .compress{
     /*width: 50px !important;*/
     max-width: 70px !important;
@@ -307,18 +342,26 @@ footer .nav-link{
     width: 600px;
     top: 50px;
     left: 50px;
+    white-space: normal;
+    overflow: hidden;
     z-index: 1000;
     box-shadow: 5px 5px 10px #525252;
+    border-radius: 10px;
+
     border: solid #525252 1px;
 }
 
 .draggableModal .card-header{
-    padding: 5px;
-    background-color: #c3c3c3;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #e8e8e8;
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+
 }
 .draggableModal .card-body{
     overflow: auto;
-    padding: 5px;
+    padding: 10px;
 }
 .draggableModal>*{
     padding: 10px;
@@ -327,14 +370,4 @@ footer .nav-link{
     width: 100%;
     height: 400px;
 }
-table td:first-child{
-    width: 60px !important;
-    min-width: 60px !important;
-    position: sticky;
-    left: 0;
-}
-table td:nth-child(2){
-    position: sticky;
-    left: 60px;
-    background-color: white;
-}
+
