@@ -1,12 +1,13 @@
 {
   "dependencies": {
     "ace-builds": "^1.36.2",
-    "bootstrap": "^4.6.2",
+    "bootstrap": "^5.3.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.7.1",
     "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0",
-    "komponentor": "github:vsergione/komponentor"
+    "komponentor": "github:vsergione/komponentor",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "electron": "^32.2.0"

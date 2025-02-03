@@ -18,12 +18,11 @@
     </style>
 </head>
 <body>
-    <div style="width: 100vw; height: 100vh; display: flex;flex-direction:column;">
-        <nav class="navbar navbar-expand-md navbar-dark bg-secondary" id="top">
+    <div id="mainView">
+        <nav class="navbar navbar-expand-md navbar-light" id="top" >
             <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fa fa-bars"></i>
             </button>
-
             <div class="navbar-collapse collapse" id="navbarsExample04" style="">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
@@ -42,7 +41,7 @@
                         </a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
-                            <!-- <a class="dropdown-item" role="button" onclick="alert_modal('Not yet implemented')">Import Excel</a> -->
+                            <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importXlsModal">Import XLS</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
 
@@ -87,12 +86,36 @@
                             <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Help</a>
                         </div>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-toggle="dropdown" aria-expanded="false" ondummymouseover="$(this).dropdown('toggle')">
+                            Help
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" role="button">ZbxWizz documention</a>
+                            <a class="dropdown-item" href="https://www.zabbix.com/documentation/current/en/manual/api" role="button" target="_blank">Zabbix documention</a>
+                            <a class="dropdown-item" href="#" role="button">ZbxWizz FAQ</a>
+                            <a class="dropdown-item" href="#" role="button">Contact the developer</a>
+                        </div>
+                    </li>
                 </ul>
+                <span class="dropdown">
+
+                </span>
                 <a class="nav-link" href="#"  role="button" data-toggle="modal" data-target="#zbxConfigModal"><img src="assets/img/zbx_logo.png" width="30" id="zbxLogo" class="notConnected" alt="API Conn"></a>
-                <a class="btn btn-outline-warning" href="https://www.zabbix.com/documentation/current/en/manual/api"  target="_blank"><i class="fa fa-question"></i></a>
+
             </div>
         </nav>
-        <div class="tab-content" id="worksheets"></div>
+        <div class="tab-content" id="worksheets">
+            <div class="vertical-center emptyDataTablePlaceholder">
+                <div class="d-inline-block text-center alert" style="width: 500px">
+                    <span style="font-size: 100px">&#x2620;</span>
+                    <h2 class="text-danger">Warning</h2>
+                    <p><strong>ZbxWizz</strong> is a very powerful tool &#x1F680; to manage <strong>Zabbix&trade;</strong> configuration. But with great power comes great responsibility!</p>
+                    <p>You can save a lot of time and get your <strong>Bo$$</strong> appreciation (and eventually gain a raise or a bonus) or you can sign your <strike>death  sentence</strike> resignation &#x1F609; by pushing the wrong commands.</p>
+                    <p>Use it wisely and at your own risk! </p>
+                </div>
+            </div>
+        </div>
         <footer class="footer bg-secondary border-top border-dark">
             <div class="container-fluid p-1 d-flex" >
                 <div class="flex-grow-1" style="overflow: auto;">
@@ -150,18 +173,17 @@
 
         <div class="vertical-center emptyDataTablePlaceholder" id="emptyDataTable">
             <div class="d-inline-block text-center" style="width: 500px">
-                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import from CSV</button>
+                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import CSV</button>
+                <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importXlsModal'>Import Excel</button>
                 <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
                 <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</button>
-
             </div>
         </div>
     </div>
 
     <div class="d-none">
-        <form class="p-0 m-0" id="transformForm" onsubmit="event.preventDefault();transform_data(this,true)">
+        <form class="p-0 m-0" id="transformForm" onsubmit="event.preventDefault();transform_data(this,true)" style="height: 100%">
             <div class="transform active">
-
                 <div class="form-row">
                     <div class="col">
                         <div class="form-group">
@@ -181,8 +203,17 @@
                 <div class="form-row">
                     <div class="col">
                         <div class="form-group">
-                            <label>Expression</label>
-                            <textarea name="xpression" placeholder='transform' rows=1 class="form-control w-100" onkeyup="transform_data(this.form)"></textarea>
+                            <label>Column</label>
+                            <select name="col" class="custom-select custom-select-sm"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <label>Expression</label>
+                        <div id="transformXpression"></div>
+                        <div class="form-group">
+<!--                            <textarea name="xpression" placeholder='transform' rows=1 class="form-control w-100" onkeyup="transform_data(this.form)"></textarea>-->
                         </div>
                     </div>
                 </div>
@@ -194,13 +225,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="col">
-                        <button class="btn btn-secondary btn-sm w-100 mt-1" type="submit">Apply</button>
-                    </div>
-                </div>
-                <input type="hidden" name="col">
+
             </div>
+            <input type="hidden" name="xpression">
         </form>
 
         <form id="importZbxForm" disabled="">
@@ -226,7 +253,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,$(this).val(),'get')">
+                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,$(this).val(),'get')" required>
                                 <option></option>
                                 <option>action</option>
                                 <option>alert</option>
@@ -420,7 +447,7 @@
 
 
     <div class="modal" id="importCsvModal">
-        <form id="loadCvsForm">
+        <form id="loadCvsForm" onsubmit="event.preventDefault();load_csv(this)">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -429,8 +456,41 @@
                     <div class="modal-body">
                         <input type="file" name="file" accept="text/csv">
                     </div>
+                    <div class="modal-body">
+                        <select name="sheet">
+                            <option value="">New sheet</option>
+                        </select>
+                    </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="load_csv(this.form.file)">Load</button>
+                        <button type="submit" class="btn btn-primary" >Load</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal" id="importXlsModal">
+        <form id="loadXlsForm" onsubmit="event.preventDefault(); load_xls(this,true)">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        Load Excel file
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <h4>WARNING!!</h4>
+                            Loading the Excel file will remove all sheets from the current workspace
+                        </div>
+                        <input type="file" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+                        <div class="sheets2import">
+                            <label>Sheets to import</label>
+                            <select name="sheets" multiple class="custom-select custom-select-sm" required></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success"  name="import">Import</button>
+                        <button type="button" class="btn btn-primary" name="load" onclick="load_xls(this.form)">Load</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -438,8 +498,9 @@
         </form>
     </div>
 
+
     <div class="modal" id="zbxConfigModal">
-        <form id="zbxConfigForm">
+        <form id="zbxConfigForm" onsubmit="event.preventDefault();save_zbx_config(this)">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -460,7 +521,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="save_zbx_config(this.form)">Save config</button>
+                        <button type="submit" class="btn btn-primary" data-dismiss="modal">Save config</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -470,21 +531,18 @@
     <div class="modal" id="load_env">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
-                <form>
+                <form onsubmit="event.preventDefault();load_env(this,$(this).parents('modal'))">
                 <div class="modal-header">Load environment</div>
                 <div class="modal-body">
                     <input type="file" name="envfile" accept="application/json">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" onclick="load_env(this.form,$(this).parents('modal'))">Load</button>
+                    <button class="btn btn-secondary" type="submit">Load</button>
                 </div>
                 </form>
             </div>
         </div>
     </div>
-
-
-
     <div class="modal" id="generic_modal">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -507,20 +565,7 @@
             </div>
         </div>
     </div>
-    <div id="warning">
-        <div class="vertical-center">
-            <div class="d-inline-block text-center bg-dark text-white rounded p-5" style="width: 500px">
-                <span style="font-size: 100px">&#x2620;</span>
-                <h3 class="text-danger">Warning</h3>
-                <p><strong>ZbxWizz</strong> is a very powerful (and dangerous) tool to configure the data in large scale (and small as well) <strong>Zabbix&trade;</strong> deployments.</p>
-                <p>You can save a lot of time and get your <strong>Bo$$</strong> appreciation (and eventually a raise or a bonus) or you can sign your <strike>death  sentence</strike> resignation by pushing the wrong commands</p>
-                <p>As with great power comes great responsibility. Use it wisely and at your own risk! </p>
-                <p>So which pill will you choose?</p>
-                <button class="badge-pill badge-danger" onclick="run() && localStorage.setItem('userlevel','courageous')">Red pill (be brave!)</button>
-                <button class="badge-pill badge-primary" onclick="alert_modal('Enjoy the stake!');window.close()">Blue pill (stay safe!)</button>
-            </div>
-        </div>
-    </div>
+
 
 <script src="assets/js/jquery.js"></script>
 <!--<script src="assets/js/bootstrap.min.js"></script>-->
@@ -529,14 +574,18 @@
 <script src="assets/js/select2.min.js"></script>
 <script src="assets/js/jsoneditor.js"></script>
 <script src="assets/js/jquery-ui.js"></script>
-<script src="assets/js/colResizable-1.6.min.js"></script>
+<script src="node_modules/xlsx/dist/xlsx.full.min.js"></script>
+<script src="assets/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+    <script>
+        ace.require("ace/ext/language_tools");
+    </script>
 <script src="plugins/zbx.js"></script>
 <script src="lib/util.js"></script>
 <script src="lib/datatable.js"></script>
 <script src="lib/worksheets.js"></script>
 <script src="lib/zbxwizz.js"></script>
-<script src="assets/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+
 </body>
 </html>
 
