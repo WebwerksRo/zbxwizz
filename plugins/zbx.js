@@ -1,8 +1,118 @@
 class ZBXApi {
 	status = false;
-	constructor(url,apiKey) {
+
+	/**
+	 *
+	 * @param url
+	 * @param apiKey
+	 * @param bulkquerymode
+	 * @param batchSize
+	 */
+	constructor(url,apiKey,bulkquerymode="parallel",batchSize=10) {
 		this.url = url;
 		this.apiKey = apiKey;
+		this.bulkquerymode = bulkquerymode;
+		this.batchSize = batchSize;
+	}
+
+	/**
+	 *
+	 * @param {String} method
+	 * @param {Array} reqArr
+	 * @param {Function} doneCb
+	 * @param {Function} errCb
+	 * @param {Function} finalCb
+	 * @param {Function} lastFinalCb
+	 * @param {('paralel'|'seq'|'batch')} mode
+	 * @param {number} batchSize
+	 * @returns {Promise<void>}
+	 */
+	async bulk_req(method,reqArr,doneCb,errCb,finalCb) {
+		const zbx = this;
+
+		/**
+		 *
+		 * @param {Array} arr
+		 * @param resolve
+		 */
+		function exec_seq(arr,resolve) {
+			console.log("sequencial");
+			let req = arr.shift();
+			if(!req) {
+				resolve();
+				return;
+			}
+
+			zbx.req(method,req.params)
+				.then((resp)=>{
+					doneCb(resp,req.ctx)
+				})
+				.catch((err)=>{
+					errCb(err,req.ctx)
+				})
+				.finally(()=>{
+					finalCb(req.ctx);
+					exec_seq(arr,resolve);
+				})
+		}
+
+		/**
+		 *
+		 * @param arr
+		 * @param resolve
+		 */
+		function exec_parallel(arr,resolve) {
+			console.log(arr)
+			let ps = [];
+			arr.forEach(req=>{
+				ps.push(zbx.req(method,req.params)
+					.then((resp)=>{
+						doneCb(resp,req.ctx);
+					})
+					.catch(err=>{
+						errCb(err,req.ctx)
+					})
+					.finally(()=>{
+						finalCb(req.ctx);
+					}));
+			});
+			Promise.all(ps).finally(()=>{
+				resolve();
+			});
+		}
+
+		/**
+		 *
+		 * @param arr
+		 * @param resolve
+		 */
+		function exec_batch(arr,resolve) {
+			if(arr.length===0) {
+				resolve();
+				return;
+			}
+			let tmp = arr.splice(0,zbx.batchSize);
+
+			exec_parallel(tmp,()=>{
+				exec_batch(arr,resolve);
+			})
+		}
+
+		return new Promise((resolve) => {
+			console.log(zbx.bulkquerymode)
+			switch (zbx.bulkquerymode) {
+				case "parallel":
+					exec_parallel(reqArr,resolve);
+					break;
+				case "seq":
+					exec_seq(reqArr,resolve);
+					break;
+				case "batch":
+					exec_batch(reqArr,resolve);
+					break;
+			}
+		});
+
 	}
 
 	async get(resource,params,async=false) {

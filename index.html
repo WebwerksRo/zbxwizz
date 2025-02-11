@@ -66,7 +66,7 @@
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',req_pull,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',pull_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Push</a>
                         </div>
                     </li>
@@ -123,6 +123,7 @@
                     <div class="d-inline-block">
                         <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
                     </div>
+
                     <button onclick="worksheets.new_sheet()" class="btn btn-info btn-sm addremove"><i class="fa fa-plus"></i> <span>New sheet</span></button>
                     <button onclick="worksheets.delete_sheet()" class="btn btn-danger btn-sm addremove"><i class="fa fa-minus"></i><span> Remove current sheet</span></button>
                 </div>
@@ -427,7 +428,7 @@
             <div class="form-group">
                 <label>Saved templates</label>
                 <div class="input-group mb-2">
-                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates"></select>
+                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates" required></select>
                     <div class="input-group-append">
                         <div class="btn-group">
                             <button class="btn btn-success" onclick="save_req_tpl('importJSTplPfx_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
@@ -451,13 +452,14 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        Load CSV file
+                        Load from CSV file
                     </div>
                     <div class="modal-body">
-                        <input type="file" name="file" accept="text/csv">
+                        <input type="file" name="file" accept="text/csv" class="form-control-file form-control">
                     </div>
                     <div class="modal-body">
-                        <select name="sheet">
+                        Target sheet:<br>
+                        <select name="sheet" class="custom-select">
                             <option value="">New sheet</option>
                         </select>
                     </div>
@@ -475,7 +477,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        Load Excel file
+                        Load from Excel file
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-warning">
@@ -519,9 +521,20 @@
                                 <input type="text" class="form-control" name="token" id="zbxTokenInput">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="zbxTokenInput">API query mode</label>
+                            <div class="input-group mb-3">
+                                <select class="custom-select" name="bulkquerymode" id="zbxBulkQueryMode">
+                                    <option value="parallel" selected>parallel (fast, but could cause problems)</option>
+                                    <option value="seq">sequential (slow)</option>
+                                    <option value="batch">hybrid (sequence of parallel batches)</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" data-dismiss="modal">Save config</button>
+                        <button type="submit" class="btn btn-primary" data-dismiss="modal" onclick="save_zbx_config(this.form)">Save config</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -556,12 +569,11 @@
     </div>
     <div id="overlay" class="overlay">
         <div class="vertical-center">
-
-            <div class="d-inline">
-                <div class="spinner-border" role="status">
-                    <span class="sr-only message">Loading...</span>
+            <div class="d-inline ">
+                <div class="rounded rounded-5 bg-white border opacity-100 p-3">
+                    <div class="text-center" id="progressText"></div>
+                    <progress id="loading" value="32" max="100" style="display: none; height: 1em;background-color: #eee;border-radius: 2px;box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;"></progress>
                 </div>
-                <div><progress id="loading" value="32" max="100" style="display: none; height: 1em;background-color: #eee;border-radius: 2px;box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;"></progress></div>
             </div>
         </div>
     </div>

@@ -132,8 +132,7 @@ table td{
     position:sticky;
     top: 0px;
     width: 100%;
-    background-color: silver;
-    opacity: 0.7;
+    background: rgba(255,255,255,0.5);
     z-index: 1000000;
 }
 
@@ -178,6 +177,7 @@ footer .nav-link{
 .dataTable tbody td.active{
     background: #00AEEF;
     color: white;
+    word-wrap: break-word;
 }
 .dataTable td{
     white-space: normal;
@@ -196,7 +196,6 @@ footer .nav-link{
 }
 .dataTable tbody>tr.success td{
     background: #e8ffec;
-
 }
 
 .dataTable tbody>tr.error td{
@@ -226,7 +225,7 @@ footer .nav-link{
 }
 .dataTable>thead>tr>th:nth-child(2) {
     left: 40px;
-    width: 60px;
+    width: 100px;
     z-index: 110;
 }
 .dataTable td:nth-child(1){
