@@ -30,7 +30,7 @@
                             Environment
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.reset()">New</a>
+                            <a class="dropdown-item" href="#" role="button" onclick="sheetManager.reset()">New</a>
                             <a class="dropdown-item" href="#" role="button" onclick="save_env(true)">Save</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#load_env">Load</a>
                         </div>
@@ -42,8 +42,8 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importXlsModal">Import XLS</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
 
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -55,9 +55,9 @@
                             Table ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" role="button" onclick="worksheets.get_active().add_rows_dialog()">Add rows</a>
-                            <a class="dropdown-item" href="#" onclick="worksheets.get_active().reorder_columns_dialog()">Reorder columns</a>
-                            <a class="dropdown-item" href="#" onclick="worksheets.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a>
+                            <a class="dropdown-item" href="#" role="button" onclick="sheetManager.get_active().add_rows_dialog()">Add rows</a>
+                            <a class="dropdown-item" href="#" onclick="sheetManager.get_active().reorder_columns_dialog()">Reorder columns</a>
+                            <a class="dropdown-item" href="#" onclick="sheetManager.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a>
                         </div>
                     </li>
 
@@ -66,8 +66,8 @@
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',pull_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Push</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',pull_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Push</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -124,10 +124,10 @@
                         <ul class="nav nav-pills" id="sheetSelector" role="tablist" data-lastassigned="1"></ul>
                     </div>
 
-                    <button onclick="worksheets.new_sheet()" class="btn btn-info btn-sm addremove"><i class="fa fa-plus"></i> <span>New sheet</span></button>
-                    <button onclick="worksheets.delete_sheet()" class="btn btn-danger btn-sm addremove"><i class="fa fa-minus"></i><span> Remove current sheet</span></button>
+                    <button onclick="sheetManager.new_sheet()" class="btn btn-info btn-sm addremove"><i class="fa fa-plus"></i> <span>New sheet</span></button>
+                    <button onclick="sheetManager.delete_sheet()" class="btn btn-danger btn-sm addremove"><i class="fa fa-minus"></i><span> Remove current sheet</span></button>
                 </div>
-                <div onclick="worksheets.update_stats()" style="min-width: 250px !important;">
+                <div onclick="sheetManager.update_stats()" style="min-width: 250px !important;">
                     <a href="#" onclick="$ws.scrollTop(0).scrollLeft(0)" title="To top"><i class="fa fa-arrow-up text-white"></i></a>
                     <a href="#" onclick="save_session(true)" title="To top"><i class="fa fa-save text-white"></i></a>
                     <span class="badge badge-light mr-1">Total: <span class="badge badge-secondary" id="totalRecs">123</span></span>
@@ -176,8 +176,8 @@
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import CSV</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importXlsModal'>Import Excel</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,worksheets.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</button>
             </div>
         </div>
     </div>
