@@ -238,10 +238,10 @@
                     <div class="form-group">
                         <label>Request templates</label>
                         <div class="input-group mb-2">
-                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'importReqTpl_')" name="templates"></select>
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this.form).children('.jsoneditorcontainer').data('editor'),this.value)" onclick="load_templates(event,'importReqTpl_')" name="templates"></select>
                             <div class="input-group-append">
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-success" onclick="save_req_tpl('importReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-success" onclick="save_req_tpl('importReqTpl_',$(this.form).children('.jsoneditorcontainer').data('editor'),this.value)" type="button">Save</button>
                                     <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                 </div>
                             </div>
@@ -254,7 +254,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,$(this).val(),'get')" required>
+                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,'get');localStorage.setItem('#importZbxForm_res',this.value)" required>
                                 <option></option>
                                 <option>action</option>
                                 <option>alert</option>
@@ -296,10 +296,10 @@
                     <div class="form-group">
                         <label>Saved templates</label>
                         <div class="input-group mb-2">
-                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pullReqTpl_')" name="templates"></select>
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" onclick="load_templates(event,'pullReqTpl_')" name="templates"></select>
                             <div class="input-group-append">
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-success" onclick="save_req_tpl('pullReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-success" onclick="save_req_tpl('pullReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" type="button">Save</button>
                                     <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                 </div>
                             </div>
@@ -312,7 +312,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,$(this).val(),'get')" required>
+                            <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,this.value,'get');localStorage.setItem('#pullZbxForm_res',this.value);" required>
                                 <option></option>
                                 <option>action</option>
                                 <option>alert</option>
@@ -361,10 +361,10 @@
                     <div class="form-group">
                         <label>Saved templates</label>
                         <div class="input-group mb-2">
-                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" onclick="load_templates(event,'pushReqTpl_')" name="templates"></select>
+                            <select class="custom-select custom-select-sm" onchange="load_req_tpl($(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" onclick="load_templates(event,'pushReqTpl_')" name="templates"></select>
                             <div class="input-group-append">
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-success" onclick="save_req_tpl('pushReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                                    <button class="btn btn-success" onclick="save_req_tpl('pushReqTpl_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" type="button">Save</button>
                                     <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,$(this).val(),$(this.form.operation).val())">
+                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,this.form.operation.value);localStorage.setItem('#pushZbxForm_res',this.value);">
                                 <option></option>
                                 <option>action</option>
                                 <option>alert</option>
@@ -408,7 +408,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label>Operation</label>
-                        <select class="custom-select custom-select-sm" name="operation"  onchange="update_help_link(this,$(this.form.resource).val(),$(this).val())">
+                        <select class="custom-select custom-select-sm" name="operation"  onchange="update_help_link(this,this.form.resource.value,this.value);localStorage.setItem('#pushZbxForm_reqtype',this.value);">
                             <option>update</option>
                             <option>create</option>
                             <option>delete</option>
@@ -428,10 +428,10 @@
             <div class="form-group">
                 <label>Saved templates</label>
                 <div class="input-group mb-2">
-                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,$(this).val())" id="importJSTemplates" name="templates" required></select>
+                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,this.value)" id="importJSTemplates" name="templates" required></select>
                     <div class="input-group-append">
                         <div class="btn-group">
-                            <button class="btn btn-success" onclick="save_req_tpl('importJSTplPfx_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),$(this).val())" type="button">Save</button>
+                            <button class="btn btn-success" onclick="save_req_tpl('importJSTplPfx_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" type="button">Save</button>
                             <button class="btn btn-danger" onclick="remove_template(this)" type="button">Remove</button>
                         </div>
                     </div>
