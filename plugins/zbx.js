@@ -130,6 +130,17 @@ class ZBXApi {
 	}
 
 	async req(method,params,async=false) {
+		let execParams = {
+			limit: 5
+		};
+		execParams = Object.assign(execParams,params);
+		
+		Object.keys(execParams).forEach(key=>{
+			if(execParams[key]===undefined || execParams[key]===null)
+				delete execParams[key];
+
+		});
+		console.log(execParams);
 		if(async) {
 			
 			const resp = await fetch(this.url, {
@@ -141,7 +152,7 @@ class ZBXApi {
 				body: JSON.stringify({
 					jsonrpc: "2.0",
 					method: method,
-					params: params,
+					params: execParams,
 					id: 2
 				})
 			});
@@ -160,7 +171,7 @@ class ZBXApi {
 					body: JSON.stringify({
 						jsonrpc: "2.0",
 						method: method,
-						params: params,
+						params: execParams,
 						id: 2
 					})
 				})
