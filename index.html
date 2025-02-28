@@ -79,11 +79,11 @@
                             <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore table structure</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Script editor</a>
-                            <div class="dropdown-divider"></div>
+                            <!-- <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Settings</a>
 
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Help</a>
+                            <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Help</a> -->
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -91,7 +91,7 @@
                             Help
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" role="button">ZbxWizz documention</a>
+                            <a class="dropdown-item" href="#" role="button" onclick="documentation_modal()">ZbxWizz documentation</a>
                             <a class="dropdown-item" href="https://www.zabbix.com/documentation/current/en/manual/api" role="button" target="_blank">Zabbix documention</a>
                             <a class="dropdown-item" href="#" role="button">ZbxWizz FAQ</a>
                             <a class="dropdown-item" href="#" role="button">Contact the developer</a>
@@ -108,11 +108,8 @@
         <div class="tab-content" id="worksheets">
             <div class="vertical-center emptyDataTablePlaceholder">
                 <div class="d-inline-block text-center alert" style="width: 500px">
-                    <span style="font-size: 100px">&#x2620;</span>
-                    <h2 class="text-danger">Warning</h2>
                     <p><strong>ZbxWizz</strong> is a very powerful tool &#x1F680; to manage <strong>Zabbix&trade;</strong> configuration. But with great power comes great responsibility!</p>
-                    <p>You can save a lot of time and get your <strong>Bo$$</strong> appreciation (and eventually gain a raise or a bonus) or you can sign your <strike>death  sentence</strike> resignation &#x1F609; by pushing the wrong commands.</p>
-                    <p>Use it wisely and at your own risk! </p>
+                    <p>You can save a lot of time and effort but you can also ruin your day by pushing the wrong commands. Use it wisely and at your own risk! </p>
                 </div>
             </div>
         </div>
@@ -165,10 +162,64 @@
             </div>
         </div>
         <div id="scriptPlayer">
+            <div class="col">
+                <div class="form-group">
+                    <label >Saved scripts</label>
+                    <div class="input-group input-group-sm">
+                        <select class="custom-select" onchange="load_script(this)" name="templates" onclick="list_scripts(this,event)" ></select>
+                        <div class="input-group-append">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-success" onclick="save_script(this)" type="button">+</button>
+                                <button class="btn btn-danger" onclick="remove_script(this)" type="button">-</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="alert alert-secondary">
                 <input type="file" id="scriptFile">
             </div>
-            <div id="editor"></div>
+            <style>
+                .params .row .add{
+                    display: none;
+                }
+                .params .row:last-child .add{
+                    display: unset;
+                }
+                .params .row:last-child .del{
+                    display: none;
+                }
+
+            </style>
+            <div class="alert alert-secondary">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            Parameter name
+                        </div>
+                        <div class="col">
+                            Parameter value
+                        </div>
+                        <div class="col-2">
+                        </div>
+                    </div>
+                </div>
+                <div class="params">
+                    <div class="row param">
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="param_name">
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" name="param_value">
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-success btn-sm add" onclick="$(this).parent().parent().clone().insertAfter($(this).parent().parent())"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-danger btn-sm del" onclick="$(this).parent().parent().remove()"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="editor" style="height: 300px;"></div>
             <textarea disabled id="scriptDebug" style="width: 100%;"></textarea>
         </div>
 
