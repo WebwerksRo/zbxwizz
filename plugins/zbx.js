@@ -130,9 +130,10 @@ class ZBXApi {
 	}
 
 	async req(method,params,async=false) {
-		let execParams = {
-			limit: 5
-		};
+		let execParams = {};
+		if(method.match(/get$/i)) {
+			execParams.limit = 5;
+		}
 		execParams = Object.assign(execParams,params);
 		
 		Object.keys(execParams).forEach(key=>{
