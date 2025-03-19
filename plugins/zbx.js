@@ -116,10 +116,16 @@ class ZBXApi {
 	}
 
 	async get(resource,params,async=false) {
-		if(async)
-			return await this.req(resource+".get",params,async);
-		else
-			return this.req(resource+".get",params,async);
+		try {
+			if(async)
+				return await this.req(resource+".get",params,async);
+			else
+				return this.req(resource+".get",params,async);
+		}
+		catch(e) {
+			console.error(e);
+			return null;
+		}
 	}
 
 	async update(resource,params,async=false) {

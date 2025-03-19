@@ -305,28 +305,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,'get');localStorage.setItem('#importZbxForm_res',this.value)" required>
-                                <option></option>
-                                <option>action</option>
-                                <option>alert</option>
-                                <option>event</option>
-                                <option>graph</option>
-                                <option>historry</option>
-                                <option>history</option>
-                                <option>host</option>
-                                <option>hostgroup</option>
-                                <option>hostinterface</option>
-                                <option>httptest</option>
-                                <option>item</option>
-                                <option>maintenance</option>
-                                <option>proxy</option>
-                                <option>report</option>
-                                <option>script</option>
-                                <option>template</option>
-                                <option>templategroup</option>
-                                <option>trigger</option>
-                                <option>user</option>
-                            </select>
+                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,'get');localStorage.setItem('#importZbxForm_res',this.value)" required></select>
                             <div  class="input-group-append">
                                 <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
@@ -363,28 +342,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,this.value,'get');localStorage.setItem('#pullZbxForm_res',this.value);" required>
-                                <option></option>
-                                <option>action</option>
-                                <option>alert</option>
-                                <option>event</option>
-                                <option>graph</option>
-                                <option>historry</option>
-                                <option>history</option>
-                                <option>host</option>
-                                <option>hostgroup</option>
-                                <option>hostinterface</option>
-                                <option>httptest</option>
-                                <option>item</option>
-                                <option>maintenance</option>
-                                <option>proxy</option>
-                                <option>report</option>
-                                <option>script</option>
-                                <option>template</option>
-                                <option>templategroup</option>
-                                <option>trigger</option>
-                                <option>user</option>
-                            </select>
+                            <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,this.value,'get');localStorage.setItem('#pullZbxForm_res',this.value);" required></select>
                             <div  class="input-group-append">
                                 <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
@@ -429,26 +387,7 @@
                         <label>Resource</label>
                         <div class="input-group">
                             <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,this.form.operation.value);localStorage.setItem('#pushZbxForm_res',this.value);">
-                                <option></option>
-                                <option>action</option>
-                                <option>alert</option>
-                                <option>event</option>
-                                <option>graph</option>
-                                <option>historry</option>
-                                <option>history</option>
-                                <option>host</option>
-                                <option>hostgroup</option>
-                                <option>hostinterface</option>
-                                <option>httptest</option>
-                                <option>item</option>
-                                <option>maintenance</option>
-                                <option>proxy</option>
-                                <option>report</option>
-                                <option>script</option>
-                                <option>template</option>
-                                <option>templategroup</option>
-                                <option>trigger</option>
-                                <option>user</option>
+                                
                             </select>
                             <div  class="input-group-append">
                                 <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
@@ -642,6 +581,16 @@
 <script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
     <script>
         ace.require("ace/ext/language_tools");
+        let options = ["action","alert","apiinfo","auditlog","authentication","autoregistration","configuration","connector","correlation",
+            "dashboard","dcheck","dhost","discoveryrule","drule","dservice","event","graph","graphitem","graphprototype","hanode","history","host",
+            "hostgroup","hostinterface","hostprototype","housekeeping","httptest","iconmap","image","item","itemprototype","maintenance","map",
+            "mediatype","mfa","module","problem","proxy","proxygroup","regexp","report","role","script","service","settings","sla","task","template",
+            "templatedashboard","templategroup","token","trend","trigger","triggerprototype","user","userdirectory","usergroup","usermacro","valuemap"]
+        $("select[name='resource']").each((idx,el)=>{
+            $(el).empty();
+            $(el).append("<option></option>");
+            options.forEach(o=>$(el).append("<option>"+o+"</option>"));
+        });
     </script>
 <script src="plugins/zbx.js"></script>
 <script src="lib/util.js"></script>
