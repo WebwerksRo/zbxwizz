@@ -499,38 +499,46 @@ function filter_rows(form,clear=false) {
  *
  * @param form
  */
-function load_csv(form) {
-    let input = form.file;
+function load_csv(form,loadText=false) {
+    
     const sheetName = form.sheet.value!==""?form.sheet.value:null;
     const dt = sheetName ? sheetManager.sheets[sheetName] : sheetManager.new_sheet();
+
+    function load_data(data){
+        console.log(data);
+        if(data.errors.length) {
+            normal_modal({
+                body: "Some error occured while importing the CSV: <pre class='d-block'>"+json(data.errors,null,4)+"</pre>"
+            })
+        }
+        data = {
+            records: data.data,
+            fields: data.meta.fields
+        };
+        localStorage.setItem("sheet-"+dt.container_id + "-data", JSON.stringify(data));
+        
+        for(let i=0;i<data.records.length;i++) {
+            data.records[i] = {
+                flds: data.records[i]
+            }
+        }
+        console.log(data);
+        
+        dt.reset().load_data(data.fields, data.records);$(form).parents(".modal").modal("hide");
+        resolve();
+    }
+
+    if(loadText) {
+        load_data(Papa.parse(form.csvtext.value, {header: true}));
+        return;
+    }
+    let input = form.file;
     return new Promise((resolve)=>{
         console.log("Import CSV");
         $(input).parse({
             config: {
                 header: true,
-                complete: (data) => {
-                    console.log(data);
-                    if(data.errors.length) {
-                        normal_modal({
-                            body: "Some error occured while importing the CSV: <pre class='d-block'>"+json(data.errors,null,4)+"</pre>"
-                        })
-                    }
-                    data = {
-                        records: data.data,
-                        fields: data.meta.fields
-                    };
-                    localStorage.setItem("sheet-"+dt.container_id + "-data", JSON.stringify(data));
-                    
-                    for(let i=0;i<data.records.length;i++) {
-                        data.records[i] = {
-                            flds: data.records[i]
-                        }
-                    }
-                    console.log(data);
-                    
-                    dt.reset().load_data(data.fields, data.records);$(form).parents(".modal").modal("hide");
-                    resolve();
-                }
+                complete: load_data
             }
         });
     });
@@ -576,7 +584,11 @@ function load_xls(form,load=false) {
             };
             if(data.records.length){
                 data.fields = Object.getOwnPropertyNames(data.records[0]);
-                data.records = data.records.map(r=>({flds:r}));
+                data.fields.splice(data.fields.indexOf("__rowNum__"),1);
+                data.records = data.records.map(r=>{
+                    delete r["__rowNum__"];
+                    return {flds:r};
+                });
             }
             sheetManager.new_sheet(name,data.records.length ? data : null)
         });

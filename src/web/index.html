@@ -440,14 +440,21 @@
 
 
     <div class="modal" id="importCsvModal">
-        <form id="loadCvsForm" onsubmit="event.preventDefault();load_csv(this)">
+        <form id="loadCvsForm" onsubmit="event.preventDefault();">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        Load from CSV file
+                        Load from CSV
                     </div>
                     <div class="modal-body">
-                        <input type="file" name="file" accept="text/csv" class="form-control-file form-control">
+                        <div class="form-group">
+                            <label>Load from CSV file</label>
+                            <input type="file" name="file" accept="text/csv" class="form-control-file form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Load from CSV text</label>
+                            <textarea name="csvtext" class="form-control" rows="10"></textarea>
+                        </div>
                     </div>
                     <div class="modal-body">
                         Target sheet:<br>
@@ -457,7 +464,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" >Load</button>
+                        <button type="button" class="btn btn-primary" onclick="load_vcsv(this.form,false)" ><i class="fa fa-file"></i> Load from file </button>
+                        <button type="button" onclick="load_csv(this.form,true)" class="btn btn-primary" ><i class="fa fa-file-text"></i> Load from text</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
