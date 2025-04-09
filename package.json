@@ -11,12 +11,16 @@
     "komponentor": "github:vsergione/komponentor",
     "papaparse": "^5.5.2",
     "select2": "^4.1.0-rc.0",
+    "webpack": "^5.99.5",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "electron": "^32.2.0"
+    "electron": "^32.2.0",
+    "webpack-cli": "^6.0.1"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "webpack --config config/webpack.common.js",
+    "start:web": "webpack serve --config config/webpack.common.js"
   }
 }
