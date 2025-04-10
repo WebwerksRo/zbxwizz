@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: web1-htz
+    runs-on: web1
     
     steps:
       - name: Checkout repository
