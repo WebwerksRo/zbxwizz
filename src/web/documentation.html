@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZbxWizz Documentation</title>
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
     
 </head>
 <body>
     <div class="container-fluid"></div>
-    <script src="assets/js/marked.min.js" type="text/javascript"></script>
-    <script src="assets/js/jquery.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        $.get('docs/documentation.md', function(markdown) {
+    <script src="../../node_modules/marked/marked.min.js"></script>
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+    <script>
+        $.get('../../docs/documentation.md', function(markdown) {
             const html = marked.parse(markdown);
             document.querySelector('.container-fluid').innerHTML = html;
         });

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "ace": "^1.3.0",
     "ace-builds": "^1.36.2",
     "bootstrap": "^4.6.0",
     "font-awesome": "^4.7.0",
@@ -9,6 +10,7 @@
     "jqueryui": "^1.11.1",
     "jsoneditor": "^10.1.0",
     "komponentor": "github:vsergione/komponentor",
+    "marked": "^15.0.11",
     "papaparse": "^5.5.2",
     "select2": "^4.1.0-rc.0",
     "webpack": "^5.99.5",

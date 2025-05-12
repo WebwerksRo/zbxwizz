@@ -185,12 +185,7 @@ function json(obj,opt1=null,opt2=null) {
 }
 
 function obj(str) {
-    try {
-        return JSON.parse(str);
-    } catch (e) {
-        console.error(e,str);
-        return null;
-    }
+    return JSON.parse(str);
 }
 
 function dragable_modal(opts) {

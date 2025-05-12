@@ -111,7 +111,7 @@ function req_import_from_api(sheet, form, validTpl=false,success=new Function())
     success();
 }
 
-function req_import_js(sheet,form, validTpl=false,success=new Function()) {
+function req_import_js(sheet, form, validTpl=false,success=new Function()) {
 
     if(!validTpl) {
         alert_modal("Warning: the request message is not a valid JSON");
@@ -283,13 +283,14 @@ function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
                 with (data) {
                     request = eval("`" + template + "`");
                 }
+                row.set_loading();
+                reqArr.push({params: obj(request), ctx: row});
             } catch (e) {
-                console.log(e, template, data);
+                console.log(e, template, request,data);
                 return;
             }
 
-            row.set_loading();
-            reqArr.push({params: obj(request), ctx: row});
+            
         });
     let cnt = 0;
     zbx.bulk_req(resource+".get",reqArr,
@@ -323,7 +324,9 @@ function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
 }
 
 function update_help_link(src,object,method){
-    $(src).parents("form").find(".zbxapihelp").attr("href","https://www.zabbix.com/documentation/current/en/manual/api/reference/"+object+"/"+method).attr("title","Zabbix help on "+object+"."+method)
+    const form = $(src).parents('form')[0];
+    $(src).attr("href","https://www.zabbix.com/documentation/current/en/manual/api/reference/"+form.resource.value+"/"+form.operation.value)
+        .attr("title","Zabbix help on "+form.resource.value+"."+form.operation.value)
 }
 /**
  *
@@ -499,7 +502,7 @@ function filter_rows(form,clear=false) {
  *
  * @param form
  */
-function load_csv(form,loadText=false) {
+function load_csv(form,loadType="file") {
     
     const sheetName = form.sheet.value!==""?form.sheet.value:null;
     const dt = sheetName ? sheetManager.sheets[sheetName] : sheetManager.new_sheet();
@@ -524,12 +527,27 @@ function load_csv(form,loadText=false) {
         }
         console.log(data);
         
-        dt.reset().load_data(data.fields, data.records);$(form).parents(".modal").modal("hide");
-        resolve();
+
+        dt.reset().load_data(data.fields, data.records);
+        $(form).parents(".modal").modal("hide");
+        
+        
     }
 
-    if(loadText) {
-        load_data(Papa.parse(form.csvtext.value, {header: true}));
+    if(loadType==="text") {
+        try{
+            let data = Papa.parse(form.csvtext.value, {header: true});
+            if(data.data.length)
+                return load_data(data);
+            if(data.errors.length)
+                throw new Error("<pre>"+json(data.errors,null,4)+"</pre>");
+        }
+            catch(e){
+                console.log(e);
+                alert_modal("Error loading data from CSV text: "+e.message);
+        }
+        
+        $(form).parents(".modal").modal("hide");
         return;
     }
     let input = form.file;
@@ -674,7 +692,7 @@ function preview_request(editor,tpl,rowContext=true) {
                             previewEl.addClass("alert-success");
                         }
                         catch (e) {
-                            previewEl.addClass("alert-danger");
+                            previewEl.addClass("alert-danger").children().text(e.message);
                         }
                     } catch (e) {
                         previewEl.addClass("alert-danger").children().text("Invalid JS template: "+e.message)
@@ -840,11 +858,16 @@ function manage_struct() {
 
 function restore_structure(name) {
     let struct = localStorage.getItem(name);
-    let fields = obj(struct);
-    sheetManager.new_sheet(null,{
-        records: sheetManager.get_active_sheet().export(),
-        fields: fields
-    })
+    try {
+        let fields = obj(struct);
+        sheetManager.new_sheet(null,{
+            records: sheetManager.get_active_sheet().export(),
+            fields: fields
+        })
+    }
+    catch(e) {
+        alert_modal("Error restoring structure: "+e.message);
+    }
 }
 
 
@@ -887,13 +910,18 @@ function save_env() {
 
     prompt_modal("Enter file name to save",(filename)=>{
         if(!filename) return;
-        let data = {
-            worksheets: obj(localStorage.getItem("worksheets")),
-            sheets: {},
-            name: filename
-        };
-        data.worksheets.sheets.forEach(s=>data.sheets[s]=obj(localStorage.getItem(`sheet-${s}-data`)));
-        download_string(data.name+".json","application/json",json(data));
+        try {
+            let data = {
+                    worksheets: obj(localStorage.getItem("worksheets")),
+                    sheets: {},
+                    name: filename
+            };
+            data.worksheets.sheets.forEach(s=>data.sheets[s]=obj(localStorage.getItem(`sheet-${s}-data`)));
+            download_string(data.name+".json","application/json",json(data));
+        }
+        catch(e) {
+            alert_modal("Error retrieving environment for export: "+e.message);
+        }
     })
 
 }
@@ -958,10 +986,12 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
     let lastSavedRes = localStorage.getItem(sel+"_res");
     let lastSavedReqType = localStorage.getItem(sel+"_reqtype");
     let form = $(sel).clone().attr("id","f"+generateShortUUID());
+    
     form.on("submit",(event)=>{
             event.preventDefault();
             action(sheet,form,!form.find(".preview").hasClass("alert-danger"),()=>modal.remove());
         });
+
     form.find(".jsoneditorcontainer").toArray().forEach((item)=>{
         let editor = new JSONEditor(item, {
             mode: 'code', onChange: () => {
@@ -1154,9 +1184,6 @@ const transformModal = (()=>{
             },
             {
                 text: "Cancel",
-                attrs:{
-                    form: formId
-                },
                 action: ()=>modal.hide(),
                 class: "secondary w-50"
             },
@@ -1187,17 +1214,35 @@ $("#importXlsModal").on("show.bs.modal",(modal)=>{
 function documentation_modal() {
     dragable_modal({
         title: "Documentation",
-        body: "<iframe src='documentation.html' width='100%' height='100%' style='min-width: 700px; min-height: 600px;'></iframe>",
+        body: `
+        <a class="btn btn-primary mb-2 btn-sm" href="documentation.html" target="_blank">Open in new window</a>
+        <iframe src='documentation.html' width='100%' height='100%' style='min-width: 700px; min-height: 600px;'></iframe>`,
         buttons: []
     })
 }
 
+function contact_modal() {
+    dragable_modal({
+        title: "Contact the developer",
+        body: `
+        <ul>
+        <li>Email: <a href="mailto:support@zbxwizz.app">support@zbxwizz.app</a></li>
+        </ul>
+        `,
+        buttons: []
+    })
+}
 function list_scripts(sel,event) {
     if(event.target.tagName==="OPTION") return;
     sel = $(event.target).empty().append("<option value=''>Select script</option>");
     Object.keys(localStorage).filter(key => key.indexOf("script_") !== -1).forEach(key => {
-        let script = obj(localStorage.getItem(key));
-        $("<option>").text(script.name).attr("value", key).appendTo(sel);
+        try {
+            let script = obj(localStorage.getItem(key));
+            $("<option>").text(script.name).attr("value", key).appendTo(sel);
+        }
+        catch(e) {
+            console.log(e);
+        }
     });
 }
 
@@ -1208,13 +1253,18 @@ function load_script(sel) {
     
     let paramProto = $(modal.find(".param")[0]).clone();
     let paramsContainer = modal.find(".params").empty();
-    let script = obj(localStorage.getItem(sel.value));
-    script.params.forEach(param=>{
-        $(paramProto).find("input[name='param_name']").val(param.name);
-        $(paramProto).find("input[name='param_value']").val(param.value);
-        $(paramProto).clone().appendTo(paramsContainer);
-    });
-    modal.find(".editor").data("editor").setValue(script.script);
+    try {
+        let script = obj(localStorage.getItem(sel.value));
+        script.params.forEach(param=>{
+            $(paramProto).find("input[name='param_name']").val(param.name);
+            $(paramProto).find("input[name='param_value']").val(param.value);
+            $(paramProto).clone().appendTo(paramsContainer);
+            });
+        modal.find(".editor").data("editor").setValue(script.script);
+    }
+    catch(e) {
+        console.log(e);
+    }
 
 }
 

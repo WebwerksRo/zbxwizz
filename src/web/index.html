@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../../node_modules/select2/dist/css/select2.min.css">
     <link rel="stylesheet" href="../../node_modules/jsoneditor/dist/jsoneditor.css">
     <link rel="stylesheet" href="../../node_modules/jquery-ui/themes/base/all.css">
-    <link rel="stylesheet" href="../../node_modules/ace-builds/src-min-noconflict/ace.min.css">
+    <link rel="stylesheet" href="../../node_modules/ace-builds/css/ace.css">
     <link rel="stylesheet" href="style.css">
     <title>ZbxWizz</title>
     <style>
@@ -77,9 +77,9 @@
                             Tools
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save table structure</a>
+                            <!-- <a class="dropdown-item" role="button"  href="#" onclick="save_structure()">Save table structure</a>
                             <a class="dropdown-item" role="button"  href="#" onclick="manage_struct()">Restore table structure</a>
-                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider"></div> -->
                             <a class="dropdown-item" role="button"  href="#" onclick="open_play_editor()">Script editor</a>
                             <!-- <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="under_development()">Settings</a>
@@ -95,8 +95,8 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="#" role="button" onclick="documentation_modal()">ZbxWizz documentation</a>
                             <a class="dropdown-item" href="https://www.zabbix.com/documentation/current/en/manual/api" role="button" target="_blank">Zabbix documention</a>
-                            <a class="dropdown-item" href="#" role="button">ZbxWizz FAQ</a>
-                            <a class="dropdown-item" href="#" role="button">Contact the developer</a>
+                            <!-- <a class="dropdown-item" href="#" role="button">ZbxWizz FAQ</a> -->
+                            <a class="dropdown-item" href="#" role="button" onclick="contact_modal()">Contact the developer</a>
                         </div>
                     </li>
                 </ul>
@@ -307,7 +307,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,'get');localStorage.setItem('#importZbxForm_res',this.value)" required></select>
+                            <select class="custom-select custom-select-sm" name="resource"  onclick="update_help_link(this,this.value,'get');" onchange="localStorage.setItem('#importZbxForm_res',this.value)" required></select>
                             <div  class="input-group-append">
                                 <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
@@ -318,7 +318,7 @@
             
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1 mb-1">
-                <pre>Preview</pre>
+                <code>Preview</code>
             </div>
         </form>
 
@@ -344,7 +344,7 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource" onchange="update_help_link(this,this.value,'get');localStorage.setItem('#pullZbxForm_res',this.value);" required></select>
+                            <select class="custom-select custom-select-sm" name="resource" onclick="update_help_link(this,this.value,'get');" onchange="localStorage.setItem('#pullZbxForm_res',this.value);"></select>
                             <div  class="input-group-append">
                                 <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
@@ -362,7 +362,7 @@
             
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1 mb-1">
-                <pre>Start typing</pre>
+                <code>Start typing</code>
             </div>
         </form>
 
@@ -388,11 +388,10 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onchange="update_help_link(this,this.value,this.form.operation.value);localStorage.setItem('#pushZbxForm_res',this.value);">
-                                
+                            <select class="custom-select custom-select-sm" name="resource"  onclick="update_help_link(this,this.value,this.form.operation.value);" onchange="localStorage.setItem('#pushZbxForm_res',this.value);"></select>
                             </select>
                             <div  class="input-group-append">
-                                <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
+                                <a class="btn btn-secondary btn-sm zbxapihelp" onclick="update_help_link(this);" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
                         </div>
                     </div>
@@ -400,7 +399,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label>Operation</label>
-                        <select class="custom-select custom-select-sm" name="operation"  onchange="update_help_link(this,this.form.resource.value,this.value);localStorage.setItem('#pushZbxForm_reqtype',this.value);">
+                        <select class="custom-select custom-select-sm" name="operation"  onclick="event.preventDefault();update_help_link(this,$(this).parents('form').resource.value,this.value);" onchange="localStorage.setItem('#pushZbxForm_reqtype',this.value);">
                             <option>update</option>
                             <option>create</option>
                             <option>delete</option>
@@ -412,7 +411,7 @@
            
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1">
-                <pre>preview</pre>
+                <code>preview</code>
             </div>
         </form>
 
@@ -429,9 +428,12 @@
                     </div>
                 </div>
             </div>
+            <div class="alert alert-warning">
+                Write the body of a function that will be executed with the data as parameter.
+            </div>
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-5">
-                <pre>Nothing to show</pre>
+                <code>Nothing to show</code>
             </div>
         </form>
     </div>
@@ -447,25 +449,33 @@
                         Load from CSV
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label>Load from CSV file</label>
-                            <input type="file" name="file" accept="text/csv" class="form-control-file form-control">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="load-file-tab" onclick="this.form.load_type.value='file'" data-toggle="tab" data-target="#load-file" type="button" role="tab" aria-controls="load-file" aria-selected="true">Load from file</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="load-text-tab" onclick="this.form.load_type.value='text'" data-toggle="tab" data-target="#load-text" type="button" role="tab" aria-controls="load-text" aria-selected="false">Load from text</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active pt-3 pb-3" id="load-file" role="tabpanel" aria-labelledby="load-file-tab">
+                                <input type="file" name="file" accept="text/csv" class="form-control-file form-control">
+                            </div>
+                            <div class="tab-pane fade pt-3 pb-3" id="load-text" role="tabpanel" aria-labelledby="load-text-tab">
+                                <textarea name="csvtext" class="form-control" rows="10"></textarea>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Load from CSV text</label>
-                            <textarea name="csvtext" class="form-control" rows="10"></textarea>
+                        <div>
+                            Load into:<br>
+                            <select name="sheet" class="custom-select">
+                                <option value="">New sheet</option>
+                                <option value="overwrite">Overwrite existing sheet</option>
+                            </select>
                         </div>
+                        <input type="hidden" name="load_type" value="file">
                     </div>
-                    <div class="modal-body">
-                        Target sheet:<br>
-                        <select name="sheet" class="custom-select">
-                            <option value="">New sheet</option>
-                        </select>
-                    </div>
-
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="load_csv(this.form,false)" ><i class="fa fa-file"></i> Load from file </button>
-                        <button type="button" onclick="load_csv(this.form,true)" class="btn btn-primary" ><i class="fa fa-file-text"></i> Load from text</button>
+                        <button type="button" class="btn btn-primary" onclick="load_csv(this.form,this.form.load_type.value)" ><i class="fa fa-file"></i> Load </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
