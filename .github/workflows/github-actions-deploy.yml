@@ -23,3 +23,20 @@ jobs:
       - name: Copy files
         run: cp -r * /var/www/domains/softaccel.net/subdomains/zbxwizz/public_html
 
+      - name: Send Telegram notification
+        if: always()  # This ensures the notification is sent even if the job fails
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: html
+          message: |
+            🚀 <b>Deployment Status</b>
+            
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+            
+            🔗 <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Workflow</a>
+
