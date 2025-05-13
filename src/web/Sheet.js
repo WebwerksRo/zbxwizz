@@ -14,6 +14,7 @@ class Sheet {
         <div class="dropdown-menu dropdown">
             <h6 class="dropdown-header">Actions</h6>
             <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().add_rows_dialog()">Add rows</a>
+            <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().copy_visible_to_new_sheet()">Copy visible to new sheet</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete selected records?',()=>$(this).parents('table').data().sheet.delete_selected())">Delete selected rows</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete unselected records?',()=>$(this).parents('table').data().sheet.delete_unselected())">Delete unselected rows</a>
             <div class="dropdown-divider"></div>
@@ -144,14 +145,14 @@ class Sheet {
      * @returns 
      */
     add_row(fields,record,rowIdx) {
-        // console.log(rec);
+        // log(rec);
 
         return row;
     }
     export(filter) {
         let rows = this.#rows;
         if(filter && typeof filter === "function") {
-            console.log("apply filter",filter);
+            log("apply filter",filter);
             rows = rows.filter(filter);
         }
         return rows.map(
@@ -207,10 +208,10 @@ class Sheet {
 
         let selCells = this.#rows.filter(row=>{
             let srchFlds = Object.keys(terms);
-            //console.log(terms,srchFlds);
+            //log(terms,srchFlds);
             for(let i=0;i<srchFlds.length;i++) {
                 let col = row.cell(srchFlds[i]);
-                //console.log(row,srchFlds[i],terms[srchFlds[i]],col);
+                //log(row,srchFlds[i],terms[srchFlds[i]],col);
                 if(!col || col.val.match(new RegExp("^"+terms[srchFlds[i]]+"$"))===null)
                     return false;
             }
@@ -241,7 +242,7 @@ class Sheet {
         }
 
         let selCells = cells.filter(cell=>cell.val.match(subject));
-        //console.log(selCells);
+        //log(selCells);
         selCells = selCells.map(cell=>cell.row.cell(valueCol).val);
 
         if(selCells.length===1) return selCells.pop();
@@ -358,7 +359,7 @@ class Sheet {
             this.load_data(data.fields,data.records);
         }
         catch (e) {
-            console.log(e,'Probably invalid data',data);
+            log(e,'Probably invalid data',data);
         }
     }
 
@@ -432,7 +433,7 @@ class Sheet {
         let filterCell = this.#el.find("thead>tr:nth-child(3)>th:nth-child("+(idx*1+1)+")");
         let transfoCell = this.#el.find("thead>tr:nth-child(4)>th:nth-child("+(idx*1 + 1)+")");
         let dataCol = this.#el.find("tbody>tr>td:nth-child("+(idx*1 + 3)+")");
-        // console.log(dataCol)
+        // log(dataCol)
         if(colCell.hasClass("compress")) {
             colCell.removeClass("compress");
             fldCell.removeClass("compress");
@@ -456,6 +457,7 @@ class Sheet {
      * @returns 
      */
     load_data(fields,records,dataLabel="csv") {
+        log(fields,records);
         this.#setup(false);
 
         return new Promise(((resolve) => {
@@ -572,10 +574,10 @@ class Sheet {
                             el.children().toArray().forEach((item)=>{
                                 flds.push(item.innerText);
                             });
-                            console.log(flds);
+                            log(flds);
                             sheet.render_header(flds,flds.length);
                             sheet.rows.forEach(row=>{
-                                // console.log(row.cellsData);
+                                // log(row.cellsData);
                                 row.load_data(flds,row.cellsData).render();
                             });
                             overlay.hide();
@@ -617,7 +619,7 @@ class Sheet {
                             tmp = activeSheet.export(row=>row.isSelected);
                         else if(data==="hidden")
                             tmp = activeSheet.export(row=>row.isHidden);
-                        console.log(tmp);
+                        log(tmp);
                         sheetManager.new_sheet(tmp);
                         
                         //alert_modal("Not yet implemented");
@@ -625,6 +627,15 @@ class Sheet {
                 }
             ]
         })
+    }
+    copy_visible_to_new_sheet() {
+        let tmp = this.export(row=>!row.isHidden);
+        let data = {
+            fields: this.fields,
+            records: tmp
+        }
+        //return 
+        sheetManager.new_sheet(null,data);
     }
 
     add_rows_dialog() {
@@ -703,10 +714,10 @@ class Sheet {
         overlay.show();
         setTimeout(()=> {
 
-            console.log(flds);
+            log(flds);
             this.render_header(flds, flds.length);
             this.rows.forEach(row => {
-                // console.log(row.cellsData);
+                // log(row.cellsData);
                 let data = row.cellsData;
                 delete data[fldName];
                 row.load_data(flds, data).render();
@@ -733,10 +744,10 @@ class Sheet {
         overlay.show();
         setTimeout(()=> {
 
-            console.log(flds);
+            log(flds);
             this.render_header(flds, flds.length);
             this.rows.forEach(row => {
-                // console.log(row.cellsData);
+                // log(row.cellsData);
                 let data = row.cellsData;
                 data[newFldName] = "";
                 row.load_data(flds, data).render();
@@ -844,7 +855,7 @@ class Sheet {
 let newUnsavedData = false;
 
 // function showInfo(src) {
-//     console.log($(src).data());
+//     log($(src).data());
 // }
 
 
@@ -890,7 +901,7 @@ let newUnsavedData = false;
 //       </div>`).appendTo("body");
 //
 // function toggle_compress_col(src){
-//     console.log(src,this);
+//     log(src,this);
 //     let cell = $(this).parents("th");
 //     if(cell.hasClass("compressed"))
 //         cell.removeClass("compressed");

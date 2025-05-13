@@ -1,8 +1,14 @@
+
 Array.prototype.unique = function(){
     return this.filter((value, index, array)=>{
         return array.indexOf(value) === index;
     });
 };
+function log(...params) {
+    if(typeof doLog !== "undefined" && doLog) {
+        console.log(new Error().stack.split('\n')[1], ...params)
+    }
+}
 
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -112,7 +118,7 @@ function prompt_modal(message,callback,value="") {
             {
                 text: "Cancel",
                 action: ()=>{
-                    console.log(modal);
+                    log(modal);
                     modal.modal("hide");
                     callback(null);
                 },
@@ -221,7 +227,7 @@ function dragable_modal(opts) {
         });
     }
     catch (e) {
-        //console.log(e)
+        //log(e)
     }
 
     if(!footer.children().length)

@@ -6,7 +6,7 @@ let zbx;
 function load_req_tpl(editor, key) {
     if (key.length) {
         const tpl = JSON.parse(localStorage.getItem(key));
-        console.log(tpl);
+        log(tpl);
 
         try{
             editor.container.parentElement.elements.resource.value = tpl.resource;
@@ -102,7 +102,7 @@ function req_import_from_api(sheet, form, validTpl=false,success=new Function())
                 })
         })
         .catch((e)=>{
-            console.log(e);
+            log(e);
             normal_modal({
                 body: 'Error perfoming the request:<pre class="pre" style="overflow: scroll">'+reqTpl+"/ "+e+'</pre>'
             })
@@ -153,7 +153,7 @@ function remove_template(btn) {
  * @param success
  */
 function push_to_api(sheet, form, validTpl=false,success=new Function()) {
-    console.log("Zabbix sstatus",zbx);
+    log("Zabbix sstatus",zbx);
     if(!zbx.status)
         return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
@@ -225,7 +225,7 @@ function push_to_api(sheet, form, validTpl=false,success=new Function()) {
              * @param {Row} row
              */
             (err,row)=>{
-                console.log("error",err)
+                log("error",err)
                 row.set_error(err);
             },
             (row)=>{
@@ -248,7 +248,7 @@ function push_to_api(sheet, form, validTpl=false,success=new Function()) {
  * @param success
  */
 function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
-    console.log("Zabbix sstatus",zbx);
+    log("Zabbix sstatus",zbx);
     if(!zbx.status)
         return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
@@ -286,7 +286,7 @@ function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
                 row.set_loading();
                 reqArr.push({params: obj(request), ctx: row});
             } catch (e) {
-                console.log(e, template, request,data);
+                log(e, template, request,data);
                 return;
             }
 
@@ -455,7 +455,7 @@ function transform_data(form, apply = false) {
         try {
             preview.value = transform_cell(cell,expr);
         } catch (e) {
-            console.log(e);
+            log(e);
             preview.value = "Error: " + e.message
         }
         return;
@@ -483,10 +483,10 @@ function filter_rows(form,clear=false) {
 
     dt.col(colNo).forEach(cell => {
         if (!rgx.test(cell.val)) {
-            // console.log("filterOut", col);
+            // log("filterOut", col);
             cell.row.filter_out(cell);
         } else {
-            // console.log("filterIn", col);
+            // log("filterIn", col);
             cell.row.filter_in(cell);
         }
     });
@@ -508,7 +508,7 @@ function load_csv(form,loadType="file") {
     const dt = sheetName ? sheetManager.sheets[sheetName] : sheetManager.new_sheet();
 
     function load_data(data){
-        console.log(data);
+        log(data);
         if(data.errors.length) {
             normal_modal({
                 body: "Some error occured while importing the CSV: <pre class='d-block'>"+json(data.errors,null,4)+"</pre>"
@@ -525,7 +525,7 @@ function load_csv(form,loadType="file") {
                 flds: data.records[i]
             }
         }
-        console.log(data);
+        log(data);
         
 
         dt.reset().load_data(data.fields, data.records);
@@ -543,7 +543,7 @@ function load_csv(form,loadType="file") {
                 throw new Error("<pre>"+json(data.errors,null,4)+"</pre>");
         }
             catch(e){
-                console.log(e);
+                log(e);
                 alert_modal("Error loading data from CSV text: "+e.message);
         }
         
@@ -552,7 +552,7 @@ function load_csv(form,loadType="file") {
     }
     let input = form.file;
     return new Promise((resolve)=>{
-        console.log("Import CSV");
+        log("Import CSV");
         $(input).parse({
             config: {
                 header: true,
@@ -566,7 +566,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 function load_xls(form,load=false) {
-    console.log(form.file.files[0]);
+    log(form.file.files[0]);
     const sheetsSelect = $(form.sheets);
     if(!load) {
         const reader = new FileReader();
@@ -575,7 +575,7 @@ function load_xls(form,load=false) {
 
         reader.onload = ()=>{
             const wb = XLSX.read(reader.result);
-            console.log(wb);
+            log(wb);
             $(form).data("wb",wb);
             wb.SheetNames.forEach(async  (name)=>{
                 $("<option selected>").text(name).appendTo(sheetsSelect);
@@ -618,11 +618,11 @@ function load_xls(form,load=false) {
 
 
 function save_zbx_config(form) {
-    console.log("save config");
+    log("save config");
     $("#zbxLogo").addClass("notConnected");
     localStorage.setItem("zbxUrl", form.url.value);
     localStorage.setItem("zbxToken", form.token.value);
-    console.log(form.bulkquerymode.value)
+    log(form.bulkquerymode.value)
     localStorage.setItem("zbxBulkQueryMode", form.bulkquerymode.value);
     zbx_connect();
 }
@@ -655,7 +655,7 @@ function zbx_connect() {
             zbx.status = false;
         }
     })
-    .catch(e=>console.log("could not connect to zabbix. Invalid URL or token?")).finally(() => overlay.hide());
+    .catch(e=>log("could not connect to zabbix. Invalid URL or token?")).finally(() => overlay.hide());
 }
 function save_req_tpl(prefix, editor) {
     prompt_modal("Template name",(name)=>{
@@ -675,14 +675,14 @@ function preview_request(editor,tpl,rowContext=true) {
     let previewEl = $(editor.container.parentNode).find(".preview");
 
     previewEl.addClass("alert-secondary").removeClass("alert-danger").removeClass("alert-success");
-    // console.log(editor);
+    // log(editor);
     try {
         if(rowContext) {
             let row = sheetManager.get_active_sheet().rows.filter(row => row.isSelected)[0];
-            // console.log(row);
+            // log(row);
             if (row) {
                 let data = row_data(row);
-                // console.log(data);
+                // log(data);
                 with (data) {
                     try {
                         let xpr = eval("`" + tpl + "`");
@@ -719,7 +719,7 @@ function preview_request(editor,tpl,rowContext=true) {
         }
         
     } catch (e) {
-        console.log(e);
+        log(e);
     }
 }
 
@@ -776,7 +776,7 @@ function save_transformation(src) {
     if(!src.form.xpression.value) {
         return;
     }
-    console.log("Save transformation", src.form.xpression.value);
+    log("Save transformation", src.form.xpression.value);
     localStorage.setItem("transfo_" + generateUID(), src.form.xpression.value);
 }
 
@@ -800,7 +800,7 @@ function load_transfo(src) {
     if(!xpr) return;
     $(src.form).find("#transformXpression").data("editor").setValue(xpr);
     $(src.form.xpression).trigger("focus").trigger("change");
-    console.log(src);
+    log(src);
 }
 
 
@@ -823,7 +823,7 @@ function save_structure() {
     normal_modal({
         body:`
         Save table structures<br>
-        <form  onsubmit="event.preventDefault();console.log(this.structname.value);localStorage.setItem('tbl_struct_'+this.structname.value,this.config.value);">
+        <form  onsubmit="event.preventDefault();log(this.structname.value);localStorage.setItem('tbl_struct_'+this.structname.value,this.config.value);">
         <label class="d-block">Name<br>
         <input name="structname" class="w-100" required/>
         </label>
@@ -950,7 +950,7 @@ function load_env(form,modal) {
                 modal.modal("hide");
             }
             catch (e) {
-                console.log(e);
+                log(e);
             }
         },
         false,
@@ -1001,7 +1001,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
             }
         });
 
-        console.log(form)
+        log(form)
         if(lastSavedTpl) editor.setText(lastSavedTpl);
         if(lastSavedRes) form[0].resource.value = lastSavedRes;
         if(lastSavedReqType && form[0].operation) form[0].operation.value = lastSavedReqType;
@@ -1049,9 +1049,6 @@ function under_development() {
     })
 }
 
-function log(...params) {
-    console.log(...params)
-}
 
 
 function playscript(content,editor) {
@@ -1092,7 +1089,7 @@ function prompt_save_data() {
             {
                 text: "Export",
                 action: ()=>{
-                    console.log($el.children("select").val());
+                    log($el.children("select").val());
                     switch($el.children("select").val()) {
                         case "selected":
                             save_data(row=>row.isSelected);
@@ -1114,7 +1111,7 @@ function open_play_editor(    ) {
     
     let content = $("#scriptPlayer");
 
-    console.log(content.find(".editor")[0]);
+    log(content.find(".editor")[0]);
     
 
     
@@ -1241,7 +1238,7 @@ function list_scripts(sel,event) {
             $("<option>").text(script.name).attr("value", key).appendTo(sel);
         }
         catch(e) {
-            console.log(e);
+            log(e);
         }
     });
 }
@@ -1263,7 +1260,7 @@ function load_script(sel) {
         modal.find(".editor").data("editor").setValue(script.script);
     }
     catch(e) {
-        console.log(e);
+        log(e);
     }
 
 }

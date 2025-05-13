@@ -63,7 +63,7 @@ class Cell {
         this.#rowRef.table.save();
     }
     process_keystrokes(event) {
-        // console.log(event);
+        // log(event);
         if(event.ctrlKey && event.keyCode===13)
             this.finish_edit();
     }

@@ -61,10 +61,10 @@ class SheetsManager {
             config = JSON.parse(localStorage.getItem("worksheets"));
             config = config ? config : {};
         } catch (e) {
-            console.log('No saved ws config');
+            log('No saved ws config');
             config = {};
         }
-        // console.log(config);
+        // log(config);
 
         this.lastAssignedIdx = config.lastAssignedIdx ? config.lastAssignedIdx : 0;
         //this.#activeSheetName = config.activeSheet ? config.activeSheet : null;
@@ -78,11 +78,11 @@ class SheetsManager {
             // load sheet data
             try {
                 let wsData = JSON.parse(localStorage.getItem("sheet-"+sheetName + "-data"));
-                console.log(sheetName,wsData);
+                // log(sheetName,wsData);
                 this.new_sheet(sheetName, wsData);
             } catch (e) {
                 this.new_sheet(sheetName);
-                console.log('Invalid sheet data', e);
+                log('Invalid sheet data', e);
             }
         });
 
@@ -93,7 +93,7 @@ class SheetsManager {
     activate_sheet(sheetName) {
         
         try {
-            console.log("activate_sheet "+sheetName);
+            // log("activate_sheet "+sheetName);
             const sheetId = this.sheets[sheetName].id;
             $ws.children().hide();
             $("#sheetSelector").find("a.nav-link").removeClass("active");
@@ -109,7 +109,7 @@ class SheetsManager {
             this.update_stats();    
         }
         catch (e) {
-            console.log(e)
+            log(e)
         }
         
         return this.sheets[sheetName];
@@ -122,7 +122,7 @@ class SheetsManager {
             lastAssignedIdx: this.lastAssignedIdx,
             activeSheet: this.#activeSheetName
         };
-        // console.log("save cfg",cfg)
+        // log("save cfg",cfg)
         localStorage.setItem("worksheets", JSON.stringify(cfg));
     }
 
@@ -134,7 +134,7 @@ class SheetsManager {
             $("#totalVisible").text(stats.visible);
         }
         catch(e) {
-            //console.log(e);
+            //log(e);
         }
     }
 
@@ -155,7 +155,7 @@ class SheetsManager {
      * @returns 
      */
     new_sheet(sheetName=null, data = null) {
-        console.log("New sheet",sheetName,data);
+        // log("New sheet",sheetName,data);
         if (!sheetName) {
             this.lastAssignedIdx++;
             sheetName = "sheet" + (this.lastAssignedIdx);
@@ -194,14 +194,14 @@ class SheetsManager {
             sheetName = this.#activeSheetName;
         }
         const sheetId = this.sheets[sheetName].id;
-        // console.log("delete "+sheetId)
+        // log("delete "+sheetId)
 
         this.sheets[sheetName].remove();
         delete this.sheets[sheetName];
         $("#"+sheetId+"-tab").parent().remove();
         this.reorder();
         this.save();
-        console.log("new list",this.#sheetsOrder);
+        log("new list",this.#sheetsOrder);
 
         this.activate_sheet(this.sheetsNames.pop());
 
@@ -266,7 +266,7 @@ class SheetsManager {
     reorder() {
         let newOrder = [];
         $("#sheetSelector").find("a").toArray().forEach(a=>newOrder.push($(a).attr("data-sheet")));
-        console.log("reorder",newOrder);
+        log("reorder",newOrder);
         this.#sheetsOrder = newOrder;
         this.save();
     }
@@ -284,20 +284,20 @@ function edit_tab(src) {
         .trigger("focus")
         .on("keyup",(event)=>{
             let sheetNewName = inp.val();
-            console.log(event);
+            log(event);
             if(event.code==="Escape") {
                 restore();
                 return;
             }
             if(event.code==="Enter" || event.code==="NumpadEnter") {
-                // console.log(sheetNewName)
+                // log(sheetNewName)
                 if(sheetNewName==="")
                     return;
                 if(sheetNewName===sheetName)
                     return restore();
                 if(sheetManager.sheets[sheetNewName])
                     return;
-                // console.log("Perfom rename")
+                // log("Perfom rename")
                 restore();
                 sheetManager.rename_sheet(sheetName,sheetNewName);
             }

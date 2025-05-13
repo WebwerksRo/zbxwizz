@@ -1,15 +1,13 @@
 # ZbxWizz
 
-ZbxWizz is a tool that helps you automate your Zabbix workflows.
-
-It presents iself as a spreadsheet editor which is connected to the Zabbix API, allowing you to create, edit, and delete Zabbix objects.
+**ZbxWizz** is a powerful and flexible tool for managing Zabbix configurations at scale. It allows you to **import, transform, and export** Zabbix data using a spreadsheet-like interface, making bulk operations simple and error-free.
 
 ## Usage
-Clone the repository anywhere on your machine and just open the `index.html` file with your browser. A local server is not required, but you can use one if you want. 
+Clone the repository anywhere on your machine and just open the `index.html` file with your browser. A local web server is not required, but you can use one if you want. 
 
 You will also need to disable CORS. Depending on the browser, you should consider installing and extension to disable CORS.
 
-An electron version is in the making, so stay tuned.
+An Electron version is in the making, so stay tuned.
 
 ## Documentation
 The documentation is available [here](docs/documentation.md).

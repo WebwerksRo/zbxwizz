@@ -93,7 +93,7 @@ class Row {
         let idx = this.#filtercols.indexOf(col);
         if(idx!==-1)
             this.#filtercols.splice(idx,1);
-        // console.log(this,this.#filtercols);
+        // log(this,this.#filtercols);
         if(this.#filtercols.length===0)
             this.show();
     }
@@ -134,7 +134,7 @@ class Row {
      */
     get fld_vals() {
         let resp = {};
-        // console.log(this.#cellsByFld);
+        // log(this.#cellsByFld);
         Object.keys(this.#cellsByFld).forEach((key)=>resp[key]=this.#cellsByFld[key].val);
         return resp;
     }
@@ -192,7 +192,7 @@ class Row {
         if(checked!==null) {
             this.#el.find("input[type=checkbox]")[0].checked = checked;
         }
-        // console.log(checked,this.#el.find("input[type=checkbox]")[0].checked)
+        // log(checked,this.#el.find("input[type=checkbox]")[0].checked)
         if(this.#el.find("input[type=checkbox]")[0].checked) {
             this.#el.addClass("selected");
         }

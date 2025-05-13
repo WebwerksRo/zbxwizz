@@ -6,7 +6,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../node_modules/font-awesome/css/font-awesome.min.css">
-
     <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../node_modules/select2/dist/css/select2.min.css">
     <link rel="stylesheet" href="../../node_modules/jsoneditor/dist/jsoneditor.css">
@@ -589,35 +588,54 @@
         </div>
     </div>
 
+    <div id="updateNotification" class="alert alert-info" style="display: none;">
+        <strong>Update Available!</strong> A new version is being downloaded...
+    </div>
 
-<!-- <script src="assets/js/jquery.js"></script>
-<script src="assets/js/bootstrap.bundle.js"></script>
-<script src="assets/js/papaparse.min.js"></script>
-<script src="assets/js/select2.min.js"></script>
-<script src="assets/js/jsoneditor.js"></script>
-<script src="assets/js/jquery-ui.js"></script>
-<script src="assets/js/xlsx.full.min.js"></script>
-<script src="assets/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script src="assets/ace-builds/src-min-noconflict/ext-language_tools.js"></script> -->
+    <div id="updateReady" class="alert alert-success" style="display: none;">
+        <strong>Update Ready!</strong> 
+        <button onclick="window.electron.restartApp()" class="btn btn-primary">Restart to Update</button>
+    </div>
 
-<script src="../../node_modules/jquery/dist/jquery.js"></script>
+
+
+<script>
+  //window.$ = window.jQuery = require('jquery');
+</script>
+<script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../../node_modules/jquery-ui/dist/jquery-ui.min.js"></script>
 <script src="../../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 <script src="../../node_modules/papaparse/papaparse.min.js"></script>
 <script src="../../node_modules/select2/dist/js/select2.min.js"></script>
 <script src="../../node_modules/jsoneditor/dist/jsoneditor.js"></script>
-<script src="../../node_modules/jquery-ui/dist/jquery-ui.min.js"></script>
 <script src="../../node_modules/xlsx/dist/xlsx.full.min.js"></script>
 <script src="../../node_modules/ace-builds/src-min-noconflict/ace.js"></script>
 <script src="../../node_modules/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
     
 
-<script src="util.js"></script>
-<script src="ZBXApi.js"></script>
-<script src="Cell.js"></script>
-<script src="Row.js"></script>
-<script src="Sheet.js"></script>
-<script src="SheetsManager.js"></script>
-<script src="main.js"></script>
+<script src="./util.js"></script>
+<script src="./ZBXApi.js"></script>
+<script src="./Cell.js"></script>
+<script src="./Row.js"></script>
+<script src="./Sheet.js"></script>
+<script src="./SheetsManager.js"></script>
+<script src="./main.js"></script>
+
+<script>
+  // Listen for update events
+window.electron.on('update_available', () => {
+    document.getElementById('updateNotification').style.display = 'block';
+});
+
+window.electron.on('update_downloaded', () => {
+    document.getElementById('updateNotification').style.display = 'none';
+    document.getElementById('updateReady').style.display = 'block';
+});
+
+window.electron.restartApp = () => {
+    window.electron.send('restart_app');
+};
+</script>
 
 </body>
 </html>
