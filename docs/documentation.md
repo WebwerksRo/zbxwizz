@@ -14,12 +14,19 @@
     - [Importing data from XLS](#importing-data-from-xls)
     - [Importing data from Zabbix](#importing-data-from-zabbix)
     - [Import from JavaScript](#import-from-javascript)
-  - [Editing data](#editing-data)
-    - [Filtering data](#filtering-data)
+  - [Working with active data set](#working-with-active-data-set)
+    - [Selecting rows](#selecting-rows)
+    - [Sorting](#sorting)
+    - [Filtering](#filtering)
     - [Manual editing](#manual-editing)
     - [Row operations](#row-operations)
-    - [JavaScript transformations](#javascript-transformations)
+    - [Transformations](#transformations)
     - [Augmenting data](#augmenting-data)
+    - [Copy rows to different sheet](#copy-rows-to-different-sheet)
+    - [Delete rows](#delete-rows)
+    - [Rename columns](#rename-columns)
+    - [Rename worksheets](#rename-worksheets)
+    - [Reorder columns](#reorder-columns)
   - [Exporting data](#exporting-data)
     - [Exporting data to CSV](#exporting-data-to-csv)
     - [Exporting data to Zabbix](#exporting-data-to-zabbix)
@@ -165,20 +172,27 @@ You will be presented with a dialog where you can write JavaScript code which wi
 
 The JavaScript code has access to the following variables:
 
-*   worksheet.sheets.sheetName - the current cell value
-*   worksheet.sheets.sheetName - the sheet object identified by the sheetName.
-*   ws.sheetName.col(colIdx) - array containing all the values in the column identified by colIdx.
-*   ws.sheetName.rows\[rowIdx\] - array containing all the values in the row identified by rowIdx.
-*   ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn) - lookup a value in the lookupColumn and return the value from the resultColumn.
-*   json(object) - convert an object to a JSON string.
-*   obj(jsonString) - convert a JSON string to an object.
+- worksheet.sheets.sheetName - the current cell value
+- worksheet.sheets.sheetName - the sheet object identified by the sheetName.
+- ws.sheetName.col(colIdx) - array containing all the values in the column identified by colIdx.
+- ws.sheetName.rows\[rowIdx\] - array containing all the values in the row identified by rowIdx.
+- ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn) - lookup a value in the lookupColumn and return the value from the resultColumn.
+- json(object) - convert an object to a JSON string.
+- obj(jsonString) - convert a JSON string to an object.
 
-Editing data
-------------
+## Working with active data set
 
-### Filtering data
+### Selecting rows
 
-You can filter the data in the spreadsheet by clicking on the column index in the table header and using the filter form in the displayed menu dialog.
+Any pull/push operation is executed only agains selected and visible rows. Rows can be selected individually or in bulk by using the top left checkbox. The bulk select toggle will act only upon the visible rows. This means that if you selected in the past some rows and then applied some filter which hide them, using the bulk select toggle to deselect will not deselect the hidden rows.
+
+### Sorting
+
+Sorting is straightforward: click on the column index button and select the sorting direction from the menu.
+
+### Filtering
+
+You can filter the data in the spreadsheet by clicking on the column index in the table header and using the filter form in the displayed menu dialog. Keep in mind that the filter text is threated as a RegExp expression, so don't forget to escape special characters preceding them by a backslash.
 
 ### Manual editing
 
@@ -188,44 +202,61 @@ Double click any cell to enter cell edit mode. Exiting the edit mode is done by 
 
 You can add, remove and duplicate rows by clicking on the row index button and selecting of the "Insert empty row before", "Insert empty row after", "Delete row", and "Duplicate row" entries in the row context menu.
 
-### JavaScript transformations
+### Transformations
 
-You can use JavaScript transformations to transform the data in the spreadsheet. To use JavaScript transformations, you need to click the "Column index" button in the table header of the column which you want to transform and select the transformation menu item.
+The transformations are JavaScript expressions to transform the data in the target column. To use JavaScript transformations, click the "Column index" button in the table header of the column which you want to transform and select the transformation menu item.
 
 You will be presented with a dialog where you can write small JavaScript snippets which must return a value.
 
 The JS code has access to the following variables and functions:
 
-- self - the current cell value
-- $columnIndex - eg. $1, $2, $3, etc. - the index of the column
-- _columnName - the name of the column
-- ws.sheetName - the sheet object identified by the sheetName.
-- ws.sheetName.col(colIdx) - array containing all the values in the column identified by colIdx.
-- ws.sheetName.rows\[rowIdx\] - array containing all the values in the row identified by rowIdx.
-- ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn) - lookup a value in the lookupColumn and return the value from the resultColumn. The lookup column and result column can be either column names or column indices. When resultColumn is omitted the function will return the row object which can be further queried for the data.
-- json(object) - convert an object to a JSON string.
-- obj(jsonString) - convert a JSON string to an object.
-- lastResult - the result of the last executed request.
-- lastError - the error of the last executed request.
-- data.csv - the original data set of the row when it was first imported. Imutable
-- data.labelName - the data which has been last retrieved from Zabbix using a pull request. The labelName is configurable in the pull request dialog (see Augmenting data) . Imutable
+- **self** - the current cell value
+- **$columnIndex** - eg. $1, $2, $3, etc. - the index of the column
+- **_columnName** - the name of the column
+- **ws.sheetName** - the sheet object identified by the sheetName.
+- **ws.sheetName.col(colIdx)** - array containing all the values in the column identified by colIdx.
+- **ws.sheetName.rows\[rowIdx\]** - row object
+- **ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn)** - lookup a value in the lookupColumn and return the value from the resultColumn. The lookup column and result column can be either column names or column indices. When resultColumn is omitted the function will return the row object which can be further queried for the data.
+- **json({object})** - convert an object to a JSON string.
+- **obj({jsonString})** - convert a JSON string to an object.
+- **lastResult** - the result of the last executed request.
+- **lastError** - the error of the last executed request.
+- **data.csv** - the original data set of the row when it was first imported. Imutable
+- **data.labelName** - the data which has been last retrieved from Zabbix using a pull request. The labelName is configurable in the pull request dialog (see Augmenting data) and it defaults to **zbx**. Imutable
 
 ### Augmenting data
 
-You can augment the data by pulling related data from Zabbix. To do this, you need to click the "Zabbix Ops" menu and select the Pull menu item.
+You can augment the data by pulling related data from Zabbix. To do this, access **Zabbix Ops-> Pull**
 
 You will be presented with a dialog where you can select the Zabbix resource you want to pull and create the Zabbix API request template in the editor.
 
 You can embed JavaScript code into the request template using the ${...} syntax. The JS code has access to the same variables as the JavaScript transformations (see above).
 
-The template is evaluated each time the request changes using the data from the first selected row
+The template is evaluated each time you type something. The result of the compiled request against the data of the first selected row is displayed in the "Preview" section bellow the editor. If the preview backgroung is green, the request is valid and if the background is red, the request is invalid.
 
-A preview of the compiled request against the data of the first selected row is displayed in the "Preview" section bellow the editor. If the preview backgroung is green, the request is valid and if the background is red, the request is invalid.
+The request is executed for each **SELECTED and VISIBLE row** when you click the "Execute" button.
 
-The request is executed for each **selected row** when you click the "Execute" button. Currently, the request will be executed regardless if the preview is green or red.
+### Copy rows to different sheet
 
-Exporting data
---------------
+By accessing the table hamburger menu (top right) one can copy either the selected rows or all the visible rows to a new sheet
+
+### Delete rows
+
+By accessing the table hamburger menu (top right) one can delete either the selected rows or all the visible rows.
+
+### Rename columns
+
+Double click the column name to rename a column
+
+### Rename worksheets
+
+Double click the worksheet name to rename it.
+
+### Reorder columns
+
+Go to **Table ops->Reorder columns** to open a window where columns order can be changed using drag&drop
+
+## Exporting data
 
 ### Exporting data to CSV
 

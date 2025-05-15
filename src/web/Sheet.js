@@ -18,13 +18,13 @@ class Sheet {
             <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().copy_selected_to_new_sheet()">Copy selected to new sheet</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete selected records?',()=>$(this).parents('table').data().sheet.delete_selected())">Delete selected rows</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete unselected records?',()=>$(this).parents('table').data().sheet.delete_unselected())">Delete unselected rows</a>
-            <div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Filtering</h6>
-            <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.remove_filters()">Remove all filters</a>
-            <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_selected()">Show selected</a>
-            <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_unselected()">Show unselected</a>
-            <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_errors()">Show rows with errors</a>
-            <div class="dropdown-divider"></div>
+            <!-- <div class="dropdown-divider"></div> -->
+            <!-- <h6 class="dropdown-header">Filtering</h6> -->
+            <!-- <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.remove_filters()">Remove all filters</a> -->
+            <!-- <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_selected()">Show selected</a> -->
+            <!-- <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_unselected()">Show unselected</a> -->
+            <!-- <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.filter_errors()">Show rows with errors</a> -->
+            <!-- <div class="dropdown-divider"></div> -->
             <h6 class="dropdown-header">Filtering</h6>
             <a class="dropdown-item" role="button" href="#" onclick="$(this).parents('table').data().sheet.clear_errors()">Clear errors</a>
             

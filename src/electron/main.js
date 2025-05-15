@@ -1,10 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
+const $ = require('jquery');
 
 let win;
 
 function createWindow() {
+  // Log the preload path
+
   win = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -12,8 +15,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
-      webSecurity: false,
-      preload: path.join(__dirname, 'preload.js')
+      webSecurity: false
     }
   });
 
