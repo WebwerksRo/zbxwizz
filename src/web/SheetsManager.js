@@ -245,21 +245,13 @@ class SheetsManager {
 
     rename_sheet(oldName,newName) {
         if(oldName!==newName && this.sheets.newName) throw "Sheet "+newName+" already exists";
-
+        log("RENAMING SHEET",oldName,newName,this)
         this.sheets[newName] = this.sheets[oldName];
         const sheetId = this.sheets[newName].id;
-        this.sheets[newName].rename(newName);
-        delete this.sheets[oldName];
+        this.sheets[newName].rename(newName).save();
         this.sheetsNames[this.sheetsNames.indexOf(oldName)] = newName;
-        $("#"+sheetId+"-tab").text(newName);
-        // $("#sheet-"+oldName+"-tab")
-        //     .attr("id","sheet-"+newName+"-tab")
-        //     .attr("data-target","sheet-"+newName)
-        //     .attr("data-sheet",newName)
-        //     .text(newName);
-        // $("#sheet-"+oldName)
-        //     .attr("id","sheet-"+newName)
-        //     .attr("data-sheet",newName);
+        delete this.sheets[oldName];
+        $("#"+sheetId+"-tab").text(newName).attr("data-sheet",newName);
         return this.activate_sheet(newName);
     }
 
@@ -280,28 +272,30 @@ function edit_tab(src) {
     }
     let lnk = $(src).css("display","none");
     let sheetName = lnk.text();
+    function rename(event){
+        let sheetNewName = inp.val();
+        // log(event);
+        if(event.code==="Escape") {
+            restore();
+            return;
+        }
+        if(event.code==="Enter" || event.code==="NumpadEnter") {
+            // log(sheetNewName)
+            if(sheetNewName==="")
+                return;
+            if(sheetNewName===sheetName)
+                return restore();
+            if(sheetManager.sheets[sheetNewName])
+                return;
+            // log("Perfom rename")
+            restore();
+            sheetManager.rename_sheet(sheetName,sheetNewName);
+        }
+    }
     let inp = $("<input>").val(sheetName).insertAfter(lnk)
         .trigger("focus")
-        .on("keyup",(event)=>{
-            let sheetNewName = inp.val();
-            log(event);
-            if(event.code==="Escape") {
-                restore();
-                return;
-            }
-            if(event.code==="Enter" || event.code==="NumpadEnter") {
-                // log(sheetNewName)
-                if(sheetNewName==="")
-                    return;
-                if(sheetNewName===sheetName)
-                    return restore();
-                if(sheetManager.sheets[sheetNewName])
-                    return;
-                // log("Perfom rename")
-                restore();
-                sheetManager.rename_sheet(sheetName,sheetNewName);
-            }
-        })
+        .on("blur",rename)
+        .on("keyup",rename)
         .on("blur",restore);
 }
 

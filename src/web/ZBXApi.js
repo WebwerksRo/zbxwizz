@@ -147,7 +147,7 @@ class ZBXApi {
 				delete execParams[key];
 
 		});
-		console.log(execParams);
+		// console.log(execParams);
 		if(async) {
 			
 			const resp = await fetch(this.url, {

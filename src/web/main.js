@@ -323,10 +323,13 @@ function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
         });
 }
 
-function update_help_link(src,object,method){
+function update_help_link(src){
     const form = $(src).parents('form')[0];
-    $(src).attr("href","https://www.zabbix.com/documentation/current/en/manual/api/reference/"+form.resource.value+"/"+form.operation.value)
-        .attr("title","Zabbix help on "+form.resource.value+"."+form.operation.value)
+    let resource = form.resource.value;
+    let operation = form.operation ? form.operation.value : "get";
+    $(src).attr("href","https://www.zabbix.com/documentation/current/en/manual/api/reference/"+resource+"/"+operation)
+        .attr("title","Zabbix help on "+resource+"."+operation)
+    log(src);
 }
 /**
  *
@@ -1062,7 +1065,7 @@ function playscript(content,editor) {
     localStorage.setItem("script",script);
     try {
         with(params) {
-            $("#scriptDebug").val(eval(script));
+            $("#scriptDebug").val(eval("(function() {"+script+"})()"));
         }
     }
     catch(e) {

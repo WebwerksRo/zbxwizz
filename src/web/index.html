@@ -58,7 +58,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="#" role="button" onclick="sheetManager.get_active().add_rows_dialog()">Add rows</a>
                             <a class="dropdown-item" href="#" onclick="sheetManager.get_active().reorder_columns_dialog()">Reorder columns</a>
-                            <a class="dropdown-item" href="#" onclick="sheetManager.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a>
+                            <!-- <a class="dropdown-item" href="#" onclick="sheetManager.get_active().copy_to_new_sheet_dialog()">Copy to new sheet</a> -->
                         </div>
                     </li>
 
@@ -306,9 +306,9 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onclick="update_help_link(this,this.value,'get');" onchange="localStorage.setItem('#importZbxForm_res',this.value)" required></select>
+                            <select class="custom-select custom-select-sm" name="resource"onchange="localStorage.setItem('#importZbxForm_res',this.value)" required></select>
                             <div  class="input-group-append">
-                                <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
+                                <a class="btn btn-info btn-sm zbxapihelp" onclick="update_help_link(this);"  href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
                         </div>
                     </div>
@@ -343,9 +343,9 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource" onclick="update_help_link(this,this.value,'get');" onchange="localStorage.setItem('#pullZbxForm_res',this.value);"></select>
+                            <select class="custom-select custom-select-sm" name="resource" onchange="localStorage.setItem('#pullZbxForm_res',this.value);"></select>
                             <div  class="input-group-append">
-                                <a class="btn btn-secondary btn-sm zbxapihelp" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
+                                <a class="btn btn-info btn-sm zbxapihelp" onclick="update_help_link(this);" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
                         </div>
                     </div>
@@ -387,10 +387,10 @@
                     <div class="form-group ">
                         <label>Resource</label>
                         <div class="input-group">
-                            <select class="custom-select custom-select-sm" name="resource"  onclick="update_help_link(this,this.value,this.form.operation.value);" onchange="localStorage.setItem('#pushZbxForm_res',this.value);"></select>
+                            <select class="custom-select custom-select-sm" name="resource" onchange="localStorage.setItem('#pushZbxForm_res',this.value);"></select>
                             </select>
                             <div  class="input-group-append">
-                                <a class="btn btn-secondary btn-sm zbxapihelp" onclick="update_help_link(this);" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
+                                <a class="btn btn-info btn-sm zbxapihelp" onclick="update_help_link(this);" href="https://www.zabbix.com/documentation/current/en/manual/api/reference" target="_blank"><i class="fa fa-question"></i></a>
                             </div>
                         </div>
                     </div>
@@ -398,7 +398,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label>Operation</label>
-                        <select class="custom-select custom-select-sm" name="operation"  onclick="event.preventDefault();update_help_link(this,$(this).parents('form').resource.value,this.value);" onchange="localStorage.setItem('#pushZbxForm_reqtype',this.value);">
+                        <select class="custom-select custom-select-sm" name="operation" onchange="localStorage.setItem('#pushZbxForm_reqtype',this.value);">
                             <option>update</option>
                             <option>create</option>
                             <option>delete</option>
@@ -489,10 +489,6 @@
                         Load from Excel file
                     </div>
                     <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <h4>WARNING!!</h4>
-                            Loading the Excel file will remove all sheets from the current workspace
-                        </div>
                         <input type="file" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
                         <div class="sheets2import">
                             <label>Sheets to import</label>
@@ -623,18 +619,21 @@
 
 <script>
   // Listen for update events
-window.electron.on('update_available', () => {
-    document.getElementById('updateNotification').style.display = 'block';
-});
+if(window.electron) {
+    window.electron.on('update_available', () => {
+        document.getElementById('updateNotification').style.display = 'block';
+    });
 
-window.electron.on('update_downloaded', () => {
-    document.getElementById('updateNotification').style.display = 'none';
-    document.getElementById('updateReady').style.display = 'block';
-});
+    window.electron.on('update_downloaded', () => {
+        document.getElementById('updateNotification').style.display = 'none';
+        document.getElementById('updateReady').style.display = 'block';
+    });
 
-window.electron.restartApp = () => {
-    window.electron.send('restart_app');
-};
+    window.electron.restartApp = () => {
+        window.electron.send('restart_app');
+    };
+}
+doLog = false;
 </script>
 
 </body>

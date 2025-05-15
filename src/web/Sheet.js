@@ -15,6 +15,7 @@ class Sheet {
             <h6 class="dropdown-header">Actions</h6>
             <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().add_rows_dialog()">Add rows</a>
             <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().copy_visible_to_new_sheet()">Copy visible to new sheet</a>
+            <a class="dropdown-item" role="button" href="#" onclick="sheetManager.get_active().copy_selected_to_new_sheet()">Copy selected to new sheet</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete selected records?',()=>$(this).parents('table').data().sheet.delete_selected())">Delete selected rows</a>
             <a class="dropdown-item" role="button" href="#" onclick="confirm_modal('Are you sure you want to delete unselected records?',()=>$(this).parents('table').data().sheet.delete_unselected())">Delete unselected rows</a>
             <div class="dropdown-divider"></div>
@@ -197,7 +198,7 @@ class Sheet {
      * @param defaultOnEmpty
      * @returns {null|*[]|*}
      */
-    lookup2(terms,valueCol,regexp=false,defaultOnEmpty=null){
+    lookup2(terms,valueCol=null,regexp=false,defaultOnEmpty=null){
         if(typeof terms=="undefined")
             return;
 
@@ -208,15 +209,13 @@ class Sheet {
 
         let selCells = this.#rows.filter(row=>{
             let srchFlds = Object.keys(terms);
-            //log(terms,srchFlds);
             for(let i=0;i<srchFlds.length;i++) {
                 let col = row.cell(srchFlds[i]);
-                //log(row,srchFlds[i],terms[srchFlds[i]],col);
                 if(!col || col.val.match(new RegExp("^"+terms[srchFlds[i]]+"$"))===null)
                     return false;
             }
             return true;
-        }).map(r=>r.cell(valueCol).val);
+        }).map(r=>(valueCol===null ? r : r.cell(valueCol).val));
 
         if(selCells.length===1) return selCells.pop();
         if(selCells.length===0) return defaultOnEmpty ? defaultOnEmpty : null;
@@ -232,7 +231,7 @@ class Sheet {
      * @param defaultOnEmpty
      * @returns {String|null|String[]}
      */
-    lookup(subject,searchCol,valueCol) {
+    lookup(subject,searchCol,valueCol=null) {
         let cells = this.col(searchCol);
         if(!cells) {
             return null;
@@ -243,7 +242,7 @@ class Sheet {
 
         let selCells = cells.filter(cell=>cell.val.match(subject));
         //log(selCells);
-        selCells = selCells.map(cell=>cell.row.cell(valueCol).val);
+        selCells = selCells.map(cell=>valueCol===null ? cell.row : cell.row.cell(valueCol).val);
 
         if(selCells.length===1) return selCells.pop();
         if(selCells.length===0) return null;
@@ -634,8 +633,17 @@ class Sheet {
             fields: this.fields,
             records: tmp
         }
-        //return 
-        sheetManager.new_sheet(null,data);
+        log(data);
+        return sheetManager.new_sheet(null,data);
+    }
+
+    copy_selected_to_new_sheet() {
+        let tmp = this.export(row=>row.isSelected);
+        let data = {
+            fields: this.fields,
+            records: tmp
+        }
+        return sheetManager.new_sheet(null,data);
     }
 
     add_rows_dialog() {
@@ -678,8 +686,7 @@ class Sheet {
     rename(new_name) {
         localStorage.removeItem("sheet-"+this.#name+"-data");
         this.#name = new_name;
-        this.save();
-
+        return this;
     }
 
     get visibleRows() {
