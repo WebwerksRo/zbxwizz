@@ -1,63 +1,118 @@
+# ZbxWizz documentation
 
+## Introduction
 
-Introduction
-------------
+ZbxWizz is a tool that helps you automate your Zabbix workflows.
 
-ZbxWizz is a tool that helps you to automate your Zabbix workflows.
+It presents iself as a spreadsheet editor which connects to Zabbix API, allowing you to create, edit, update and delete Zabbix resources.
 
-It presents iself as a spreadsheet editor which is connected to the Zabbix API, allowing you to create, edit, and delete Zabbix objects.
+## Installation
 
-How to use ZbxWizz
-------------------
-The typical workflow in working with ZbxWizz involves the following steps.
+Clone the repo on your machine and open the index.html file using your favorite browser. You should also disabled CORS by using a plugin or by playing with the advanced browser settings, otherwise the browser policy will block the requests to the Zabbix API. How to do this is beyond the scope of this documention so google it.
 
-    
-                            |------------------------|
-                            | Edit current data set  |
-                            |                        |
-                            | ---------------------- |
-    ------------------      | |   Manual editing   | |      |----------------|
-    |  Import data   |      | ---------------------- |      |   Export data  |
-    |      from      | ->   | ---------------------- |  ->  |       to       |
-    | Zabbix/CSV/XLS |      | | JS transformations | |      | Zabbix/CSV/XLS |
-    ------------------      | ---------------------- |      |----------------|
-                            | ---------------------- |
-                            | |    Augment data    | |
-                            | ---------------------- |
-                            |------------------------|
-    
+An Electron version and Zabbix module are in the making so stay tunned by subscribing to our mailing list.
 
-Configuring Zabbix connection
------------------------------
+## Using ZbxWizz - short intro
 
-To configure the connection to a Zabbix server, you need to click the on the Zabbix connection red icon in the top right corner of the screen.
+The typical workflow with ZbxWizz involves the following steps, given that the Zabbix API connection is already configured.
 
-You will be presented with a dialog where you can enter the Zabbix server URL and the API key and the API query mode.
+```text
+                        |------------------------|                
+                        | Edit current data set  |             
+                        | ---------------------- |               
+  ------------------    | |   Manual editing   | |    |----------------|
+  |  Import data   |    | ---------------------- |    |   Export data  |
+  |      from      | -> | ---------------------- | -> |       to       |
+  | Zabbix/CSV/XLS |    | | JS transformations | |    | Zabbix/CSV/XLS |
+  ------------------    | ---------------------- |    |----------------|
+                        | ---------------------- |         
+                        | | Data augmentation  | |             
+                        | ---------------------- |             
+                        |------------------------|                 
+```
 
-There are 3 modes of API query:
+### Data augmentation
+Importing data is pretty clear what it means, but let's talk a bit about data augmentation.
 
-*   sequential - in this mode, the API queries are executed sequentially, one after another. It's slower but it's more reliable since
-*   parallel - in the mode all API requests are send at the same time. It is faster, but for write operations not recommended. From our experience, at least the inserts, can lead to data corruption in the database
-*   hybrid - In this mode, the API queries ar executed in sequential batches of parallel requests. It's a good compromise between speed and reliability. Currently, the batch size is 10 requests, but we will add the ability to configure the batch size in the future.
+Given an active sheet which has data in it, there is the possibility to extract aditional data from Zabbix for each row.
 
-The API key can be obtained from the Zabbix API documentation.
+Let's say the active sheet contains a list of IPs and you want to retrieve the hosts from Zabbix which are configured with those IPs. For this, go to **Zabbix Ops -> Pull**. In this window one can compose a Zabbix API request template which shall contain refferences to the column names.
 
-After entering the API key, click the "Save" button. The connection is saved in the browser's local storage, so it will be available in the same browser session.
+As an example, let's say that the 1st column is the one containing the IPs and the name of the column is **IP** and you want to retrieve the host which has that IP configured. From the **resource** select box you will select **hostinterface**. The Data label field sets the name of the property that you will later use to access the retrieved data. And in the JSON code editor you will create the following request template:
 
-The Zabbix connection icon is bright red when the connection is available and pale red when the connection is not available.
+```json
+{
+    "filter":{
+        "ip":"${$0}"
+    },
+    "selectHosts":["host","name","hostid"....],
+    "output":["interfaceid"]
+}
+```
 
-Importing data
---------------
+Notice the value of the "ip" field in the filter. Using **\${\$0}** I am refferencing the value from the 1st column (numbering starts at 0). An alternative way to refference a column is by using its name, so we can also write this as **${_IP}**, where IP is the column name.
+
+A request template is actually a JavaScript template literal. You can read more about it [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). Notice also that the request is not a full Zabbix API request, but it refers only to the content of the **params** field. ZbxWizz takes care to create the full request based on the selected resource, method and the template that you provided.
+
+Knowing how to formulate each API request by heart is a matter of experience. So you can always use the **?** button next to the resource selector which will take you to the Zabbix API documentation page for that specific operation.
+
+Once the request has been defined, press the Execute button. ZbxWizz will iterate over each selected row, it will interpolate the row data with the template and perform the request. The result of the request will be attached to the row as an internal object which you can access in the tranformations by using the **data.{data_label}**. If you left the data label unmodified you will use **data.zbx** to access the result.
+
+### Data manipulation
+
+Rows can be sorted, filtered and transformed by clicking on the column index button. If the first 2 are obvious how to use, transforming the data is the thing that makes ZbxWizz so powerfull. All transformations are performed on the column level only for the visible rows. A transformation consist of a JavaScript expression, which will be evaluated and it's output will be set as the cell new value. 
+
+In the JavaScript expressions one can reference other columns by using the column index ($2, $3 and so on) or the column name (_host, _ip and so on), the row data (as mentioned before, you can access the result of a pull by using data.zbx, or whatever other data label that you configured). There are more to tell about transformations in the dedicated section.
+
+As an example let's assume I want to set the name of a host as consisting of a prefix and the IP, something like CountryCode - DevType - IP. In the current data set I have all these details loaded in the corresponding columns. The transformation expression to use for the new column with the name, will be:
+
+```JavaScript
+_CountryCode + " - " + _DevType + " - " + _IP
+```
+
+Notice I have used the column names, but using the column indexes would have achieved the same result.
+
+### Pushing data to Zabbix
+
+With the current data set one can create, update or delete resources in Zabbix. In order to do that access the **Zabbix Ops -> Push** menu. In a similar way with the Zabbix data pull, one has to select the Zabbix resource type, the operation and create the request parameters template. 
+
+As a simple example, let's assume we want to create multiple hostgroups at once. In the active worksheet we have loaded a list of names on the 1st column for those hostgroups. The template will look like this:
+
+```json
+{
+    "name":"${$0}"
+}
+```
+
+By pressing the execute button, ZbxWizz will iterate over each selected row and, interpolate the template with the row data and execute the scriot. Upon succesfull execution, the row color will change to pale blue. If there was an error, the background color will be pale-peach. You can inspect the error, by clicking on the row index button and navigate to the bottom of the window where you should find the **lastError** property
+
+## Configuring Zabbix API connection
+
+Configuring the Zabbix API connection is done by accessing the red icon on the top right corner of the app.
+
+You will be presented with a dialog where you can enter the Zabbix server URL and the API key and the API query mode. There are 3 modes of API query:
+
+* sequential - in this mode, the API queries are executed sequentially, one after another. It's slower but safer, since it will not overload the server with parallel requests.
+* parallel - in the mode all API requests for that specific row selection are executed at the same time. It actually depends on you browser settings if they will be actually all executed in parallel or rather in a pooled way. It is faster, but for write operations when dealing with a lot of records it might proove to be dangerous. From my experience, when creating new resources I've run a couple of times into a situation where data was corrupted in the DB.
+* hybrid - In this mode, the API queries ar executed in sequential batches of parallel requests. It's a good compromise between speed and reliability. Currently, the batch size is 10 requests, but we will add the ability to configure the batch size in the future.
+
+The API key should be obtained from the Zabbix user interface. Showing how to do it is beyond the scope of this documentation.
+
+After entering the details click the "Save" button and this will save the data in the browser's local storage and reloaded from there each time you start the applicaton.
+
+The Zabbix connection icon is bright red when the connection is available and pale red when the connection is not available. 
+
+## Importing data
 
 ### Importing data from CSV
 
-To import data from a CSV file, you need to click the "Import CSV" button in the Data menu and select the file you want to import. You also need to select the target sheet where the data will be imported. The CSV file should have a header row with the column names.
+To import data from a CSV file, go to  **Data menu -> Import CSV** and select the file you want to import. You also need to select the target sheet where the data will be imported. 
+
+The CSV file should have a header row with the column names.
 
 ### Importing data from XLS
 
-To import data from an XLS file, you need to click the "Import XLS" button in the Data menu and select the file you want to import. Importing data from XLS is similar to importing data from CSV, but keep in mind that if there are any other sheets in the workspace, they will be deleted.
-
-When importing data from XLS, you can also select the sheet which will be imported. By default, all sheets are imported.
+To import data from an XLS file, go to **Data menu -> Import XLS**, select the file you want to import and you can select which worksheet to import. By default, all sheets are imported.
 
 ### Importing data from Zabbix
 
