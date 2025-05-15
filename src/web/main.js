@@ -182,7 +182,7 @@ function push_to_api(sheet, form, validTpl=false,success=new Function()) {
 
         let err = false;
         sheet.clear_errors();
-        let rows = sheet.rows.filter(row => row.isSelected && row.isVisible);
+        let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
         let cnt = 0;
         overlay.show().set_progress(rows.length);
         let reqArr = [];
@@ -260,7 +260,7 @@ function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
 
     let template = form.find(".jsoneditorcontainer").data().editor.getText();
     form = form[0];
-    let rows = sheet.rows.filter(row => row.isSelected && row.isVisible);
+    let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
     if(!rows.length) return alert_modal("No rows selected");
 
     let resource = form.resource.value;
