@@ -382,22 +382,16 @@ class Sheet {
         if([-1,colIdx].indexOf(this.fields.indexOf(newName))===-1){
             throw "Duplicate field name";
         }
-
-
-
-
-            this.#rows.forEach(
-                /**
-                 * @param {Row} row
-                 */
-                (row)=>{
-
-                        row.rename_cell(newName, colIdx)
-                });
+        this.#rows.forEach(
+            /**
+             * @param {Row} row
+             */
+            (row)=>{
+                row.rename_cell(newName, colIdx)
+            }
+        );
 
         this.#fields[colIdx] = newName;
-        
-        
         return newName;
     }
 

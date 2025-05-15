@@ -1,5 +1,29 @@
 # ZbxWizz documentation
 
+- [ZbxWizz documentation](#zbxwizz-documentation)
+  - [Introduction](#introduction)
+  - [Installation](#installation)
+  - [Using ZbxWizz - short intro](#using-zbxwizz---short-intro)
+    - [Data import](#data-import)
+    - [Data augmentation](#data-augmentation)
+    - [Data manipulation](#data-manipulation)
+    - [Pushing data to Zabbix](#pushing-data-to-zabbix)
+  - [Configuring Zabbix API connection](#configuring-zabbix-api-connection)
+  - [Importing data](#importing-data)
+    - [Importing data from CSV](#importing-data-from-csv)
+    - [Importing data from XLS](#importing-data-from-xls)
+    - [Importing data from Zabbix](#importing-data-from-zabbix)
+    - [Import from JavaScript](#import-from-javascript)
+  - [Editing data](#editing-data)
+    - [Filtering data](#filtering-data)
+    - [Manual editing](#manual-editing)
+    - [Row operations](#row-operations)
+    - [JavaScript transformations](#javascript-transformations)
+    - [Augmenting data](#augmenting-data)
+  - [Exporting data](#exporting-data)
+    - [Exporting data to CSV](#exporting-data-to-csv)
+    - [Exporting data to Zabbix](#exporting-data-to-zabbix)
+
 ## Introduction
 
 ZbxWizz is a tool that helps you automate your Zabbix workflows.
@@ -31,8 +55,11 @@ The typical workflow with ZbxWizz involves the following steps, given that the Z
                         |------------------------|                 
 ```
 
+### Data import
+
+Importing data from CSV and XLS files is pretty straightforward. Importing from Zabbix involves creating a Zabbix API request, while importing using JavaScript allows an even more flexible approach by writing a script that will generate the request. This is worth using when one wants to reuse data from other loaded sheets. Check out the [Importing data](#importing-data) section.
+
 ### Data augmentation
-Importing data is pretty clear what it means, but let's talk a bit about data augmentation.
 
 Given an active sheet which has data in it, there is the possibility to extract aditional data from Zabbix for each row.
 
@@ -169,19 +196,19 @@ You will be presented with a dialog where you can write small JavaScript snippet
 
 The JS code has access to the following variables and functions:
 
-*   self - the current cell value
-*   $columnIndex - eg. $1, $2, $3, etc. - the index of the column
-*   \_columnName - the name of the column
-*   ws.sheetName - the sheet object identified by the sheetName.
-*   ws.sheetName.col(colIdx) - array containing all the values in the column identified by colIdx.
-*   ws.sheetName.rows\[rowIdx\] - array containing all the values in the row identified by rowIdx.
-*   ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn) - lookup a value in the lookupColumn and return the value from the resultColumn.
-*   json(object) - convert an object to a JSON string.
-*   obj(jsonString) - convert a JSON string to an object.
-*   lastResult - the result of the last executed request.
-*   lastError - the error of the last executed request.
-*   data.csv - the original data set of the row when it was first imported. Imutable
-*   data.labelName - the data which has been last retrieved from Zabbix using a pull request. The labelName is configurable in the pull request dialog (see Augmenting data) . Imutable
+- self - the current cell value
+- $columnIndex - eg. $1, $2, $3, etc. - the index of the column
+- _columnName - the name of the column
+- ws.sheetName - the sheet object identified by the sheetName.
+- ws.sheetName.col(colIdx) - array containing all the values in the column identified by colIdx.
+- ws.sheetName.rows\[rowIdx\] - array containing all the values in the row identified by rowIdx.
+- ws.sheetName.lookup(lookupValue, lookupColumn, resultColumn) - lookup a value in the lookupColumn and return the value from the resultColumn. The lookup column and result column can be either column names or column indices. When resultColumn is omitted the function will return the row object which can be further queried for the data.
+- json(object) - convert an object to a JSON string.
+- obj(jsonString) - convert a JSON string to an object.
+- lastResult - the result of the last executed request.
+- lastError - the error of the last executed request.
+- data.csv - the original data set of the row when it was first imported. Imutable
+- data.labelName - the data which has been last retrieved from Zabbix using a pull request. The labelName is configurable in the pull request dialog (see Augmenting data) . Imutable
 
 ### Augmenting data
 

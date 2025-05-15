@@ -146,6 +146,10 @@ class Row {
         return this.#cells.map(cell=>cell.val);
     }
 
+    val(fld) {
+        return this.#cellsByFld[fld].val;
+    }
+
     /**
      *
      * @returns {Cell[]}
@@ -164,8 +168,11 @@ class Row {
         if(typeof idf==="number") {
             return this.#cells[idf];
         }
-        else {
+        else if(typeof idf==="string") {
             return this.#cellsByFld[idf];
+        }
+        else {
+            throw "Invalid cell id: "+idf;
         }
     }
 
