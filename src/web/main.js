@@ -20,7 +20,7 @@ function load_req_tpl(editor, key) {
 }
 
 
-function import_from_api (sheet,resource, tpl){
+async function import_from_api (sheet,resource, tpl){
     if(!sheet)
         sheet = sheetManager.new_sheet();
     
@@ -77,7 +77,6 @@ function import_from_api (sheet,resource, tpl){
             reject(e)      
         }
     });
-    
 }
 
 // function req_import_from_api(reqTpl, form) {
@@ -1054,7 +1053,7 @@ function under_development() {
 
 
 
-function playscript(content,editor) {
+async function playscript(content,editor) {
     let params = {};
     content.find(".param").each((idx,el)=>{
         let paramName = $(el).find("input[name='param_name']").val()
@@ -1065,7 +1064,8 @@ function playscript(content,editor) {
     localStorage.setItem("script",script);
     try {
         with(params) {
-            $("#scriptDebug").val(eval("(function() {"+script+"})()"));
+            let val = await eval("(async function() {"+script+"})()")
+            $("#scriptDebug").val(val);
         }
     }
     catch(e) {
