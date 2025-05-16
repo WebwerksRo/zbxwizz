@@ -1,11 +1,11 @@
 zbx_*.txt
-tmp*.*
+/tmp*.*
 procedure.txt
-.idea
-procedures
-node_modules/*
-out
-dist
+/.idea
+/procedures
+/node_modules/*
+/out/*
+/dist/*
 
 !node_modules/jquery
 !node_modules/jquery-ui
