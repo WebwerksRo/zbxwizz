@@ -112,23 +112,18 @@ function req_import_from_api(sheet, form, validTpl=false,success=new Function())
 
 function req_import_js(sheet, form, validTpl=false,success=new Function()) {
 
-    if(!validTpl) {
-        alert_modal("Warning: the request message is not a valid JSON");
-        return;
-    }
-    
+    console.log("req_import_js", form, validTpl,success);
     let template = form.find(".jsoneditorcontainer").data().editor.getText();
     try {
-        let tmp =  ( obj(eval("`" + template + "`")));
-        let data = tmp;
-        if(tmp.constructor===Array) {
-            data.records = tmp.map(r=>({flds:r}));
-            data.fields = Object.keys(tmp[0]);
+        let tmpFunc = eval("()=>{"+ template + "}");
+        let data = tmpFunc();
+        if(data.constructor===Array) {
+            sheet.reset().load_data(Object.keys(data[0]), data.map(r=>({flds:r})),'csv');
         }
 
-        sheet.reset().load_data(data.fields, data.records,'csv');
     }
     catch(e) {
+        console.log("error",e);
         normal_modal({body: "Error on importing data:<br><pre>"+e.message + "</pre>"});
     }
     success();

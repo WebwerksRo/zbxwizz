@@ -44,7 +44,7 @@
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importXlsModal">Import XLS</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
-                            <!-- <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a> -->
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
 
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -407,7 +407,6 @@
                 </div>
             </div>
             
-           
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-1">
                 <pre>preview</pre>
@@ -418,7 +417,7 @@
             <div class="form-group">
                 <label>Saved templates</label>
                 <div class="input-group mb-2">
-                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,this.value)" id="importJSTemplates" name="templates" required></select>
+                    <select class="custom-select" onchange="load_req_tpl(importJSTplEditor,this.value)" id="importJSTemplates" name="templates"></select>
                     <div class="input-group-append">
                         <div class="btn-group">
                             <button class="btn btn-success" onclick="save_req_tpl('importJSTplPfx_',$(this).parents('form').children('.jsoneditorcontainer').data('editor'),this.value)" type="button">Save</button>
@@ -427,8 +426,15 @@
                     </div>
                 </div>
             </div>
-            <div class="alert alert-warning">
-                Write the body of a function that will be executed with the data as parameter.
+            <div class="alert alert-warning" style="cursor: pointer" onclick="$(this).find('.alertcontent').slideToggle()">
+                <i class="fa fa-caret-down"></i>
+                <div class="alertcontent">
+                    <p>Write the body of a function which will return an array of records. The records should be objects with fields as keys.</p>Example:<br>
+                <pre style="background-color: #f8f9fa; padding: 10px; border-radius: 5px;">return [
+    {name: 'John', age: 30},
+    {name: 'Jane', age: 25}
+];</pre>
+                </div>
             </div>
             <div class="jsoneditorcontainer" style="height: 300px;"></div>
             <div class="preview alert alert-secondary mt-5">

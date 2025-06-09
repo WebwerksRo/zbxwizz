@@ -16,5 +16,5 @@ procedure.txt
 !node_modules/jsoneditor
 !node_modules/xlsx
 !node_modules/ace-builds
-
+scratch/*
 

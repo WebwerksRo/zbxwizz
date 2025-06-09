@@ -249,3 +249,68 @@ function generateUID() {
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
 }
+
+async function httpRequest(url, options = {}) {
+    try {
+        const defaultOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+
+        // If basic auth credentials are provided, add Authorization header
+        if (options.auth) {
+            const { username, password } = options.auth;
+            const auth = btoa(username + ":" + password);
+            defaultOptions.headers['Authorization'] = `Basic ${auth}`;
+            // Remove auth from options to avoid sending it in the request body
+            delete options.auth;
+        }
+
+        const response = await fetch(url, { ...defaultOptions, ...options });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('HTTP Request failed:', error);
+        throw error;
+    }
+}
+
+const http = {
+    get: (url, options = {}) => httpRequest(url, { ...options, method: 'GET' }),
+    
+    post: (url, data, options = {}) => httpRequest(url, {
+        ...options,
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+    
+    put: (url, data, options = {}) => httpRequest(url, {
+        ...options,
+        method: 'PUT',
+        body: JSON.stringify(data)
+    }),
+    
+    delete: (url, options = {}) => httpRequest(url, { ...options, method: 'DELETE' })
+};
+
+
+
+function fetch_jsonapi(url, options = {}) {
+    function parse_jsonapi(data) {
+        if(!data || !data.data) {
+            return [];
+        }
+        const records = data.data.map(item =>({flds:item.attributes})  );
+        return {fields:Object.keys(records[0].flds),records: records};
+    }
+
+    return http.get(url, options).then(parse_jsonapi);
+}
