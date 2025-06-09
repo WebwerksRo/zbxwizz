@@ -80,20 +80,18 @@ async function import_from_api (sheet,resource, tpl){
 }
 
 // function req_import_from_api(reqTpl, form) {
-function req_import_from_api(sheet, form, validTpl=false,success=new Function()) {
-    if(!validTpl) {
-        alert_modal("Warning: the request message is not a valid JSON");
-        return;
-    }
-    
-    let resource = form[0].resource.value;
+// function req_import_from_api(sheet, form, validTpl=false,success=new Function()) {
+function req_import_from_api(sheet, resource, operation, template,success=new Function()) {
+    if(!zbx.status)
+        return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
+
     if(!resource) {
         alert_modal("No resource selected");
         return;
     }
-    let reqTpl = form.find(".jsoneditorcontainer").data().editor.getText();
+    // let reqTpl = form.find(".jsoneditorcontainer").data().editor.getText();
     
-    import_from_api (sheet,form[0].resource.value,reqTpl)
+    import_from_api (sheet,resource,template)
         .then((resp)=>{
             if(resp===null) 
                 normal_modal({
@@ -103,17 +101,15 @@ function req_import_from_api(sheet, form, validTpl=false,success=new Function())
         .catch((e)=>{
             log(e);
             normal_modal({
-                body: 'Error perfoming the request:<pre class="pre" style="overflow: scroll">'+reqTpl+"/ "+e+'</pre>'
+                body: 'Error perfoming the request:<pre class="pre" style="overflow: scroll">'+template+"/ "+e+'</pre>'
             })
         })
         .finally(()=>overlay.hide())
     success();
 }
 
-function req_import_js(sheet, form, validTpl=false,success=new Function()) {
+function req_import_js(sheet, resource,operation,template,success=new Function()) {
 
-    console.log("req_import_js", form, validTpl,success);
-    let template = form.find(".jsoneditorcontainer").data().editor.getText();
     try {
         let tmpFunc = eval("()=>{"+ template + "}");
         let data = tmpFunc();
@@ -146,33 +142,24 @@ function remove_template(btn) {
  * @param validTpl
  * @param success
  */
-function push_to_api(sheet, form, validTpl=false,success=new Function()) {
-    log("Zabbix sstatus",zbx);
+// function push_to_api(sheet, form, validTpl=false,success=new Function()) {
+function push_to_api(sheet, resource, operation, template,success=new Function()) {
     if(!zbx.status)
         return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
-    if(!validTpl) {
-        alert_modal("Warning: the request message is not a valid JSON");
-        return;
-    }
-    
-
-    let editor = form.find(".jsoneditorcontainer").data().editor;
-    form = form[0];
-    let template = editor.getText();
     normal_modal({
         body: $("<div>").html("<p>Pushing to Zabbix can lead to damage if the request is not properly configured. Please confirm you have reviewed the request and you are sure you want to perform the operation</p>"+
-            (form.operation.value==="delete"?"<div class='alert alert-danger'>You are trying to perform a DELETE operation</div>":""))
-            .append($("<button class='btn btn-danger' data-dismiss='modal'>Confirm</button>").on("click",()=>exec_push(template, form)))
+            (operation==="delete"?"<div class='alert alert-danger'>You are trying to perform a DELETE operation</div>":""))
+            .append($("<button class='btn btn-danger' data-dismiss='modal'>Confirm</button>").on("click",()=>exec_push(template)))
     });
 
-    function exec_push(template, form) {
+    function exec_push(template) {
 
-        if(!form.resource.value) {
+        if(!resource) {
             alert_modal("No resource selected");
             return;
         }
-        let method = form.resource.value + "." + form.operation.value;
+        let method = resource + "." + operation;
 
         let err = false;
         sheet.clear_errors();
@@ -237,33 +224,28 @@ function push_to_api(sheet, form, validTpl=false,success=new Function()) {
  *
  * pull data from zabbix
  * @param {Sheet} sheet
- * @param {jquery} form
- * @param validTpl
+ * @param {string} resource
+ * @param {string} operation
+ * @param {string} template
  * @param success
  */
-function pull_from_api(sheet, form, validTpl=false, success=new Function()) {
-    log("Zabbix sstatus",zbx);
+function pull_from_api(sheet, resource, operation,template, success=new Function()) {
     if(!zbx.status)
         return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
-    if(!validTpl) {
-        alert_modal("Warning: the request message is not a valid JSON");
-        return;
-    }
+    // if(!validTpl) {
+    //     alert_modal("Warning: the request message is not a valid JSON");
+    //     return;
+    // }
     
-
-    let template = form.find(".jsoneditorcontainer").data().editor.getText();
-    form = form[0];
     let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
     if(!rows.length) return alert_modal("No rows selected");
 
-    let resource = form.resource.value;
     if(!resource) {
         alert_modal("No resource selected");
         return;
     }
     let label = form.label.value;
-
 
     overlay.show().set_progress(rows.length);
     let reqArr = [];
@@ -986,7 +968,16 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
     
     form.on("submit",(event)=>{
             event.preventDefault();
-            action(sheet,form,!form.find(".preview").hasClass("alert-danger"),()=>modal.remove());
+            if(form.find(".preview").hasClass("alert-danger")) {
+                alert_modal("Warning: the request message is not a valid JSON 1");
+                return;
+            }
+            
+            const resource = typeof form[0].resource === "object" ? form[0].resource.value : null;
+            const operation = typeof form[0].operation === "object" ? form[0].operation.value : null;
+            const template = $(form).find(".jsoneditorcontainer").data().editor.getText();
+            action(sheet,resource,operation,template,()=>modal.remove());
+            modal.remove();
         });
 
     form.find(".jsoneditorcontainer").toArray().forEach((item)=>{
@@ -998,7 +989,6 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
             }
         });
 
-        log(form)
         if(lastSavedTpl) editor.setText(lastSavedTpl);
         if(lastSavedRes) form[0].resource.value = lastSavedRes;
         if(lastSavedReqType && form[0].operation) form[0].operation.value = lastSavedReqType;
