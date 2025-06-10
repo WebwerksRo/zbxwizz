@@ -176,15 +176,18 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
 
                 let data = row_data(row);
                 let params;
-
+                let req;
                 try {
                     with (data) {
-                        let req = eval("`" + template + "`");
+                        req = eval("`" + template + "`");
                         params = JSON.parse(req);
                     }
 
                 } catch (e) {
-                    console.log(e)
+                    console.log(e);
+                    console.log("Request",req);
+                    console.log("Template",template);
+                    console.log("Data",data);
                     return;
                 }
                 reqArr.push({params:params,ctx:row})
