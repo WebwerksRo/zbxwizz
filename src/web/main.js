@@ -144,81 +144,85 @@ function remove_template(btn) {
  */
 // function push_to_api(sheet, form, validTpl=false,success=new Function()) {
 function push_to_api(sheet, resource, operation, template,success=new Function()) {
-    if(!zbx.status)
-        return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
+    return new Promise((resolve,reject)=>{
+        if(!zbx.status)
+            return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
-    normal_modal({
-        body: $("<div>").html("<p>Pushing to Zabbix can lead to damage if the request is not properly configured. Please confirm you have reviewed the request and you are sure you want to perform the operation</p>"+
-            (operation==="delete"?"<div class='alert alert-danger'>You are trying to perform a DELETE operation</div>":""))
-            .append($("<button class='btn btn-danger' data-dismiss='modal'>Confirm</button>").on("click",()=>exec_push(template)))
-    });
-
-    function exec_push(template) {
-
-        if(!resource) {
-            alert_modal("No resource selected");
-            return;
-        }
-        let method = resource + "." + operation;
-
-        let err = false;
-        sheet.clear_errors();
-        let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
-        let cnt = 0;
-        overlay.show().set_progress(rows.length);
-        let reqArr = [];
-        rows.forEach((row) => {
-            row.lastResponse = null;
-            if(err) return;
-
-            let data = row_data(row);
-            let params;
-
-            try {
-                with (data) {
-                    let req = eval("`" + template + "`");
-                    params = JSON.parse(req);
-                }
-
-            } catch (e) {
-                console.log(e)
-                return;
-            }
-            reqArr.push({params:params,ctx:row})
+        normal_modal({
+            buttons: [],
+            body: $("<div>").html("<p>Pushing to Zabbix can lead to damage if the request is not properly configured. Please confirm you have reviewed the request and you are sure you want to perform the operation</p>"+
+                (operation==="delete"?"<div class='alert alert-danger'>You are trying to perform a DELETE operation</div>":""))
+                .append($("<button class='btn btn-danger' data-dismiss='modal'>Confirm</button>").on("click",()=>exec_push(template)))
+                .append($("<button class='btn btn-secondary ml-1' data-dismiss='modal'>Cancel</button>").on("click",()=>reject()))
         });
 
-        // perform request
-        zbx.bulk_req(method,reqArr,
-            /**
-             *
-             * @param resp
-             * @param {Row} row
-             */
-            (resp,row)=>{
-                if(typeof resp.result!=="undefined" && resp.result.length===0)
-                    return row.set_error("Not found");
-                if(typeof resp.error!=="undefined")
-                    return row.set_error(resp.error);
-                row.lastResponse = resp;
-            },
-            /**
-             *
-             * @param err
-             * @param {Row} row
-             */
-            (err,row)=>{
-                log("error",err)
-                row.set_error(err);
-            },
-            (row)=>{
-                cnt++;
-                overlay.progress(cnt);
-            })
-            .finally(()=>{
-                overlay.hide();
+        function exec_push(template) {
+
+            if(!resource) {
+                alert_modal("No resource selected");
+                return;
+            }
+            let method = resource + "." + operation;
+
+            let err = false;
+            sheet.clear_errors();
+            let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
+            let cnt = 0;
+            overlay.show().set_progress(rows.length);
+            let reqArr = [];
+            rows.forEach((row) => {
+                row.lastResponse = null;
+                if(err) return;
+
+                let data = row_data(row);
+                let params;
+
+                try {
+                    with (data) {
+                        let req = eval("`" + template + "`");
+                        params = JSON.parse(req);
+                    }
+
+                } catch (e) {
+                    console.log(e)
+                    return;
+                }
+                reqArr.push({params:params,ctx:row})
             });
-    }
-    
+
+            // perform request
+            zbx.bulk_req(method,reqArr,
+                /**
+                 *
+                 * @param resp
+                 * @param {Row} row
+                 */
+                (resp,row)=>{
+                    if(typeof resp.result!=="undefined" && resp.result.length===0)
+                        return row.set_error("Not found");
+                    if(typeof resp.error!=="undefined")
+                        return row.set_error(resp.error);
+                    row.lastResponse = resp;
+                },
+                /**
+                 *
+                 * @param err
+                 * @param {Row} row
+                 */
+                (err,row)=>{
+                    log("error",err)
+                    row.set_error(err);
+                },
+                (row)=>{
+                    cnt++;
+                    overlay.progress(cnt);
+                })
+                .finally(()=>{
+                    overlay.hide();
+                    resolve("ok");
+                });
+        }
+    });
 }
 
 /**
@@ -231,72 +235,73 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
  * @param success
  */
 function pull_from_api(sheet, resource, operation,template, success=new Function(),label=null) {
-    if(!zbx.status)
-        return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
+    return new Promise((resolve,reject)=>{
+        if(!zbx.status) {
+            alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
+            return reject();
+        }
 
-    // if(!validTpl) {
-    //     alert_modal("Warning: the request message is not a valid JSON");
-    //     return;
-    // }
     
-    let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
-    if(!rows.length) return alert_modal("No rows selected");
+        let rows = sheet.rows.filter(row => row.isSelected && !row.isHidden);
+        if(!rows.length) return alert_modal("No rows selected");
 
-    if(!resource) {
-        alert_modal("No resource selected");
-        return;
-    }
+        if(!resource) {
+            alert_modal("No resource selected");
+            return reject();
+        }
 
-    overlay.show().set_progress(rows.length);
-    let reqArr = [];
-    rows.forEach(/**
-         * @param row
-         */(row) => {
-            let data = row_data(row);
-            row.unset_error();
-            let request;
-            try {
-                with (data) {
-                    request = eval("`" + template + "`");
+        overlay.show().set_progress(rows.length);
+        let reqArr = [];
+        rows.forEach(/**
+            * @param row
+            */(row) => {
+                let data = row_data(row);
+                row.unset_error();
+                let request;
+                try {
+                    with (data) {
+                        request = eval("`" + template + "`");
+                    }
+                    row.set_loading();
+                    reqArr.push({params: obj(request), ctx: row});
+                } catch (e) {
+                    log(e, template, request,data);
+                    return;
                 }
-                row.set_loading();
-                reqArr.push({params: obj(request), ctx: row});
-            } catch (e) {
-                log(e, template, request,data);
-                return;
-            }
 
-            
-        });
-    let cnt = 0;
-    zbx.bulk_req(resource+".get",reqArr,
-        /**
-         *
-         * @param resp
-         * @param {Row} row
-         */
-        (resp,row) => {
-            if (resp.result) {
-                if(resp.result.length)
-                    row.data[label] = resp.result.length===1 ? resp.result[0] : resp.result ;
-                else {
-                    row.data[label]  = null;
-                    row.set_error("Not found");
+                
+            });
+        let cnt = 0;
+        zbx.bulk_req(resource+".get",reqArr,
+            /**
+             *
+             * @param resp
+             * @param {Row} row
+             */
+            (resp,row) => {
+                if (resp.result) {
+                    if(resp.result.length)
+                        row.data[label] = resp.result.length===1 ? resp.result[0] : resp.result ;
+                    else {
+                        row.data[label]  = null;
+                        row.set_error("Not found");
+                    }
                 }
-            }
-            row.lastResponse = resp;
-        },
-        (err,row)=>{
-            row.set_error(err)
-        },
-        (row)=>{
-            cnt++;
-            overlay.progress(cnt);
-            row.unset_loading();
-        })
-        .finally(()=>{
-            overlay.hide()
-        });
+                row.lastResponse = resp;
+            },
+            (err,row)=>{
+                row.set_error(err)
+            },
+            (row)=>{
+                cnt++;
+                overlay.progress(cnt);
+                row.unset_loading();
+            })
+            .finally(()=>{
+                overlay.hide()
+                resolve("ok");
+            });
+    });
 }
 
 function update_help_link(src){
