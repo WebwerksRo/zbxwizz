@@ -181,6 +181,7 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
                 }
 
             } catch (e) {
+                console.log(e)
                 return;
             }
             reqArr.push({params:params,ctx:row})
@@ -229,7 +230,7 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
  * @param {string} template
  * @param success
  */
-function pull_from_api(sheet, resource, operation,template, success=new Function()) {
+function pull_from_api(sheet, resource, operation,template, success=new Function(),label=null) {
     if(!zbx.status)
         return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
 
@@ -245,7 +246,6 @@ function pull_from_api(sheet, resource, operation,template, success=new Function
         alert_modal("No resource selected");
         return;
     }
-    let label = form.label.value;
 
     overlay.show().set_progress(rows.length);
     let reqArr = [];
@@ -976,7 +976,8 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
             const resource = typeof form[0].resource === "object" ? form[0].resource.value : null;
             const operation = typeof form[0].operation === "object" ? form[0].operation.value : null;
             const template = $(form).find(".jsoneditorcontainer").data().editor.getText();
-            action(sheet,resource,operation,template,()=>modal.remove());
+            const label = typeof form[0].label === "object" ? form[0].label.value : null;
+            action(sheet,resource,operation,template,()=>modal.remove(),label);
             modal.remove();
         });
 
