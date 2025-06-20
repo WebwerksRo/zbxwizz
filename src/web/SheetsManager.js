@@ -161,7 +161,7 @@ class SheetsManager {
             sheetName = "sheet" + (this.lastAssignedIdx);
         }
         let container = $(this.#sheetContainerTpl).appendTo(this.#sheetsContainer);
-        this.sheets[sheetName] = new Sheet(this,sheetName,container,30, data);
+        this.sheets[sheetName] = new Sheet(this,sheetName,container,10, data);
         const sheetId = this.sheets[sheetName].id;
         this.sheetsNames.push(sheetName);
 
