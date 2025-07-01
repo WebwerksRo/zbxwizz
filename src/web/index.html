@@ -44,7 +44,7 @@
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importXlsModal">Import XLS</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</a>
+                            <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_req_import_js)">Import from JavaScript</a>
 
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" role="button"  href="#" onclick="prompt_save_data()">Export to CSV</a>
@@ -229,7 +229,7 @@
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import CSV</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importXlsModal'>Import Excel</button>
                 <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from JavaScript</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_req_import_js)">Import from JavaScript</button>
             </div>
         </div>
     </div>

@@ -107,6 +107,20 @@ function req_import_from_api(sheet, resource, operation, template,success=new Fu
         .finally(()=>overlay.hide())
     success();
 }
+function preview_req_import_js(editor,template) {
+    let previewEl = $(editor.container.parentNode).find(".preview");
+
+    previewEl.addClass("alert-secondary").removeClass("alert-danger").removeClass("alert-success");
+    // log(editor);
+    try {
+        let tmpFunc = eval("()=>{"+ template + "}");
+        let data = tmpFunc();
+        previewEl.removeClass("alert-secondary").children().text(data);
+        previewEl.addClass("alert-success");
+    } catch (e) {
+        previewEl.addClass("alert-danger").children().text("Invalid JS template: "+e.message)
+    }
+}
 
 function req_import_js(sheet, resource,operation,template,success=new Function()) {
 
@@ -968,7 +982,7 @@ function load_templates(event,prefix) {
  * @param dialogOpts
  * @param rowContext
  */
-function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
+function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=preview_request){
     let lastSavedTpl = localStorage.getItem(sel+"_tpl");
     let lastSavedRes = localStorage.getItem(sel+"_res");
     let lastSavedReqType = localStorage.getItem(sel+"_reqtype");
@@ -994,7 +1008,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
             mode: 'code', onChange: () => {
                 let tpl = editor.getText();
                 localStorage.setItem(sel+"_tpl",tpl);
-                preview_request(editor,tpl,rowContext)
+                preview(editor,tpl,rowContext)
             }
         });
 
@@ -1002,7 +1016,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true){
         if(lastSavedRes) form[0].resource.value = lastSavedRes;
         if(lastSavedReqType && form[0].operation) form[0].operation.value = lastSavedReqType;
         let tpl = editor.getText();
-        preview_request(editor,tpl,rowContext);
+        preview(editor,tpl,rowContext);
         $(item).data("editor",editor)
     })
         ;
