@@ -201,6 +201,12 @@ footer .nav-link{
 .dataTable tbody>tr.error td{
     background: #fff2e2;
 }
+.dataTable tbody>tr.error td.editing{
+    background: black;
+}
+.dataTable tbody>tr.error td.active{
+    background: silver !important;
+}
 
 .dataTable td:first-child{
     width: 60px !important;

@@ -1,7 +1,4 @@
-/**
- * @param {ZBXApi}
- */
-let zbx;
+
 
 function load_req_tpl(editor, key) {
     if (key.length) {
@@ -107,6 +104,12 @@ function req_import_from_api(sheet, resource, operation, template,success=new Fu
         .finally(()=>overlay.hide())
     success();
 }
+
+/**
+ * 
+ * @param {JSONEditor} editor 
+ * @param {String} template 
+ */
 function preview_req_import_js(editor,template) {
     let previewEl = $(editor.container.parentNode).find(".preview");
 
@@ -122,6 +125,15 @@ function preview_req_import_js(editor,template) {
     }
 }
 
+/**
+ * 
+ * @param {Sheet} sheet 
+ * @param {String} resource 
+ * @param {String} operation 
+ * @param {String} template 
+ * @param {*} success 
+ * @returns 
+ */
 function req_import_js(sheet, resource,operation,template,success=new Function()) {
 
     try {
@@ -139,6 +151,10 @@ function req_import_js(sheet, resource,operation,template,success=new Function()
     success();
 }
 
+/**
+ * 
+ * @param {*} btn 
+ */
 function remove_template(btn) {
     $(btn.form.templates).children().toArray()
         .forEach(opt => {
@@ -188,7 +204,7 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
                 row.lastResponse = null;
                 if(err) return;
 
-                let data = row_data(row);
+                let data = row.script_data;
                 let params;
                 let req;
                 try {
@@ -272,7 +288,7 @@ function pull_from_api(sheet, resource, operation,template, success=new Function
         rows.forEach(/**
             * @param row
             */(row) => {
-                let data = row_data(row);
+                let data = row.script_data;
                 row.unset_error();
                 let request;
                 try {
@@ -329,8 +345,9 @@ function update_help_link(src){
         .attr("title","Zabbix help on "+resource+"."+operation)
     log(src);
 }
+
 /**
- *
+ * export data in current active sheet to csv
  * @param filter
  */
 function save_data(filter=null) {
@@ -366,23 +383,14 @@ function save_data(filter=null) {
         skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
         columns: null //or array of strings
     });
-    downloadBlob(csv, "backup.csv", "text/csv;charset=utf-8;");
-}
-function row_data(row) {
-    let data = {
-        data: Object.assign({},row.data),
-        cols: row.vals.concat([]),
-        flds: Object.assign(row.fld_vals)
-    };
-    row.vals.forEach((v,idx)=>{
-        data["$"+idx] = v;
-    });
-    Object.keys(row.fld_vals).forEach(k=>{
-        data["_"+k]=row.fld_vals[k];
-    });
-    return data;
+    downloadBlob(csv, "export.csv", "text/csv;charset=utf-8;");
 }
 
+
+/**
+ * 
+ * @param {String} txt 
+ */
 function dbg(txt) {
     $("#scriptDebug")[0].value += "\n"+txt.toString();
 }
@@ -393,7 +401,7 @@ function dbg(txt) {
  * @returns {string|*}
  */
 function transform_cell(cell, expr) {
-    let data = row_data(cell.row);
+    let data = cell.row.script_data
     data.self = cell.val;
     data.lastResponse = cell.row.lastResponse;
     data.lastError = cell.row.lastError;
@@ -433,11 +441,6 @@ function transform_col(sheet,colId,expr) {
  * @param apply
  */
 function transform_data(form, apply = false) {
-
-
-
-
-
     const col = form.col.value*1;
     const expr = form.xpression.value;
     const sheet = $(form).data("sheet");
@@ -563,9 +566,11 @@ function load_csv(form,loadType="file") {
     });
 
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 function load_xls(form,load=false) {
     log(form.file.files[0]);
     const sheetsSelect = $(form.sheets);
@@ -618,6 +623,10 @@ function load_xls(form,load=false) {
 }
 
 
+/**
+ * 
+ * @param {HTMLFormElement} form 
+ */
 function save_zbx_config(form) {
     log("save config");
     $("#zbxLogo").addClass("notConnected");
@@ -628,6 +637,9 @@ function save_zbx_config(form) {
     zbx_connect();
 }
 
+/**
+ * 
+ */
 function zbx_connect() {
     let url = localStorage.getItem("zbxUrl");
     let token = localStorage.getItem("zbxToken");
@@ -658,6 +670,12 @@ function zbx_connect() {
     })
     .catch(e=>log("could not connect to zabbix. Invalid URL or token?")).finally(() => overlay.hide());
 }
+
+/**
+ * 
+ * @param {String} prefix 
+ * @param {JSONEditor} editor 
+ */
 function save_req_tpl(prefix, editor) {
     prompt_modal("Template name",(name)=>{
         if(!name) return;
@@ -671,7 +689,12 @@ function save_req_tpl(prefix, editor) {
 
 }
 
-
+/**
+ * 
+ * @param {*} editor 
+ * @param {*} tpl 
+ * @param {*} rowContext 
+ */
 function preview_request(editor,tpl,rowContext=true) {
     let previewEl = $(editor.container.parentNode).find(".preview");
 
@@ -682,7 +705,7 @@ function preview_request(editor,tpl,rowContext=true) {
             let row = sheetManager.get_active_sheet().rows.filter(row => row.isSelected)[0];
             // log(row);
             if (row) {
-                let data = row_data(row);
+                let data = row.script_data;
                 // log(data);
                 with (data) {
                     try {
@@ -724,55 +747,6 @@ function preview_request(editor,tpl,rowContext=true) {
     }
 }
 
-/**
- * @type SheetsManager
- */
-var sheetManager;
-var sheets;
-
-
-$(document).ready(() => {
-    setTimeout(() => {
-        zbx_connect();
-        sheetManager = new SheetsManager('#worksheets', '#sheetSelector');
-        sheets = sheetManager.sheets;
-        $("#sheetSelector").sortable({
-            stop: ()=>sheetManager.reorder()
-        });
-    }, 300);
-});
-
-
-let overlay = (($overlay)=>{
-    return {
-        el: $overlay,
-        _progress: $overlay.find("progress"),
-        _progressText: $overlay.find("#progressText"),
-        max: 0,
-        show: function () {
-            this.el.show();
-            return this;
-        },
-        hide: function () {
-            this.el.hide();
-            this._progress.hide();
-            return this;
-        },
-        set_progress: function(max,val=0) {
-            this._progress.attr("max",max).attr("value",val).show();
-            this._progressText.text("0%");
-            this.max = max;
-            return this;
-        },
-        progress: function(val) {
-            this._progress.attr("value",val).text(Math.round(val/this.max*100)+"%");
-            this._progressText.text(val + " / " +this.max);
-            return this;
-        }
-    }
-})($("#overlay"));
-
-
 function save_transformation(src) {
     if(!src.form.xpression.value) {
         return;
@@ -808,14 +782,13 @@ function load_transfo(src) {
 
 function save_session(stop=false) {
     sheetManager.save();
-    Object.keys(sheetManager.sheets).forEach((name)=>{
-        sheetManager.sheets[name].save();
-    });
+    
     if(!stop) 
         setTimeout(save_session, 60000);
 }
 
-setTimeout(save_session, 60000);
+
+
 
 
 function save_structure() {
@@ -888,27 +861,11 @@ function download_string(filename, mime, text) {
     }
 }
 
-function alert_modal(message,callback=new Function) {
-    let modal = normal_modal({
-        body: message,
-        buttons: [
-            {
-                text: "OK",
-                action: ()=>{
-                    modal.modal("hide");
-                    callback()
-                },
-                class: "primary"
-            }
-        ]
-    })
-}
 
 /**
  *
  */
 function save_env() {
-
     prompt_modal("Enter file name to save",(filename)=>{
         if(!filename) return;
         try {
@@ -959,7 +916,6 @@ function load_env(form,modal) {
     
     fr.readAsText(form.envfile.files[0]);
 }
-
 
 
 
@@ -1017,6 +973,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=
         if(lastSavedReqType && form[0].operation) form[0].operation.value = lastSavedReqType;
         let tpl = editor.getText();
         preview(editor,tpl,rowContext);
+        
         $(item).data("editor",editor)
     })
         ;
@@ -1051,13 +1008,6 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=
     let modal = dragable_modal(opts);
 }
 
-
-function under_development() {
-    dragable_modal({
-        title: "Help",
-        body: "Under development"
-    })
-}
 
 
 
@@ -1118,7 +1068,7 @@ function prompt_save_data() {
     });
 }
 
-function open_play_editor(    ) {
+function open_play_editor(  ) {
     
     let content = $("#scriptPlayer");
 
@@ -1279,18 +1229,34 @@ function load_script(sel) {
 function save_script(el) {
     prompt_modal("Script name",(name)=>{
         if(!name) return;
-
-        localStorage.setItem("script_"+generateShortUUID(),json({
-            script: $(el).parents(".draggableModal").find(".editor").data("editor").getValue(),
-            name: name,
-            params: $(el).parents(".draggableModal").find(".param").toArray().map(param=>{
-                return {
-                    name: $(param).find("input[name='param_name']").val(),
-                    value: $(param).find("input[name='param_value']").val()
-                }
+        let hash = btoa(name);
+        let script = $(el).parents(".draggableModal").find(".editor").data("editor").getValue();
+        let params = $(el).parents(".draggableModal").find(".param").toArray().map(param=>(
+            {
+                name: $(param).find("input[name='param_name']").val(),
+                value: $(param).find("input[name='param_value']").val()
             })
-        }));
-        $(el).parents(".modal").find(".custom-select").val(name);
+        );
+
+        function save_script_to_local(name,script,params) {
+            let data = {
+                script: script,
+                name: name,
+                params: params
+            };
+            console.log(data);
+            
+            localStorage.setItem("script_"+hash,json(data));
+        }
+        if(localStorage.getItem("script_"+hash)) {
+            confirm_modal("Script with this name already exists",()=>{
+                save_script_to_local(name,script,params);
+            });
+            return;
+        }
+        save_script_to_local(name,script,params);
+        $(el).parents(".draggableModal").find("[name='templates']").val(name);
+        $(el).parents(".draggableModal").find("[name='templates']").trigger("change");
     });
 }
 
@@ -1298,6 +1264,7 @@ function remove_script(el) {
     localStorage.removeItem($(el).parents(".draggableModal").find("[name='templates']").val());
     $(el).parents(".draggableModal").find("[name='templates']").val("");
 }
+
 
 
 
@@ -1314,3 +1281,29 @@ $("select[name='resource']").each((idx,el)=>{
     $(el).append("<option></option>");
     options.forEach(o=>$(el).append("<option>"+o+"</option>"));
 });
+
+
+
+
+/**
+ * @param {ZBXApi}
+ */
+
+
+
+
+let zbx;
+zbx_connect();
+var sheetManager = new SheetsManager('#worksheets', '#sheetSelector');
+overlay.show("Loading sheets...");
+$(document).ready(()=>{
+    sheetManager.init();
+    overlay.hide();
+});
+
+$("#sheetSelector").sortable({
+    stop: ()=>sheetManager.reorder()
+});
+
+var sheets = sheetManager.sheets;
+setTimeout(save_session, 60000);

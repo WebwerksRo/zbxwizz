@@ -54,7 +54,10 @@ class SheetsManager {
     constructor(sheetsContainer, tabsContainer) {
         this.#sheetsContainer = $(sheetsContainer);
         this.#tabsContainer = $(tabsContainer);
+    }
 
+    init() {
+        
         // load saved config
         let config;
         try {
@@ -91,7 +94,6 @@ class SheetsManager {
     }
 
     activate_sheet(sheetName) {
-        
         try {
             // log("activate_sheet "+sheetName);
             const sheetId = this.sheets[sheetName].id;
@@ -124,6 +126,9 @@ class SheetsManager {
         };
         // log("save cfg",cfg)
         localStorage.setItem("worksheets", JSON.stringify(cfg));
+        Object.entries(this.sheets).forEach(([name,sheet])=>{
+            sheet.save();
+        });
     }
 
     update_stats() {
@@ -178,6 +183,7 @@ class SheetsManager {
         
         
         this.activate_sheet(sheetName);
+        save_session(true);
         return this.sheets[sheetName];
     }
 

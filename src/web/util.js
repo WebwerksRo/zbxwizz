@@ -15,6 +15,34 @@ function escapeRegExp(string) {
 }
 
 /**
+ * 
+ * @param {String} message 
+ * @param {Function} callback 
+ */
+function alert_modal(message,callback=new Function()) {
+    let modal = normal_modal({
+        body: message,
+        buttons: [
+            {
+                text: "OK",
+                action: ()=>{
+                    modal.modal("hide");
+                    callback()
+                },
+                class: "primary"
+            }
+        ]
+    })
+}
+
+function under_development() {
+    dragable_modal({
+        title: "Help",
+        body: "Under development"
+    })
+}
+
+/**
  *
  * @param opts
  */
@@ -314,3 +342,32 @@ function fetch_jsonapi(url, options = {}) {
 
     return http.get(url, options).then(parse_jsonapi);
 }
+let overlay = (($overlay)=>{
+    return {
+        el: $overlay,
+        _progress: $overlay.find("progress"),
+        _progressText: $overlay.find("#progressText"),
+        max: 0,
+        show: function (text="") {
+            this.el.show();
+            if(text) this._progressText.text(text);
+            return this;
+        },
+        hide: function () {
+            this.el.hide();
+            this._progress.hide();
+            return this;
+        },
+        set_progress: function(max,val=0) {
+            this._progress.attr("max",max).attr("value",val).show();
+            this._progressText.text("0%");
+            this.max = max;
+            return this;
+        },
+        progress: function(val) {
+            this._progress.attr("value",val).text(Math.round(val/this.max*100)+"%");
+            this._progressText.text(val + " / " +this.max);
+            return this;
+        }
+    }
+})($("#overlay"));

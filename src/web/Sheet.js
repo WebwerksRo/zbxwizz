@@ -468,6 +468,10 @@ class Sheet {
         }));
     }
 
+    update_stats() {
+        sheetManager.update_stats();
+    }
+
     render_header(fields,minSize=null){
         minSize = minSize ? minSize : this.#minCols;
         let headerRow = $("<tr>").appendTo(this.#thead.empty());
@@ -813,6 +817,7 @@ class Sheet {
         }
         this.rows.forEach((row,idx)=>row.renumber(idx));
         this.#renumber_rows();
+        this.update_stats();
         save_session(true);
     }
 
@@ -826,6 +831,7 @@ class Sheet {
         }
         this.rows.forEach((row,idx)=>row.renumber(idx));
         this.#renumber_rows();
+        this.update_stats();
         save_session(true);
     }
 

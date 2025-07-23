@@ -50,6 +50,25 @@ class Row {
     }
 
     /**
+     * creates a row data object with all the data in the row to be used in scripts like transform_cell, pull, push, etc.
+     * @returns {Object}
+     */
+    get script_data() {
+        let data = {
+            data: Object.assign({},this.data),
+            cols: this.vals.concat([]),
+            flds: Object.assign(this.fld_vals)
+        };
+        this.vals.forEach((v,idx)=>{
+            data["$"+idx] = v;
+        });
+        Object.keys(this.fld_vals).forEach(k=>{
+            data["_"+k]=this.fld_vals[k];
+        });
+        return data;
+    }
+
+    /**
      *
      * @returns {boolean}
      */
@@ -225,14 +244,17 @@ class Row {
     delete() {
         this.#table.delete_row(this.#rowIdx);
         this.#el.remove();
+        this.#table.update_stats();
         save_session(true);
     }
 
     insert(where) {
         this.#table.insert_row(this.#rowIdx,where);
+        this.#table.update_stats();
     }
     duplicate() {
         this.#table.duplicate_row(this);
+        this.#table.update_stats();
     }
 
     /**
