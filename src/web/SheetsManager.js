@@ -1,11 +1,3 @@
-
-let $ws = $("#worksheets").on("scroll",()=>{
-    let sheet = sheetManager.get_active();
-    sheet.scrollY = $ws.scrollTop();
-    sheet.scrollX = $ws.scrollLeft();
-});
-
-
 class SheetsManager {
     /**
      *
@@ -45,14 +37,16 @@ class SheetsManager {
 <!--  </div>-->
 <!--</div>-->
 
-
-
-
                     <a class="nav-link" ondblclick="edit_tab(this)" onclick="sheetManager.activate_sheet($(this).attr('data-sheet'))"></a>
                     </li>`;
 
     constructor(sheetsContainer, tabsContainer) {
-        this.#sheetsContainer = $(sheetsContainer);
+        let self = this;
+        this.#sheetsContainer = $(sheetsContainer).on("scroll",()=>{
+            let sheet = self.get_active();
+            sheet.scrollY = self.#sheetsContainer.scrollTop();
+            sheet.scrollX = self.#sheetsContainer.scrollLeft();
+        });
         this.#tabsContainer = $(tabsContainer);
     }
 
@@ -97,7 +91,7 @@ class SheetsManager {
         try {
             // log("activate_sheet "+sheetName);
             const sheetId = this.sheets[sheetName].id;
-            $ws.children().hide();
+            this.#sheetsContainer.children().hide();
             $("#sheetSelector").find("a.nav-link").removeClass("active");
             $("#"+sheetId).show();
             $("#"+sheetId+"-tab").addClass("active");
@@ -106,7 +100,7 @@ class SheetsManager {
             let activeSheet = this.get_active();
 
             if(activeSheet)
-                $ws.scrollTop(activeSheet.scrollY).scrollLeft(activeSheet.scrollX);
+                this.#sheetsContainer.scrollTop(activeSheet.scrollY).scrollLeft(activeSheet.scrollX);
             //this.save(true);
             this.update_stats();    
         }

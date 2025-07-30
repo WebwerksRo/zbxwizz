@@ -464,6 +464,7 @@ class Sheet {
                 this.#rows.push(row);
             });
             this.save();
+            this.update_stats();
             resolve();
         }));
     }

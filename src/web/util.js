@@ -339,7 +339,6 @@ function fetch_jsonapi(url, options = {}) {
         const records = data.data.map(item =>({flds:item.attributes})  );
         return {fields:Object.keys(records[0].flds),records: records};
     }
-
     return http.get(url, options).then(parse_jsonapi);
 }
 let overlay = (($overlay)=>{
