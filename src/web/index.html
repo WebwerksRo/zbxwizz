@@ -139,6 +139,31 @@
     </div>
 
     <div class="d-none">
+        <div id="exportToCSVDialog">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        Select records to export<br>
+                        <select name="records" class="custom-select custom-select-sm">
+                            <option value="">all records</option>
+                            <option value="selected">only selected</option>
+                            <option value="visible">only visible</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        Select columns to export<br>
+                        <input type="checkbox" checked name="all" onchange="let sel=$('select[name=columns]');$(this).is(':checked') ? sel.find('option').prop('selected',true) : sel.find('option').prop('selected',false);"><label for="all">All</label ><br>
+                        <div class="input-group input-group-sm">
+                            <select multiple name="columns" class="custom-select custom-select-sm">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>  
         <div id="tranformDialog" title="Transform">
             <label>
                 Saved xpressions<br>

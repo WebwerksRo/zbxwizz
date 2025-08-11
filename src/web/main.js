@@ -350,8 +350,7 @@ function update_help_link(src){
  * export data in current active sheet to csv
  * @param filter
  */
-function save_data(filter=null) {
-
+function save_data(filter=null,columns=null) {
     /**
      *
      * @param content
@@ -371,8 +370,7 @@ function save_data(filter=null) {
     }
 
 
-    let dt = sheetManager.get_active_sheet();
-    let data = dt.export(filter);
+    let data = sheetManager.get_active_sheet().export(filter,columns);
     let csv = Papa.unparse(data.map(d=>d.flds), {
         quotes: true, //or array of booleans
         quoteChar: '"',
@@ -1033,16 +1031,12 @@ async function playscript(content,editor) {
 
 
 function prompt_save_data() {
-    let $el = $(`
-        <div>
-            What do you want to export
-            <select>
-                <option value="">all records</option>
-                <option value="selected">only selected</option>
-                <option value="visible">only visible</option>
-            </select>
-        </div>
-            `);
+    let $el = $("#exportToCSVDialog").clone();
+    let colSel = $el.find("select[name='columns']");
+    sheetManager.get_active().fields.forEach(field=>{
+        $("<option selected>").text(field).appendTo(colSel);
+    });
+    
     dragable_modal({
         title:"Export CSV",
         body: $el,
@@ -1050,16 +1044,17 @@ function prompt_save_data() {
             {
                 text: "Export",
                 action: ()=>{
-                    log($el.children("select").val());
-                    switch($el.children("select").val()) {
+                    let columns = $el.find("select[name=columns]").val();
+                    let records = $el.find("select[name=records]").val();
+                    switch(records) {
                         case "selected":
-                            save_data(row=>row.isSelected);
+                            save_data(row=>row.isSelected,columns);
                             break;
                         case "visible":
-                            save_data(row=>!row.isHidden);
+                            save_data(row=>!row.isHidden,columns);
                             break;
                         default:
-                            save_data();
+                            save_data(null,columns);
                     }
                 },
                 class: "primary"

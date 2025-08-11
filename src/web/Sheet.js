@@ -150,7 +150,7 @@ class Sheet {
 
         return row;
     }
-    export(filter) {
+    export(filter,columns=null) {
         let rows = this.#rows;
         if(filter && typeof filter === "function") {
             log("apply filter",filter);
@@ -162,7 +162,7 @@ class Sheet {
              * @param {Row} row
              * @returns {{flds: {}}}
              */
-            row=>row.export())
+            row=>row.export(columns))
     }
     /**
      *
@@ -170,7 +170,7 @@ class Sheet {
      * @returns {*}
      */
     get_row(idx) {
-       return this.#rows[idx];
+        return this.#rows[idx];
     }
 
     clear_errors(){

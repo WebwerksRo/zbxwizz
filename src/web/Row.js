@@ -377,9 +377,13 @@ class Row {
      *
      * @returns {{flds: {}}}
      */
-    export() {
+    export(columns=null) {
         let data = {flds:{}};
-        this.#cells.forEach((cell)=>data.flds[cell.fld]=cell.val);
+        this.#cells.forEach((cell)=>{
+            if(!columns || columns.includes(cell.fld)) {
+                data.flds[cell.fld]=cell.val;
+            }
+        });
         data.data = this.data;
         return data;
     }
