@@ -401,10 +401,10 @@ function dbg(txt) {
  * @returns {string|*}
  */
 function transform_cell(cell, expr) {
-    let data = cell.row.script_data
+    let data = obj(json(cell.row.script_data));
     data.self = cell.val;
-    data.lastResponse = cell.row.lastResponse;
-    data.lastError = cell.row.lastError;
+    data.lastResponse = obj(json(cell.row.lastResponse));
+    data.lastError = obj(json(cell.row.lastError));
     data.ws = sheetManager.sheets;
 
 
