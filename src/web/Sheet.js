@@ -838,8 +838,19 @@ class Sheet {
 
 
 
+    /**
+     * 
+     * It will select all visible rows if state is true, otherwise it will deselect all rows (including hidden)
+     * @param {boolean} state 
+     */
     toggle_all_visible(state) {
-        this.rows.filter(row=>!row.is_hidden).forEach(row=>row.select(state,true));
+        
+        if(state) {
+            this.rows.filter(row=>!row.is_hidden).forEach(row=>row.select(state,true));
+        }
+        else {
+            this.rows.forEach(row=>row.select(state,true));
+        }
         this.#ws.update_stats();
     }
 
