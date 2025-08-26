@@ -947,9 +947,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=
     let lastSavedRes = localStorage.getItem(sel+"_res");
     let lastSavedReqType = localStorage.getItem(sel+"_reqtype");
     let form = $(sel).clone().attr("id","f"+generateShortUUID());
-    if(tpl) {
-        form.find(".jsoneditorcontainer").data().editor.setValue(tpl);
-    }
+    
     
     form.on("submit",(event)=>{
             event.preventDefault();
@@ -975,7 +973,9 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=
             }
         });
 
-        if(lastSavedTpl) editor.setText(lastSavedTpl);
+        if(tpl) editor.setText(tpl);
+        else if(lastSavedTpl) editor.setText(lastSavedTpl);
+
         if(lastSavedRes) form[0].resource.value = lastSavedRes;
         if(lastSavedReqType && form[0].operation) form[0].operation.value = lastSavedReqType;
         let tpl = editor.getText();
