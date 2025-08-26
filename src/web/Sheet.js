@@ -742,25 +742,32 @@ class Sheet {
      * @param {number} pos
      * @returns {Sheet}
      */
-    insert_column(pos) {
-        pos = parseInt(pos);
+    async insert_column(pos=null) {
+        return new Promise((resolve,reject)=>{
+        if(pos===null) {
+            pos = this.fields.length;
+        }
+        else {
+            pos = parseInt(pos);
+        }
         let flds = this.fields;
+        let sheet = this;
         let newFldName = generateShortUUID();
         flds.splice(pos,0,newFldName);
         overlay.show();
         setTimeout(()=> {
-
-            log(flds);
             this.render_header(flds, flds.length);
             this.rows.forEach(row => {
                 // log(row.cellsData);
                 let data = row.cellsData;
                 data[newFldName] = "";
                 row.load_data(flds, data).render();
+                resolve(pos);
             });
-            overlay.hide();
-        },200);
-        return this;
+                overlay.hide();
+            },200);
+            
+        });
 
     }
 

@@ -218,6 +218,7 @@ async function push_to_api(sheet, resource, operation, template,success=new Func
                     console.log("Request",req);
                     console.log("Template",template);
                     console.log("Data",data);
+                    reject(e);
                     return;
                 }
                 reqArr.push({params:params,ctx:row})
