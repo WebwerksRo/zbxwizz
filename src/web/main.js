@@ -942,7 +942,7 @@ function load_templates(event,prefix) {
  * @param dialogOpts
  * @param rowContext
  */
-function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=preview_request,tpl=null){
+function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=preview_request,reqTpl=null){
     let lastSavedTpl = localStorage.getItem(sel+"_tpl");
     let lastSavedRes = localStorage.getItem(sel+"_res");
     let lastSavedReqType = localStorage.getItem(sel+"_reqtype");
@@ -973,7 +973,7 @@ function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=
             }
         });
 
-        if(tpl) editor.setText(tpl);
+        if(reqTpl) editor.setText(reqTpl);
         else if(lastSavedTpl) editor.setText(lastSavedTpl);
 
         if(lastSavedRes) form[0].resource.value = lastSavedRes;
