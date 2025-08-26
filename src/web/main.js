@@ -400,11 +400,13 @@ function dbg(txt) {
  * @returns {string|*}
  */
 function transform_cell(cell, expr) {
+    console.log(expr);
     let data = obj(json(cell.row.script_data));
     data.self = cell.val;
     data.lastResponse = obj(json(cell.row.lastResponse));
     data.lastError = obj(json(cell.row.lastError));
     data.ws = sheetManager.sheets;
+    
 
 
     if (expr !== "")
@@ -419,7 +421,7 @@ function transform_cell(cell, expr) {
 
         }
         catch(e) {
-            log(e);
+            console.log(e);
             return e.message
         }
 }
@@ -441,6 +443,8 @@ function transform_col(sheet,colId,expr) {
  * @param apply
  */
 function transform_data(form, apply = false) {
+    console.log(form);
+    
     const col = form.col.value*1;
     const expr = form.xpression.value;
     const sheet = $(form).data("sheet");
@@ -459,7 +463,7 @@ function transform_data(form, apply = false) {
         try {
             preview.value = transform_cell(cell,expr);
         } catch (e) {
-            log(e);
+            console.log(e);
             preview.value = "Error: " + e.message
         }
         return;
@@ -938,11 +942,14 @@ function load_templates(event,prefix) {
  * @param dialogOpts
  * @param rowContext
  */
-function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=preview_request){
+function req_modal(sel,title,action,sheet,dialogOpts={},rowContext=true,preview=preview_request,tpl=null){
     let lastSavedTpl = localStorage.getItem(sel+"_tpl");
     let lastSavedRes = localStorage.getItem(sel+"_res");
     let lastSavedReqType = localStorage.getItem(sel+"_reqtype");
     let form = $(sel).clone().attr("id","f"+generateShortUUID());
+    if(tpl) {
+        form.find(".jsoneditorcontainer").data().editor.setValue(tpl);
+    }
     
     form.on("submit",(event)=>{
             event.preventDefault();
