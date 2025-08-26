@@ -419,6 +419,7 @@ function transform_cell(cell, expr) {
 
         }
         catch(e) {
+            log(e);
             return e.message
         }
 }

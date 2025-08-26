@@ -81,7 +81,7 @@ class Sheet {
     </div>
     </div>
     <div class="text-center field">
-        <span class="badge badge-primary" ondblclick="$(this).parents('table').data().sheet.rename_fld_dialog(this)">&nbsp;</span>
+        <span class="badge badge-primary" onblur="" ondblclick="$(this).parents('table').data().sheet.rename_fld_dialog(this)">&nbsp;</span>
     </div>
 </th>
         `;
