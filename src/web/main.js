@@ -1311,3 +1311,20 @@ $("#sheetSelector").sortable({
 
 var sheets = sheetManager.sheets;
 setTimeout(save_session, 60000);
+
+
+function import_from_zbx_modal(tpl) {
+    req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_request,tpl)
+}
+
+function pull_from_zbx_modal(tpl) {
+    req_modal('#pullZbxForm','Pull data from Zabbix',pull_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},true,preview_request,tpl)
+}
+function push_to_zbx_modal(tpl) {
+    req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},true,preview_request,tpl)
+}
+
+function import_from_js_modal(tpl) {
+    req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_req_import_js,tpl)
+}
+

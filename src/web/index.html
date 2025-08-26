@@ -43,7 +43,7 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importCsvModal">Import CSV</a>
                             <a class="dropdown-item" role="button" data-toggle="modal" data-target="#importXlsModal">Import XLS</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</a>
+                            <a class="dropdown-item" role="button" onclick="import_from_zbx_modal()">Import from Zabbix</a>
                             <a class="dropdown-item" role="button" onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_req_import_js)">Import from JavaScript</a>
 
                             <div class="dropdown-divider"></div>
@@ -67,8 +67,8 @@
                             Zabbix ops
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" role="button" onclick="req_modal('#pullZbxForm','Pull data from Zabbix',pull_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Pull</a>
-                            <a class="dropdown-item" role="button" onclick="req_modal('#pushZbxForm','Push data to Zabbix',push_to_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}})">Push</a>
+                            <a class="dropdown-item" role="button" onclick="pull_from_zbx_modal()">Pull</a>
+                            <a class="dropdown-item" role="button" onclick="push_to_zbx_modal()">Push</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -253,8 +253,8 @@
             <div class="d-inline-block text-center" style="width: 500px">
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importCsvModal'>Import CSV</button>
                 <button onclick='' style='width: 200px !important; display: inline-block  !important;' data-toggle='modal' data-target='#importXlsModal'>Import Excel</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importZbxForm','Import data from Zabbix',req_import_from_api,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false)">Import from Zabbix</button>
-                <button style='width: 200px !important; display: inline-block  !important;' onclick="req_modal('#importJsForm','Import from JavaScript',req_import_js,sheetManager.get_active(),{attrs:{style: 'width: 500px; height: 650px !important'}},false,preview_req_import_js)">Import from JavaScript</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="import_from_zbx_modal()">Import from Zabbix</button>
+                <button style='width: 200px !important; display: inline-block  !important;' onclick="import_from_js_modal()">Import from JavaScript</button>
             </div>
         </div>
     </div>
