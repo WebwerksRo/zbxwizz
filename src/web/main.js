@@ -173,7 +173,7 @@ function remove_template(btn) {
  * @param success
  */
 // function push_to_api(sheet, form, validTpl=false,success=new Function()) {
-function push_to_api(sheet, resource, operation, template,success=new Function()) {
+async function push_to_api(sheet, resource, operation, template,success=new Function()) {
     return new Promise((resolve,reject)=>{
         if(!zbx.status)
             return alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
@@ -267,7 +267,7 @@ function push_to_api(sheet, resource, operation, template,success=new Function()
  * @param {string} template
  * @param success
  */
-function pull_from_api(sheet, resource, operation,template, success=new Function(),label=null) {
+async function pull_from_api(sheet, resource, operation,template, success=new Function(),label=null) {
     return new Promise((resolve,reject)=>{
         if(!zbx.status) {
             alert_modal("Zabbix connection down. Please check configuration <a href='' data-toggle='modal' data-target='#zbxConfigModal'>here</a>");
